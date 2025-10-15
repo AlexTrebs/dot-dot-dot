@@ -1,0 +1,54 @@
+{
+  "font": "JetBrainsMono Nerd Font 12",
+  "layer": "top",
+  "position": "top",
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right": [
+    "backlight",
+    "pulseaudio",
+    "battery",
+    "tray"
+  ],
+
+  "backlight": {
+    "format": "{icon} {percent}%",
+    "format-icons": ["", ""]
+  },
+
+  "pulseaudio": {
+    "format": "{icon}  {volume}%",
+    "format-muted": " muted",
+    "format-icons": {
+      "default": [
+        "",   // very low / 0%
+        "",   // low
+        ""    // medium/high
+      ]
+    },
+    "scroll-step": 5,
+    "on-click": "GDK_BACKEND=x11 pavucontrol"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-icons": {
+      "charging": "",
+      "discharging": ["", "", "", "", ""]
+    },
+    "states": {
+      "critical": 10,
+      "warning": 25,
+      "good": 80
+    }
+  },
+
+  "clock": {
+    "format": "  {:%H:%M  %d %b}"
+  },
+
+  "tray": {
+    "icon-size": 18,
+    "spacing": 8
+  }
+}

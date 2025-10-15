@@ -1,0 +1,89 @@
+name: Build Custom Arch ISO
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repo
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Configure Git
+      - name: Set up Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      # Install dependencies for building ISO
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git xorriso squashfs-tools bsdtar wget curl rsync
+
+      # Download Archiso
+      - name: Download Archiso
+        run: |
+          mkdir iso_build
+          git clone https://gitlab.archlinux.org/archlinux/archiso.git
+          cp -r archiso/configs/releng iso_build/
+
+      # Copy dotfiles and scripts
+      - name: Copy dotfiles and scripts
+        run: |
+          mkdir -p iso_build/releng/root-image/etc/skel/.config
+          rsync -av .config/ iso_build/releng/root-image/etc/skel/.config/
+          mkdir -p iso_build/releng/root-image/usr/local/bin
+          cp -r scripts/* iso_build/releng/root-image/usr/local/bin/
+          chmod +x iso_build/releng/root-image/usr/local/bin/*
+
+      # Copy archinstall.yaml and README
+      - name: Copy archinstall config
+        run: |
+          cp archinstall.yaml iso_build/releng/root-image/archinstall.yaml
+          cp README.md iso_build/releng/root-image/README.md
+
+      # Build the ISO
+      - name: Build ISO
+        run: |
+          cd iso_build/releng
+          sudo mkarchiso -v .
+
+      # Create incrementing numeric tag
+      - name: Create new Git tag
+        id: tag
+        run: |
+          git fetch --tags
+          LATEST_TAG=$(git tag --list "V*" | sort -V | tail -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            NEXT_NUM=1
+          else
+            NEXT_NUM=$(( ${LATEST_TAG#V} + 1 ))
+          fi
+          NEW_TAG="V$NEXT_NUM"
+          echo "Creating new tag: $NEW_TAG"
+          git tag "$NEW_TAG"
+          git push origin "$NEW_TAG"
+          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      # Create a GitHub Release for that tag
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload ISO to the Release
+      - name: Upload ISO to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: iso_build/releng/out/*.iso
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

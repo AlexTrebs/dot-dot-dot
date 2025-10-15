@@ -1,0 +1,22 @@
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12px;
+}
+
+window#waybar {
+  background: rgba(30, 30, 30, 0.9);
+  color: #eceff4;
+  border-bottom: 1px solid #444;
+}
+
+#clock, #battery, #pulseaudio, #network, #bluetooth, #tray, #backlight {
+  padding: 0 8px;
+}
+
+#battery.charging {
+  color: #a3be8c;
+}
+
+#battery.critical { color: #ff5555; }
+#battery.warning { color: #f1c40f; }
+#battery.good { color: #50fa7b; }
