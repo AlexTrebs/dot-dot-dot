@@ -4,58 +4,60 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write  # Required for tagging and releases
+
 jobs:
   build-iso:
     runs-on: ubuntu-latest
 
+    container:
+      image: archlinux:latest
+      options: --privileged  # Needed by mkarchiso to use systemd-nspawn
+
     steps:
-      # Checkout the repo
+      # Checkout the repository
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Configure Git
-      - name: Set up Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-      # Install dependencies for building ISO
+      # Install dependencies
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git rsync
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm archiso git rsync base-devel
 
-      # Download Archiso
-      - name: Download Archiso
+      # Setup Archiso releng profile
+      - name: Setup Archiso releng profile
         run: |
-          mkdir iso_build
-          git clone https://gitlab.archlinux.org/archlinux/archiso.git
-          cp -r archiso/configs/releng iso_build/
+          mkdir -p iso_build
+          cp -r /usr/share/archiso/configs/releng iso_build/
+          cd iso_build/releng
+          rm -rf airootfs/etc/skel || true
 
       # Copy dotfiles and scripts
       - name: Copy dotfiles and scripts
         run: |
-          mkdir -p iso_build/releng/root-image/etc/skel/.config
-          rsync -av .config/ iso_build/releng/root-image/etc/skel/.config/
-          mkdir -p iso_build/releng/root-image/usr/local/bin
-          cp -r scripts/* iso_build/releng/root-image/usr/local/bin/
-          chmod +x iso_build/releng/root-image/usr/local/bin/*
+          mkdir -p iso_build/releng/airootfs/etc/skel/.config
+          rsync -av .config/ iso_build/releng/airootfs/etc/skel/.config/ || true
+          mkdir -p iso_build/releng/airootfs/usr/local/bin
 
-      # Copy archinstall.yaml and README
+      # Copy archinstall config and README
       - name: Copy archinstall config
         run: |
-          cp archinstall.yaml iso_build/releng/root-image/archinstall.yaml
-          cp README.md iso_build/releng/root-image/README.md
+          cp archinstall.yaml iso_build/releng/airootfs/archinstall.yaml || true
+          cp README.md iso_build/releng/airootfs/README.md || true
 
       # Build the ISO
       - name: Build ISO
         run: |
           cd iso_build/releng
-          sudo mkarchiso -v .
+          mkdir -p work out
+          export MKARCHISO_NSPAWN=0
+          mkarchiso -v -w work -o out .
 
-      # Create incrementing numeric tag
+      # Create incrementing tag (V1, V2, etc.)
       - name: Create new Git tag
         id: tag
         run: |
@@ -72,18 +74,21 @@ jobs:
           git push origin "$NEW_TAG"
           echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
-      # Create a GitHub Release for that tag
+      # Create GitHub Release
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
+          name: "Arch ISO ${{ steps.tag.outputs.tag }}"
+          body: "Automated build of custom Arch ISO."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Upload ISO to the Release
+      # Upload ISO to Release
       - name: Upload ISO to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.tag }}
           files: iso_build/releng/out/*.iso
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
