@@ -27,7 +27,7 @@ find "$DOTFILES_DIR" -type f | while read -r file; do
     fi
 
     # Create the symlink
-    ln -sf "$file" "$target_path"
+    ln -s "$file" "$target_path"
     echo "Linked $rel_path"
 done
 

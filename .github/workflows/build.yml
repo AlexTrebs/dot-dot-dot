@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git xorriso squashfs-tools bsdtar wget curl rsync
+          sudo apt-get install -y git rsync
 
       # Download Archiso
       - name: Download Archiso
