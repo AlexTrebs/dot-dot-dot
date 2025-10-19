@@ -8,15 +8,14 @@ permissions:
   contents: write
 
 jobs:
-  build-iso:
+  build:
     runs-on: ubuntu-latest
-
     container:
       image: archlinux:latest
       options: --privileged
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -26,35 +25,56 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm archiso git rsync base-devel
 
-      - name: Setup Archiso releng profile
+      - name: Build ISO
         run: |
+          set -e
           mkdir -p iso_build
           cp -r /usr/share/archiso/configs/releng iso_build/
           rm -rf iso_build/releng/airootfs/etc/skel || true
-
-      - name: Copy dotfiles and scripts
-        run: |
           mkdir -p iso_build/releng/airootfs/etc/skel/.config
           rsync -av .config/ iso_build/releng/airootfs/etc/skel/.config/ || true
           mkdir -p iso_build/releng/airootfs/usr/local/bin
-
-      - name: Copy archinstall config
-        run: |
           cp archinstall.yaml iso_build/releng/airootfs/archinstall.yaml || true
           cp README.md iso_build/releng/airootfs/README.md || true
 
-      - name: Build ISO
-        run: |
           cd iso_build/releng
           mkdir -p work out
           export MKARCHISO_NSPAWN=0
           mkarchiso -v -w work -o out .
 
-      # ✅ Make sure we're back in the git repo before tagging
-      - name: Create new Git tag
-        working-directory: ${{ github.workspace }}
+          echo "Build completed. Contents of out/:"
+          ls -lah out/
+
+      - name: Upload ISO artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-iso
+          path: iso_build/releng/out/*.iso
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download built ISO
+        uses: actions/download-artifact@v4
+        with:
+          name: arch-iso
+          path: iso_output
+
+      - name: Verify ISO presence
         run: |
-          git config --global --add safe.directory $PWD
+          echo "Verifying ISO download..."
+          ls -lah iso_output
+
+      - name: Create new Git tag
+        id: tag
+        run: |
           git fetch --tags
           LATEST_TAG=$(git tag --list "V*" | sort -V | tail -n 1)
           if [ -z "$LATEST_TAG" ]; then
@@ -81,6 +101,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          files: iso_build/releng/out/*.iso
+          files: iso_output/*.iso
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
