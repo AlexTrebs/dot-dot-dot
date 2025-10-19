@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Zed
+Comment=Zed Code Editor
+Exec=~/.local/bin/zed %F
+Icon=zed
+Terminal=false
+Type=Application
+Categories=Development;IDE;TextEditor;
+StartupNotify=true
+MimeType=text/plain;application/json;inode/directory;

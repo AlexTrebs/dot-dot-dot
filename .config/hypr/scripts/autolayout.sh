@@ -9,7 +9,7 @@ declare -A monitors_mode
 declare -A monitors_name
 external_monitors=()
 
-edp_scale="1.6"
+edp_scale="1"
 current_monitor=""
 max_external_height=0
 current_x=0

@@ -1,0 +1,40 @@
+/* Base colors */
+@define-color foreground         #d0cfcc;
+@define-color background         #13120d;
+@define-color cursor             #c4c3c2;
+
+/* Tabs */
+@define-color active_tab_foreground     #13120d;
+@define-color active_tab_background     #d0cfcc;
+@define-color inactive_tab_foreground   #c4c3c2;
+@define-color inactive_tab_background   #13120d;
+
+/* Borders */
+@define-color active_border_color   #c4c3c2;
+@define-color inactive_border_color #13120d;
+@define-color bell_border_color     #3b4e42;
+
+/* Terminal / Core Palette */
+@define-color color0   #13120d;
+@define-color color1   #28342c;
+@define-color color2   #2e645d;
+@define-color color3   #4b6458;
+@define-color color4   #666f54;
+@define-color color5   #2d6464;
+@define-color color6   #536f6a;
+@define-color color7   #98988d;
+@define-color color8   #6c6759;
+@define-color color9   #4f8a72;
+@define-color color10  #3E867D;
+@define-color color11  #658676;
+@define-color color12  #9da47f;
+@define-color color13  #3D8686;
+@define-color color14  #6F948E;
+@define-color color15  #dededd;
+
+/* Extended Semantic Colors */
+@define-color accent     #4f8a72;
+@define-color warning    #bfa45a;
+@define-color critical   #9b574d;
+@define-color success    #3E867D;
+@define-color text-strong #d0cfcc;

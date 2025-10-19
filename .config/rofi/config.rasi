@@ -1,0 +1,90 @@
+configuration {
+	/* ==========================================================
+	   GENERAL SETTINGS
+	   ========================================================== */
+	modi: "drun,run,filebrowser";
+	show-icons: true;
+	icon-theme: "Reversal-dark";
+	case-sensitive: false;
+	cycle: true;
+	scroll-method: 0;
+	normalize-match: true;
+	steal-focus: false;
+	filter: "";
+	tokenize: true;
+
+	/* ==========================================================
+	   MATCHING + EXECUTION
+	   ========================================================== */
+	matching: "fuzzy";
+	run-command: "{cmd}";
+	run-shell-command: "{terminal} -e {cmd}";
+	terminal: "kitty";  /* better match with your setup */
+	ssh-client: "ssh";
+	ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";
+	parse-hosts: true;
+	parse-known-hosts: true;
+
+	/* ==========================================================
+	   DRUN SETTINGS
+	   ========================================================== */
+	drun-display-format: "{name} <span weight='light' size='small'><i>({generic})</i></span>";
+	drun-match-fields: "name,generic,exec,categories,keywords";
+	drun-show-actions: false;
+	drun-use-desktop-cache: true;
+	drun-reload-desktop-cache: false;
+	drun {
+		parse-user: true;
+		parse-system: true;
+	}
+	run,drun {
+		fallback-icon: "application-x-addon";
+	}
+
+	/* ==========================================================
+	   WINDOW SWITCHER
+	   ========================================================== */
+	window-match-fields: "title,class,role,name,desktop";
+	window-command: "wmctrl -i -R {window}";
+	window-format: "<b>{w}</b> · {c} — {t:0}";
+	window-thumbnail: false;
+
+	/* ==========================================================
+	   HISTORY + SORTING
+	   ========================================================== */
+	disable-history: false;
+	sorting-method: "fzf";
+	max-history-size: 25;
+
+	/* ==========================================================
+	   FILE BROWSER
+	   ========================================================== */
+	filebrowser {
+		directories-first: true;
+		sorting-method: "name";
+	}
+
+	/* ==========================================================
+	   DISPLAY + INTERFACE
+	   ========================================================== */
+	display-window: "Windows";
+	display-run: "Run";
+	display-drun: "Apps";
+	display-ssh: "SSH";
+	display-filebrowser: "Files";
+
+	font: "JetBrainsMono Nerd Font 12";
+	click-to-exit: true;
+	threads: 0;
+	sort: true;
+
+	/* ==========================================================
+	   TIMEOUT + BEHAVIOR
+	   ========================================================== */
+	timeout {
+		action: "kb-cancel";
+		delay: 0;
+	}
+}
+
+@theme "hyprEarth"

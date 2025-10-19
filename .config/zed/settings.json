@@ -1,0 +1,213 @@
+{
+  // GENERAL
+  "tab_size": 2,
+  "icon_theme": "Material Icon Theme",
+  "soft_wrap": "editor_width",
+  "show_edit_predictions": true,
+  "base_keymap": "VSCode",
+  "vim_mode": false,
+
+  // FEATURES
+  "features": {
+    "edit_prediction_provider": "copilot"
+  },
+
+  // THEME & ICONS
+  "theme": {
+    "mode": "dark",
+    "light": "Nordfox - opaque",
+    "dark": "Nordfox - blurred"
+  },
+
+  // UI STYLING
+  "ui_font_family": "JetBrainsMono Nerd Font",
+  "ui_font_weight": 600,
+  "ui_font_size": 14,
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_weight": 500,
+  "buffer_font_size": 13,
+  "scrollbar": {
+    "show": "never"
+  },
+
+  // PANELS & LAYOUT
+  "outline_panel": {
+    "dock": "right"
+  },
+  "project_panel": {
+    "dock": "left",
+    "indent_size": 14,
+    "scrollbar": {
+      "show": "never"
+    },
+    "hide_gitignore": true
+  },
+  "terminal": {
+    "dock": "bottom",
+    "default_height": 220
+  },
+  "tab_bar": {
+    "show": true
+  },
+  "tabs": {
+    "git_status": true,
+    "file_icons": true
+  },
+
+  // MINIMAP
+  "minimap": {
+    "show": "always",
+    "thumb": "always"
+  },
+
+  // GIT
+  "git": {
+    "inline_blame": {
+      "enabled": true
+    }
+  },
+
+  // LSP & LANGUAGE CONFIG
+  "languages": {
+    "Python": {
+      "language_servers": ["ruff", "pyright"],
+      "format_on_save": "on",
+      "formatter": [
+        {
+          "language_server": { "name": "ruff" }
+        },
+        { "code_action": "source.fixAll.ruff" },
+        { "code_action": "source.organizeImports.ruff" }
+      ]
+    },
+    "TypeScript": {
+      "show_edit_predictions": true,
+      "tab_size": 2
+    },
+    "Markdown": {
+      "soft_wrap": "editor_width"
+    },
+    "Rust": {
+      "show_edit_predictions": false
+    },
+    "C": {
+      "formatter": {
+        "external": {
+          "command": "clang-format"
+        }
+      },
+      "format_on_save": "on"
+    },
+    "C++": {
+      "formatter": {
+        "external": {
+          "command": "clang-format"
+        }
+      },
+      "tab_size": 2,
+      "format_on_save": "off"
+    }
+  },
+
+  // LSP EXTENSIONS
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "completion": {
+          "snippets": {
+            "custom": {
+              "Arc::new": {
+                "postfix": "arc",
+                "body": ["Arc::new(${receiver})"],
+                "requires": "std::sync::Arc",
+                "scope": "expr"
+              },
+              "Rc::new": {
+                "postfix": "rc",
+                "body": ["Rc::new(${receiver})"],
+                "requires": "std::rc::Rc",
+                "scope": "expr"
+              },
+              "Some": {
+                "postfix": "some",
+                "body": ["Some(${receiver})"],
+                "scope": "expr"
+              },
+              "Ok": {
+                "postfix": "ok",
+                "body": ["Ok(${receiver})"],
+                "scope": "expr"
+              },
+              "Box::pin": {
+                "postfix": "boxpin",
+                "body": ["Box::pin(${receiver})"],
+                "requires": "std::boxed::Box",
+                "scope": "expr"
+              },
+              "vec!": {
+                "postfix": "vec",
+                "body": ["vec![${receiver}]"],
+                "description": "vec![]",
+                "scope": "expr"
+              }
+            }
+          }
+        }
+      }
+    },
+    "pyright": {
+      "settings": {
+        "analysis": {
+          "autoSearchPaths": true,
+          "useLibraryCodeForTypes": true,
+          "typeCheckingMode": "strict",
+          "reportUnusedVariable": "warning"
+        }
+      }
+    },
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          "lint": {
+            "extendSelect": [
+              "I",
+              "ARG",
+              "F841",
+              "E",
+              "F",
+              "W",
+              "C90",
+              "N",
+              "B",
+              "A"
+            ]
+          }
+        }
+      }
+    }
+  },
+
+  // AGENT / AI
+  "agent": {
+    "default_profile": "ask",
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "claude-3.7-sonnet"
+    }
+  },
+
+  // MISC
+  "format_on_save": "on",
+  "file_scan_exclusions": [
+    ".next",
+    ".turbo",
+    "node_modules",
+    "dist",
+    "target",
+    "venv",
+    "__pycache__"
+  ],
+  "file_types": {
+    "XML": ["*.csproj"]
+  }
+}

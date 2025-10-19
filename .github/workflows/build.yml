@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write  # Required for tagging and releases
+  contents: write
 
 jobs:
   build-iso:
@@ -13,43 +13,36 @@ jobs:
 
     container:
       image: archlinux:latest
-      options: --privileged  # Needed by mkarchiso to use systemd-nspawn
+      options: --privileged
 
     steps:
-      # Checkout the repository
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Install dependencies
       - name: Install dependencies
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm archiso git rsync base-devel
 
-      # Setup Archiso releng profile
       - name: Setup Archiso releng profile
         run: |
           mkdir -p iso_build
           cp -r /usr/share/archiso/configs/releng iso_build/
-          cd iso_build/releng
-          rm -rf airootfs/etc/skel || true
+          rm -rf iso_build/releng/airootfs/etc/skel || true
 
-      # Copy dotfiles and scripts
       - name: Copy dotfiles and scripts
         run: |
           mkdir -p iso_build/releng/airootfs/etc/skel/.config
           rsync -av .config/ iso_build/releng/airootfs/etc/skel/.config/ || true
           mkdir -p iso_build/releng/airootfs/usr/local/bin
 
-      # Copy archinstall config and README
       - name: Copy archinstall config
         run: |
           cp archinstall.yaml iso_build/releng/airootfs/archinstall.yaml || true
           cp README.md iso_build/releng/airootfs/README.md || true
 
-      # Build the ISO
       - name: Build ISO
         run: |
           cd iso_build/releng
@@ -57,10 +50,11 @@ jobs:
           export MKARCHISO_NSPAWN=0
           mkarchiso -v -w work -o out .
 
-      # Create incrementing tag (V1, V2, etc.)
+      # ✅ Make sure we're back in the git repo before tagging
       - name: Create new Git tag
-        id: tag
+        working-directory: ${{ github.workspace }}
         run: |
+          git config --global --add safe.directory $PWD
           git fetch --tags
           LATEST_TAG=$(git tag --list "V*" | sort -V | tail -n 1)
           if [ -z "$LATEST_TAG" ]; then
@@ -74,7 +68,6 @@ jobs:
           git push origin "$NEW_TAG"
           echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
-      # Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -84,7 +77,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Upload ISO to Release
       - name: Upload ISO to Release
         uses: softprops/action-gh-release@v2
         with:

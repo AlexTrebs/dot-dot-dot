@@ -2,8 +2,8 @@
   "font": "JetBrainsMono Nerd Font 12",
   "layer": "top",
   "position": "top",
-  "modules-left": ["hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["clock"],
+  "modules-left": ["clock", "custom/bing"],
+  "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     "backlight",
     "pulseaudio",
@@ -27,7 +27,7 @@
       ]
     },
     "scroll-step": 5,
-    "on-click": "GDK_BACKEND=x11 pavucontrol"
+    "on-click": "pavucontrol"
   },
 
   "battery": {
@@ -44,11 +44,17 @@
   },
 
   "clock": {
-    "format": "  {:%H:%M  %d %b}"
+    "format": "{:%H:%M  %d %b}  "
   },
 
   "tray": {
     "icon-size": 18,
-    "spacing": 8
+    "spacing": 16
+  },
+
+  "custom/bing": {
+    "interval": 3600,
+    "exec": "jq -r '.images[0].title' ~/Pictures/BingWallpapers/info.json 2>/dev/null || echo 'Bing Wallpaper'",
+    "on-click": "xdg-open $(jq -r '.images[0].copyrightlink' ~/Pictures/BingWallpapers/info.json 2>/dev/null)"
   }
 }

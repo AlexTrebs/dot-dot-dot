@@ -1,0 +1,22 @@
+/* Shared Color Palette for Rofi */
+
+* {
+  foreground: #c4c3c2;
+  background: #13120d;
+  accent:     #4F6858;
+  success:    #3E867D;
+  warning:    #bfa45a;
+  critical:   #9b574d;
+
+  /* rgba variants */
+  bg-90: rgba(19,18,13,0.90);
+  bg-85: rgba(19,18,13,0.85);
+  bg-75: rgba(19,18,13,0.75);
+
+  accent-15: rgba(79,104,88,0.15);
+  accent-25: rgba(79,104,88,0.25);
+  accent-30: rgba(79,104,88,0.30);
+  accent-40: rgba(79,104,88,0.40);
+
+  fg-85: rgba(196,195,194,0.85);
+}

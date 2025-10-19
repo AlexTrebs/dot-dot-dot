@@ -1,0 +1,99 @@
+@import "colours.rasi"
+
+/* ================================================================
+   HyprEarth Rofi Theme (syntax corrected)
+   ================================================================ */
+
+* {
+  font: "JetBrainsMono Nerd Font 10";
+  text-color: @foreground;
+  background-color:   transparent;
+  margin:     0px;
+  padding:    0px;
+  spacing:    0px;
+}
+
+/* ===================== WINDOW ===================== */
+window {
+  background-color: @bg-90;
+  border: 1px;
+  border-color: @accent-30;
+  border-radius: 8px;
+  padding: 8px;
+  width: 35%;
+  height: 45%;
+}
+
+/* ===================== INPUT BAR ===================== */
+inputbar {
+  background-color: @bg-85;
+  text-color: @foreground;
+  border: 1px;
+  border-color: @accent-25;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: 4px 0;
+}
+
+prompt {
+  margin: 0 4px 0 0;
+  text-color: @fg-85;
+}
+
+entry {
+  background-color: transparent;
+  text-color: @foreground;
+}
+
+/* ===================== LISTVIEW ===================== */
+listview {
+  spacing: 3px;
+  scrollbar: true;
+  padding: 3px;
+}
+
+/* ===================== ELEMENTS ===================== */
+element {
+  background-color: transparent;
+  text-color: @fg-85;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+element.selected {
+  background-color: @accent-25;
+  text-color: @foreground;
+  border: 1px;
+  border-color: @accent-30;
+}
+
+element-icon {
+  size: 16px;
+  padding: 1px 6px;
+  text-color: @success;
+}
+
+/* ===================== MESSAGE BOX ===================== */
+message {
+  background-color: @bg-75;
+  border: 1px;
+  border-color: @accent-25;
+  border-radius: 5px;
+  padding: 3px 8px;
+}
+
+/* ===================== SCROLLBAR ===================== */
+scrollbar {
+  handle-width: 4px;
+  border: 0px;
+  border-radius: 8px;
+  handle-color: @accent-40;
+  background-color: transparent;
+}
+
+/* ===================== MATCHING HIGHLIGHT ===================== */
+highlight {
+  background-color: rgba(62,134,125,0.30); /* Success color @30% */
+  border-radius: 2px;
+  text-color: @foreground;
+}

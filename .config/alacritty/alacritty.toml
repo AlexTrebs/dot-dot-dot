@@ -1,0 +1,141 @@
+# ================================================================
+#  Alacritty — HyprEarth Edition (Compact + Catppuccin Mocha)
+# ================================================================
+
+[env]
+TERM = "xterm-256color"
+
+# ================================================================
+#  COLORS
+# ================================================================
+
+[[colors.indexed_colors]]
+index = 16
+color = "#FAB387"
+
+[[colors.indexed_colors]]
+index = 17
+color = "#F5E0DC"
+
+[colors.primary]
+background = "#1E1E2E"
+foreground = "#CDD6F4"
+bright_foreground = "#DDE2F7"
+dim_foreground = "#BAC2DE"
+
+[colors.normal]
+black   = "#45475A"
+red     = "#F38BA8"
+green   = "#A6E3A1"
+yellow  = "#F9E2AF"
+blue    = "#89B4FA"
+magenta = "#F5C2E7"
+cyan    = "#94E2D5"
+white   = "#BAC2DE"
+
+[colors.bright]
+black   = "#585B70"
+red     = "#F38BA8"
+green   = "#A6E3A1"
+yellow  = "#F9E2AF"
+blue    = "#89B4FA"
+magenta = "#F5C2E7"
+cyan    = "#94E2D5"
+white   = "#A6ADC8"
+
+[colors.dim]
+black   = "#3B3F52"
+red     = "#E87A96"
+green   = "#95D491"
+yellow  = "#E6D590"
+blue    = "#7BA9EC"
+magenta = "#E1AFD5"
+cyan    = "#82D0C3"
+white   = "#A6ADC8"
+
+[colors.cursor]
+cursor = "#F5E0DC"
+text = "#1E1E2E"
+
+[colors.selection]
+background = "#F5E0DC"
+text = "#1E1E2E"
+
+[colors.search.matches]
+background = "#A6ADC8"
+foreground = "#1E1E2E"
+
+[colors.search.focused_match]
+background = "#A6E3A1"
+foreground = "#1E1E2E"
+
+[colors.hints.start]
+background = "#F9E2AF"
+foreground = "#1E1E2E"
+
+[colors.hints.end]
+background = "#A6ADC8"
+foreground = "#1E1E2E"
+
+[colors.vi_mode_cursor]
+cursor = "#B4BEFE"
+text = "#1E1E2E"
+
+# ================================================================
+#  FONT SETTINGS
+# ================================================================
+[font]
+size = 10.5
+normal = { family = "JetBrainsMono Nerd Font", style = "SemiBold" }
+bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+offset = { x = 0, y = 1 }
+glyph_offset = { x = 0, y = 0 }
+
+# Smoother text rendering
+builtin_box_drawing = true
+
+# ================================================================
+#  CURSOR
+# ================================================================
+[cursor]
+style = { shape = "Block", blinking = "Always" }
+blink_interval = 450
+blink_timeout = 0
+unfocused_hollow = true
+thickness = 0.15
+
+# ================================================================
+#  WINDOW
+# ================================================================
+[window]
+opacity = 0.8
+blur = true
+decorations = "none"
+dynamic_padding = true
+padding = { x = 6, y = 4 }
+dimensions = { columns = 100, lines = 26 }
+startup_mode = "Windowed"
+
+# ================================================================
+#  SCROLLING & MOUSE
+# ================================================================
+[scrolling]
+history = 10000
+multiplier = 3
+
+[mouse]
+hide_when_typing = true
+
+# ================================================================
+#  HINTS / URL CLICKING
+# ================================================================
+[hints]
+alphabet = "asdfghjkl"
+enabled = []
+# Example: open URLs directly
+# command = { program = "xdg-open", args = [] }
+
+[terminal.shell]
+program = "/bin/bash"
+args = ["--login"]

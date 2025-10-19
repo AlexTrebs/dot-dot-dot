@@ -1,0 +1,9 @@
+[Unit]
+Description=Battery level listener for notifications
+
+[Service]
+ExecStart=%h/.local/bin/battery_listener.sh
+Restart=always
+
+[Install]
+WantedBy=default.target

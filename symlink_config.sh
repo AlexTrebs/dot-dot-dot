@@ -1,34 +1,58 @@
 #!/usr/bin/env bash
-# Link all files from your repo's .config/ into ~/.config/, preserving structure.
+# Link or copy files from your dotfiles repo into target directories
 
-# Path to your dotfiles repo
-DOTFILES_DIR="$(pwd)/.config"
-TARGET_DIR="$HOME/.config"
+# Paths
+CONFIG_SRC="$(pwd)/.config"
+LOCAL_SRC="$(pwd)/.local"
+CONFIG_DST="$HOME/.config"
+LOCAL_DST="$HOME/.local"
 
-# Safety first
-if [ ! -d "$DOTFILES_DIR" ]; then
-    echo "Dotfiles config directory not found: $DOTFILES_DIR"
-    exit 1
-fi
+# Generic function to link or copy files
+# Usage: link_or_copy <source_dir> <target_dir> <mode>
+# mode: "symlink" or "copy"
+link_or_copy() {
+    local src="$1"
+    local dst="$2"
+    local mode="$3"
 
-# Walk through all files and directories
-find "$DOTFILES_DIR" -type f | while read -r file; do
-    # Get relative path inside .config/
-    rel_path="${file#$DOTFILES_DIR/}"
-    target_path="$TARGET_DIR/$rel_path"
-    target_dir=$(dirname "$target_path")
-
-    # Make sure target directory exists
-    mkdir -p "$target_dir"
-
-    # Remove existing file if it's already a symlink
-    if [ -L "$target_path" ]; then
-        rm "$target_path"
+    if [ ! -d "$src" ]; then
+        echo "Source directory not found: $src"
+        return 1
     fi
 
-    # Create the symlink
-    ln -s "$file" "$target_path"
-    echo "Linked $rel_path"
-done
+    find "$src" -type f | while read -r file; do
+        local rel_path="${file#$src/}"
+        local target="$dst/$rel_path"
+        local target_dir
+        target_dir=$(dirname "$target")
 
-echo "Done! All files linked into ~/.config/"
+        mkdir -p "$target_dir"
+
+        # Remove existing file or symlink
+        if [ -e "$target" ] || [ -L "$target" ]; then
+            rm -rf "$target"
+        fi
+
+        if [ "$mode" == "symlink" ]; then
+            ln -sf "$file" "$target"
+            echo "Linked $target"
+        elif [ "$mode" == "copy" ]; then
+            cp -p "$file" "$target"
+            echo "Copied $target"
+        else
+            echo "Unknown mode: $mode"
+            return 1
+        fi
+    done
+}
+
+# Run for .config (symlink)
+link_or_copy "$CONFIG_SRC" "$CONFIG_DST" "symlink"
+
+# Run for .local (copy)
+link_or_copy "$LOCAL_SRC" "$LOCAL_DST" "symlink"
+
+echo "All operations completed!"
+
+# Reload Hyprland if available
+command -v hyprctl &> /dev/null && hyprctl reload
