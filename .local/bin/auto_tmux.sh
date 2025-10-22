@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# Check if there is any tmux session running
+TMUX_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
+
 if tmux ls 2>/dev/null | grep -q .; then
-    # Attach to the first running tmux session
-    tmux attach-session -t $(tmux ls | head -n 1 | cut -d: -f1)
+    tmux attach-session -t "$(tmux ls | head -n 1 | cut -d: -f1)" -f "$TMUX_CONF"
 else
-    # Start a new tmux session
-    tmux
+    tmux -f "$TMUX_CONF"
 fi
