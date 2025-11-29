@@ -1,5 +1,6 @@
 {
   // GENERAL
+
   "tab_size": 2,
   "icon_theme": "Material Icon Theme",
   "soft_wrap": "editor_width",
@@ -40,7 +41,7 @@
     "scrollbar": {
       "show": "never"
     },
-    "hide_gitignore": true
+    "hide_gitignore": false
   },
   "terminal": {
     "dock": "bottom",

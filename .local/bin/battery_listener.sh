@@ -45,15 +45,18 @@ handle_update() {
 
         echo "critical" > "$STATE_FILE"
       elif (( cap <= LOW_LEVEL )); then
-
         if [[ "$prev_status" != "discharging" ]]; then
           send_notification normal "Unplugged — Battery Low" "Battery at ${cap}%."
         elif [[ "$last_state" != "low" ]]; then
           send_notification normal "Battery low" "Battery at ${cap}%."
+          /usr/local/bin/battery_saver.sh on
         fi
-
         echo "low" > "$STATE_FILE"
       elif (( cap > LOW_LEVEL )); then
+        if [[ "$last_state" == "low" ]] || [[ "$last_state" == "critical" ]]; then
+          /usr/local/bin/battery_saver.sh off
+          send_notification low "Battery saver off" "Battery level restored (${cap}%)."
+        fi
         echo "ok" > "$STATE_FILE"
       fi
       ;;
