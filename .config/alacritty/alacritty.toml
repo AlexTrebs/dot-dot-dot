@@ -113,7 +113,7 @@ opacity = 0.8
 blur = true
 decorations = "none"
 dynamic_padding = true
-padding = { x = 6, y = 4 }
+padding = { x = 0, y = 1 }
 dimensions = { columns = 100, lines = 26 }
 startup_mode = "Windowed"
 
@@ -139,3 +139,4 @@ enabled = []
 [terminal.shell]
 program = "/bin/bash"
 args = ["--login"]
+

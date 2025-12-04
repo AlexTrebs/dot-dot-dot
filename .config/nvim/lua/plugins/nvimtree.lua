@@ -4,5 +4,5 @@ require("nvim-tree").setup({
 		highlight_opened_files = "all",
 	},
 	update_focused_file = { enable = true },
-	git = { enable = true },
+	git = { enable = false },
 })

@@ -16,6 +16,10 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, opts)
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
 
+	if client.name == "rust_analyzer" then
+		client.server_capabilities.semanticTokensProvider = nil
+	end
+
 	if client.name == "lua_ls" then
 		client.server_capabilities.semanticTokensProvider = nil
 	end

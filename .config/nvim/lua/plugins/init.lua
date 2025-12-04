@@ -32,6 +32,8 @@ Plug("nvim-lualine/lualine.nvim")
 Plug("j-hui/fidget.nvim")
 Plug("nvim-tree/nvim-tree.lua")
 Plug("nvim-tree/nvim-web-devicons")
+Plug("folke/noice.nvim")
+Plug("MunifTanjim/nui.nvim")
 
 -- ========== TELESCOPE ==========
 Plug("nvim-telescope/telescope.nvim")
@@ -62,10 +64,6 @@ Plug("kristijanhusak/vim-dadbod-completion")
 Plug("tjdevries/express_line.nvim")
 Plug("iamcco/markdown-preview.nvim", { ["do"] = "cd app && npm install" })
 
--- ========== AI ==========
-Plug("folke/snacks.nvim")
-Plug("coder/claudecode.nvim")
-
 vim.call("plug#end")
 
 -- After plugin load → load configs
@@ -81,3 +79,4 @@ require("plugins.telescope")
 require("plugins.dap")
 require("plugins.formatter")
 require("plugins.database")
+require("plugins.noice")

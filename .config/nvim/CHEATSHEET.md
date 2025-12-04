@@ -65,6 +65,7 @@
 | `<space>ca` | Code actions |
 | `<space>wd` | Document symbols |
 | `<space>ww` | Workspace diagnostics |
+| `<space>e` | Opens floating diagnostics window |
 | `<space>f` | Format buffer (autoformat on save via `conform.nvim`) |
 | `[d` / `]d` | Previous / Next diagnostic |
 | `[D` / `]D` | First / Last diagnostic in buffer |
@@ -79,10 +80,6 @@
 | `<space>fb` | Open buffer list |
 | `<space>/` | Fuzzy search in current buffer |
 | `<space>gw` | Search string under cursor |
-| `<space>fa` | Find files in lazy-installed plugins |
-| `<space>en` | Open config folder |
-| `<space>eo` | Open backup config folder |
-| `<space>fp` | Open ~/plugins folder |
 
 ### 2.4. DAP / Debugging
 | Key | Action |
@@ -103,21 +100,7 @@
 | `<M-h><M-m>` | Add current file to Harpoon marks |
 | `<M-h><M-l>` | Toggle Harpoon quick menu |
 
-### 2.6. Claude AI (coder/claudecode.nvim)
-| Key | Action |
-| --- | --- |
-| `<leader>ac` | Toggle Claude |
-| `<leader>af` | Focus Claude window |
-| `<leader>ar` | Resume Claude session |
-| `<leader>aC` | Continue Claude session |
-| `<leader>am` | Select Claude model |
-| `<leader>ab` | Add current buffer to Claude session |
-| `<leader>as` | Send selection to Claude |
-| `<leader>as` | Add file from NvimTree/Oil to Claude |
-| `<leader>aa` | Accept Claude diff |
-| `<leader>ad` | Deny Claude diff |
-
-### 2.7. Barbar (Buffer Navigation)
+### 2.6. Barbar (Buffer Navigation)
 | Key | Action |
 | --- | --- |
 | `<Tab>` | Next buffer |
@@ -129,7 +112,7 @@
 | `<leader>1..9` | Go to buffer 1-9 |
 | `<leader>bp` | Pin/unpin buffer |
 
-### 2.8. Navigation / Editing
+### 2.7. Navigation / Editing
 | Key | Action |
 | --- | --- |
 | `<c-j> / <c-k> / <c-h> / <c-l>` | Navigate splits |
@@ -142,7 +125,7 @@
 | `[ ` / `] ` | Add empty line above / below cursor |
 | `Y` | Yank to end of line (`y$`) |
 
-### 2.9. Comments & Snippets
+### 2.8. Comments & Snippets
 | Key | Action |
 | --- | --- |
 | `gcc` | Toggle comment line |
@@ -150,7 +133,7 @@
 | `<Plug>luasnip-expand-repeat` | Repeat last snippet node expansion |
 | `<Plug>luasnip-delete-check` | Remove current snippet from jumplist |
 
-### 2.10. Plenary Test
+### 2.9. Plenary Test
 | Key | Action |
 | --- | --- |
 | `<Plug>PlenaryTestFile` | Test current file with Plenary |

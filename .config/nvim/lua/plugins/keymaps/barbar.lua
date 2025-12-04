@@ -1,8 +1,8 @@
 local set = vim.keymap.set
 
 -- Buffer navigation
-set("n", "<Tab>", "<Cmd>BufferNext<CR>", { desc = "Next buffer" })
-set("n", "<S-Tab>", "<Cmd>BufferPrevious<CR>", { desc = "Previous buffer" })
+set("n", "<C-Tab>", "<Cmd>BufferNext<CR>", { desc = "Next buffer" })
+set("n", "<C-S-Tab>", "<Cmd>BufferPrevious<CR>", { desc = "Previous buffer" })
 
 -- Move buffers
 set("n", "<leader>>", "<Cmd>BufferMoveNext<CR>", { desc = "Move buffer right" })

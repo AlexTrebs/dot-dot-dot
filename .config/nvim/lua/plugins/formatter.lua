@@ -19,7 +19,7 @@ conform.setup({
 		markdown = { "prettier" },
 		bash = { "shfmt" },
 		dockerfile = { "hadolint" },
-		rust = { "rustfmt" },
+		rust = { "rustfmt", lsp_format = "fallback" },
 		java = { "google_java_format" },
 	},
 })

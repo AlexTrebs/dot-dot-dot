@@ -8,4 +8,4 @@ set("n", "<leader>t", function()
 end, { noremap = true, silent = true })
 
 -- Exit terminal insert mode
-set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
+-- set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })

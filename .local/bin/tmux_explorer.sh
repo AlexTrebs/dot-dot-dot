@@ -10,25 +10,43 @@ CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-folder-explorer.conf"
 [[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
 
 BASE_DIR="${BASE_DIR:-$HOME}"
-SHOW_HIDDEN="${SHOW_HIDDEN:-true}"
+SHOW_HIDDEN="${SHOW_HIDDEN:-false}"
 TMUX_BIN="${TMUX_BIN:-tmux}"
 
 # ────────────────────────────────
 # HELPERS
 # ────────────────────────────────
+fd_flags() {
+  if [[ "$SHOW_HIDDEN" == "true" ]]; then
+    echo "--hidden --no-ignore"
+  else
+    echo "--no-hidden --ignore --exclude '.*'"
+  fi
+}
+
+find_flags() {
+  if [[ "$SHOW_HIDDEN" == "true" ]]; then
+    echo ""
+  else
+    echo "-not -path '*/.*'"
+  fi
+}
+
 list_entries() {
   local current_dir="$1"
   current_dir="$(realpath -m "$current_dir")"
 
   local entries
+
   if command -v fd >/dev/null 2>&1; then
+    # fd respects SHOW_HIDDEN via flags
     entries=$(fd -a '' "$current_dir" \
       --max-depth 1 \
-      --hidden \
-      --no-ignore \
+      $(fd_flags) \
       --color never)
   else
-    entries=$(find "$current_dir" -mindepth 1 -maxdepth 1 -print 2>/dev/null)
+    # find version respecting SHOW_HIDDEN
+    entries=$(find "$current_dir" -mindepth 1 -maxdepth 1 $(find_flags) -print 2>/dev/null)
   fi
 
   entries=$(echo "$entries" | grep -v "^$current_dir$" || true)
@@ -98,10 +116,14 @@ open_in_tmux() {
     $TMUX_BIN new-session -A -s "$session" -c "$target_dir"
   fi
 
-  # if it's a file → open it in nvim
+  # Always open in nvim, adjust command based on type
   if [[ -f "$target" ]]; then
-    $TMUX_BIN send-keys -t "$session" "nvim '$target'" C-m
+    nvim_cmd="nvim '$target'"
+  else
+    nvim_cmd="nvim ."
   fi
+
+  $TMUX_BIN send-keys -t "$session" "$nvim_cmd" C-m
 }
 
 # ────────────────────────────────
