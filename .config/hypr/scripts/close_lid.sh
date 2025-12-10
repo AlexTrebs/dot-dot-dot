@@ -3,10 +3,5 @@ sleep 1
 # Get the output and count the number of lines matching the regex
 line_count=$(hyprctl monitors | grep -P 'Monitor\s(?!eDP-1).+?\s\(ID\s\d+\):' | wc -l)
 
-# Check if the line count is more than 1
-if [ "$line_count" -gt 1 ]; then
-    # disable the internal monitor on lid close
-    hyprctl keyword monitor eDP-1, disable
-else
-    systemctl hibernate
-fi
+systemctl hibernate
+

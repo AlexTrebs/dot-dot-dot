@@ -39,6 +39,7 @@ local servers = {
 	ts_ls = true,
 	jsonls = true,
 	yamlls = true,
+	pyright = true,
 }
 
 -- Install servers via Mason

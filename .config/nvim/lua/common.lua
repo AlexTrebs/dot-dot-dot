@@ -38,3 +38,13 @@ vim.api.nvim_create_autocmd("UILeave", {
 		io.write("\027]111\027\\")
 	end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "python",
+	callback = function()
+		vim.opt_local.expandtab = true
+		vim.opt_local.tabstop = 2
+		vim.opt_local.shiftwidth = 2
+		vim.opt_local.softtabstop = 2
+	end,
+})
