@@ -1,0 +1,80 @@
+[Default Applications]
+# Web content
+text/html=zen.desktop
+application/xhtml+xml=zen.desktop
+x-scheme-handler/http=zen.desktop
+x-scheme-handler/https=zen.desktop
+x-scheme-handler/chrome=zen.desktop
+application/x-extension-htm=zen.desktop
+application/x-extension-html=zen.desktop
+application/x-extension-shtml=zen.desktop
+application/x-extension-xht=zen.desktop
+application/x-extension-xhtml=zen.desktop
+
+# PDF
+application/pdf=org.pwmt.zathura.desktop
+
+# Plain text and code files
+text/plain=dev.zed.Zed.desktop
+text/x-python=dev.zed.Zed.desktop
+text/x-csrc=dev.zed.Zed.desktop
+text/x-chdr=dev.zed.Zed.desktop
+text/x-c++src=dev.zed.Zed.desktop
+text/x-c++hdr=dev.zed.Zed.desktop
+text/x-java=dev.zed.Zed.desktop
+text/x-shellscript=dev.zed.Zed.desktop
+text/javascript=dev.zed.Zed.desktop
+text/x-lua=dev.zed.Zed.desktop
+text/x-ruby=dev.zed.Zed.desktop
+text/x-rust=dev.zed.Zed.desktop
+text/x-go=dev.zed.Zed.desktop
+text/css=dev.zed.Zed.desktop
+text/markdown=dev.zed.Zed.desktop
+text/x-markdown=dev.zed.Zed.desktop
+application/json=dev.zed.Zed.desktop
+application/xml=dev.zed.Zed.desktop
+application/x-yaml=dev.zed.Zed.desktop
+application/toml=dev.zed.Zed.desktop
+
+# Images
+image/png=imv.desktop
+image/jpeg=imv.desktop
+image/gif=imv.desktop
+image/webp=imv.desktop
+image/bmp=imv.desktop
+image/svg+xml=imv.desktop
+image/tiff=imv.desktop
+
+# File manager
+inode/directory=thunar.desktop
+
+# Video
+video/mp4=mpv.desktop
+video/x-matroska=mpv.desktop
+video/webm=mpv.desktop
+video/x-msvideo=mpv.desktop
+video/quicktime=mpv.desktop
+video/x-flv=mpv.desktop
+video/ogg=mpv.desktop
+
+# Audio
+audio/mpeg=audacious.desktop
+audio/mp4=audacious.desktop
+audio/ogg=audacious.desktop
+audio/flac=audacious.desktop
+audio/x-wav=audacious.desktop
+audio/aac=audacious.desktop
+
+# Archives (open with thunar's archive handling)
+application/zip=file-roller.desktop
+application/x-tar=file-roller.desktop
+application/gzip=file-roller.desktop
+application/x-bzip2=file-roller.desktop
+application/x-xz=file-roller.desktop
+application/x-7z-compressed=file-roller.desktop
+application/x-rar=file-roller.desktop
+application/vnd.rar=file-roller.desktop
+
+[Added Associations]
+application/json=dev.zed.Zed.desktop;
+text/plain=dev.zed.Zed.desktop;

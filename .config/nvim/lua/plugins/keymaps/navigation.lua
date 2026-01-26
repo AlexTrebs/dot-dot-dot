@@ -37,3 +37,9 @@ set("n", "<CR>", function()
 		return "<CR>"
 	end
 end, { expr = true })
+
+-- Quick access to cheatsheet (opens in browser with formatting)
+set("n", "<leader>ch", function()
+	vim.cmd("e ~/.config/nvim/CHEATSHEET.md")
+	vim.cmd("MarkdownPreview")
+end, { desc = "Open cheatsheet (formatted)" })

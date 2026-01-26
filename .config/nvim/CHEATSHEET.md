@@ -1,5 +1,23 @@
 # Neovim Cheat Sheet
 
+## Quick Reference - Most Used Commands
+
+| Command | What It Does |
+| --- | --- |
+| `<space>fd` | **Find file** (fuzzy search) |
+| `<space>fg` | **Find text** in entire project (grep) |
+| `<space>fb` | List open buffers |
+| `gd` | **Go to definition** |
+| `<C-o>` | **Jump back** to previous location |
+| `<space>a` | **Mark file** in Harpoon |
+| `<space>m` | **Harpoon menu** (see marked files) |
+| `<space>q` | **Close buffer** |
+| `<space>ch` | **Open this cheatsheet** |
+| `*` | Search word under cursor |
+| `n` / `N` | Next/previous search result |
+
+---
+
 ## 1. Installed Plugins & Purpose
 
 | Plugin | Purpose |
@@ -40,7 +58,11 @@
 | `kristijanhusak/vim-dadbod-ui` | UI for database plugin |
 | `kristijanhusak/vim-dadbod-completion` | SQL completion |
 | `tjdevries/express_line.nvim` | Alternative statusline (optional) |
-| `coder/claudecode.nvim` | Claude AI code integration for prompts, explanations, and diffs |
+| `iamcco/markdown-preview.nvim` | Markdown preview in browser |
+| `MeanderingProgrammer/render-markdown.nvim` | Live markdown rendering in buffer |
+| `folke/noice.nvim` | UI for messages, cmdline and popupmenu |
+| `MunifTanjim/nui.nvim` | UI component library for Noice |
+| `windwp/nvim-ts-autotag` | Auto-close HTML/JSX tags |
 
 ---
 
@@ -50,7 +72,6 @@
 | Key | Action |
 | --- | --- |
 | `<leader>t` | Open terminal in bottom 5-line split |
-| `<Esc>` (terminal mode) | Exit terminal insert mode back to normal mode |
 
 ### 2.2. LSP & Autocomplete
 | Key | Action |
@@ -58,17 +79,18 @@
 | `gd` | Go to definition |
 | `gD` | Go to declaration |
 | `gr` | References |
-| `gri` | Implementation |
-| `grt` | Type definition |
+| `gT` | Type definition |
 | `K` | Hover documentation |
 | `<space>cr` | Rename symbol |
 | `<space>ca` | Code actions |
+| `<space>co` | Organize imports (TS/JS only) |
+| `<space>ci` | Add missing imports (TS/JS only) |
+| `<space>cI` | Manually add missing imports |
 | `<space>wd` | Document symbols |
 | `<space>ww` | Workspace diagnostics |
-| `<space>e` | Opens floating diagnostics window |
+| `<leader>e` | Opens floating diagnostics window |
 | `<space>f` | Format buffer (autoformat on save via `conform.nvim`) |
-| `[d` / `]d` | Previous / Next diagnostic |
-| `[D` / `]D` | First / Last diagnostic in buffer |
+| `<C-Space>` | Manually trigger autocomplete |
 
 ### 2.3. Telescope (Fuzzy Finder)
 | Key | Action |
@@ -97,16 +119,23 @@
 ### 2.5. Harpoon (Quick file navigation)
 | Key | Action |
 | --- | --- |
-| `<M-h><M-m>` | Add current file to Harpoon marks |
-| `<M-h><M-l>` | Toggle Harpoon quick menu |
+| `<space>a` | Add current file to Harpoon marks |
+| `<space>m` | Toggle Harpoon quick menu |
+| `<space>j` | Jump to Harpoon mark 1 |
+| `<space>k` | Jump to Harpoon mark 2 |
+| `<space>l` | Jump to Harpoon mark 3 |
+| `<space>;` | Jump to Harpoon mark 4 |
+| `<space>n` | Next Harpoon mark |
+| `<space>p` | Previous Harpoon mark |
 
 ### 2.6. Barbar (Buffer Navigation)
 | Key | Action |
 | --- | --- |
-| `<Tab>` | Next buffer |
-| `<S-Tab>` | Previous buffer |
+| `<C-Tab>` | Next buffer |
+| `<C-S-Tab>` | Previous buffer |
 | `<leader>>` | Move buffer right |
 | `<leader><` | Move buffer left |
+| `<space>q` | **Close current buffer** (quick!) |
 | `<leader>bc` | Close current buffer |
 | `<leader>bo` | Close other buffers |
 | `<leader>1..9` | Go to buffer 1-9 |
@@ -124,8 +153,18 @@
 | `%` / `g%` / `[ %` / `] %` | Jump to matching pairs (including multi plugin navigation) |
 | `[ ` / `] ` | Add empty line above / below cursor |
 | `Y` | Yank to end of line (`y$`) |
+| `gp` | **Smart paste** (paste and auto-add missing imports for JS/TS) |
+| `gP` | **Smart paste before** (paste before cursor and auto-add missing imports) |
+| `<space>ch` | **Open this cheatsheet** (formatted in browser) |
 
-### 2.8. Comments & Snippets
+### 2.8. Markdown
+| Key | Action |
+| --- | --- |
+| `<leader>mp` | **Markdown Preview** - Open in web browser (full HTML rendering) |
+| `<leader>ms` | Stop markdown preview |
+| `<leader>md` | Toggle in-editor rendering (conceals markup, styles headers) |
+
+### 2.9. Comments & Snippets
 | Key | Action |
 | --- | --- |
 | `gcc` | Toggle comment line |
@@ -133,7 +172,7 @@
 | `<Plug>luasnip-expand-repeat` | Repeat last snippet node expansion |
 | `<Plug>luasnip-delete-check` | Remove current snippet from jumplist |
 
-### 2.9. Plenary Test
+### 2.10. Plenary Test
 | Key | Action |
 | --- | --- |
 | `<Plug>PlenaryTestFile` | Test current file with Plenary |

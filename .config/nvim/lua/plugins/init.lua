@@ -25,6 +25,7 @@ Plug("onsails/lspkind.nvim")
 
 -- ========== TREESITTER ==========
 Plug("nvim-treesitter/nvim-treesitter", { ["do"] = ":TSUpdate" })
+Plug("windwp/nvim-ts-autotag")
 
 -- ========== UI ==========
 Plug("romgrk/barbar.nvim")
@@ -64,6 +65,9 @@ Plug("kristijanhusak/vim-dadbod-completion")
 Plug("tjdevries/express_line.nvim")
 Plug("iamcco/markdown-preview.nvim", { ["do"] = "cd app && npm install" })
 
+-- ========== MARKDOWN ==========
+Plug("MeanderingProgrammer/render-markdown.nvim")
+
 vim.call("plug#end")
 
 -- After plugin load → load configs
@@ -73,10 +77,13 @@ require("plugins.lua_line")
 require("plugins.treesitter")
 require("plugins.lsp")
 require("plugins.cmp")
-require("plugins.treesitter")
 require("plugins.ui")
 require("plugins.telescope")
 require("plugins.dap")
 require("plugins.formatter")
 require("plugins.database")
 require("plugins.noice")
+require("plugins.markdown")
+
+-- Load markdown-render only if available
+pcall(require, "plugins.markdown-render")

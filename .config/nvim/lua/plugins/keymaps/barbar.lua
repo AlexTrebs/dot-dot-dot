@@ -9,6 +9,7 @@ set("n", "<leader>>", "<Cmd>BufferMoveNext<CR>", { desc = "Move buffer right" })
 set("n", "<leader><", "<Cmd>BufferMovePrevious<CR>", { desc = "Move buffer left" })
 
 -- Close buffers
+set("n", "<leader>q", "<Cmd>BufferClose<CR>", { desc = "Close current buffer" })
 set("n", "<leader>bc", "<Cmd>BufferClose<CR>", { desc = "Close current buffer" })
 set("n", "<leader>bo", "<Cmd>BufferCloseAllButCurrent<CR>", { desc = "Close other buffers" })
 

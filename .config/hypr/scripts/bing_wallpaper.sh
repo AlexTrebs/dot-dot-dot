@@ -12,20 +12,18 @@ TEMP_WALL="$WALLPAPER_DIR/tmp.jpg"
 command -v curl >/dev/null 2>&1 || { echo "Error: curl not installed"; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo "Error: jq not installed"; exit 1; }
 
-# Function to safely reload hyprpaper, even if wallpaper download fails
-run_hyprpaper() {
-    echo "Running Hyprpaper with: $WALLPAPER"
-    if pgrep hyprpaper >/dev/null; then
-        hyprctl hyprpaper reload ,"$WALLPAPER"
-    else
-        CONF="/tmp/hyprpaper.conf"
-        cat <<EOF > "$CONF"
-preload = $WALLPAPER
-wallpaper = ,$WALLPAPER
-splash = false
-EOF
-        hyprpaper -c "$CONF" &
+# Function to set wallpaper using swww
+set_wallpaper() {
+    echo "Setting wallpaper with swww: $WALLPAPER"
+
+    # Start swww-daemon if not running
+    if ! pgrep -x swww-daemon >/dev/null; then
+        swww-daemon &
+        sleep 1
     fi
+
+    # Set the wallpaper with a nice transition
+    swww img "$WALLPAPER" --transition-type fade --transition-duration 2
 }
 
 # Try fetching Bing wallpaper, but don't let failure stop the script
@@ -52,5 +50,5 @@ else
     echo "Warning: Could not fetch Bing JSON — check your internet connection."
 fi
 
-# Always run Hyprpaper (even if wallpaper fetch failed)
-run_hyprpaper
+# Always set wallpaper (even if wallpaper fetch failed)
+set_wallpaper

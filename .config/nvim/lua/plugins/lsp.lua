@@ -16,6 +16,30 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, opts)
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
 
+	-- TypeScript specific: organize imports and add missing imports
+	if client.name == "ts_ls" then
+		vim.keymap.set("n", "<leader>co", function()
+			vim.lsp.buf.code_action({
+				apply = true,
+				context = {
+					only = { "source.organizeImports" },
+					diagnostics = {},
+				},
+			})
+		end, opts)
+
+		-- Add missing imports keybinding
+		vim.keymap.set("n", "<leader>ci", function()
+			vim.lsp.buf.code_action({
+				apply = true,
+				context = {
+					only = { "source.addMissingImports.ts" },
+					diagnostics = {},
+				},
+			})
+		end, opts)
+	end
+
 	if client.name == "rust_analyzer" then
 		client.server_capabilities.semanticTokensProvider = nil
 	end
@@ -36,10 +60,45 @@ local servers = {
 	svelte = true,
 	templ = true,
 	cssls = true,
-	ts_ls = true,
+	ts_ls = {
+		settings = {
+			typescript = {
+				inlayHints = {
+					includeInlayParameterNameHints = "all",
+					includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+					includeInlayFunctionParameterTypeHints = true,
+					includeInlayVariableTypeHints = true,
+					includeInlayPropertyDeclarationTypeHints = true,
+					includeInlayFunctionLikeReturnTypeHints = true,
+					includeInlayEnumMemberValueHints = true,
+				},
+			},
+			javascript = {
+				inlayHints = {
+					includeInlayParameterNameHints = "all",
+					includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+					includeInlayFunctionParameterTypeHints = true,
+					includeInlayVariableTypeHints = true,
+					includeInlayPropertyDeclarationTypeHints = true,
+					includeInlayFunctionLikeReturnTypeHints = true,
+					includeInlayEnumMemberValueHints = true,
+				},
+			},
+		},
+	},
+	eslint = true,
 	jsonls = true,
 	yamlls = true,
 	pyright = true,
+	ruby_lsp = {
+		settings = {
+			rubyLsp = {
+				diagnostics = true,
+				formatter = "rubocop",
+				linters = { "rubocop" },
+			},
+		},
+	},
 }
 
 -- Install servers via Mason
@@ -48,16 +107,27 @@ local servers_to_install = vim.tbl_filter(function(key)
 end, vim.tbl_keys(servers))
 
 require("mason").setup()
-require("mason-lspconfig").setup({ ensure_installed = servers_to_install })
 require("mason-tool-installer").setup({ ensure_installed = servers_to_install })
 
--- Register LSP servers
-local lsp = vim.lsp
-for name, config in pairs(servers) do
-	if config == true then
-		config = {}
-	end
-	config = vim.tbl_deep_extend("force", { on_attach = on_attach, capabilities = cmp_capabilities or {} }, config)
-	lsp.config[name] = config
-	lsp.enable(name)
-end
+-- Setup mason-lspconfig with handlers to automatically configure servers
+require("mason-lspconfig").setup({
+	ensure_installed = servers_to_install,
+	handlers = {
+		-- Default handler for all servers
+		function(server_name)
+			local config = servers[server_name]
+			if config == false then
+				return
+			end
+			if config == true then
+				config = {}
+			end
+			config = vim.tbl_deep_extend("force", {
+				on_attach = on_attach,
+				capabilities = cmp_capabilities or {},
+			}, config)
+
+			require("lspconfig")[server_name].setup(config)
+		end,
+	},
+})

@@ -21,6 +21,7 @@ conform.setup({
 		dockerfile = { "hadolint" },
 		rust = { "rustfmt", lsp_format = "fallback" },
 		java = { "google_java_format" },
+		ruby = { "rubocop" },
 	},
 })
 

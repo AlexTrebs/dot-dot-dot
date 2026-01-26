@@ -3,6 +3,7 @@
 
 LOW_LEVEL=25
 CRITICAL_LEVEL=10
+HIBERNATE_LEVEL=1
 STATE_FILE="/tmp/.battery_notify_state"
 BATTERY=$(upower -e | grep -m1 BAT)
 
@@ -32,11 +33,20 @@ handle_update() {
   case "$status" in
     discharging)
 
+      # Auto-hibernate if battery extremely low
+      if (( cap <= HIBERNATE_LEVEL )); then
+        if [[ "$last_state" != "hibernate" ]]; then
+          send_notification critical "🔋 HIBERNATING NOW" "Battery at ${cap}% - Saving state to prevent data loss!"
+          echo "hibernate" > "$STATE_FILE"
+          sleep 2  # Give notification time to show
+          systemctl hibernate
+        fi
+
       # If capacity is critical/low and:
       #   - Was previously charging, or
       #   - State has changed (cirtical, low, ok)
       # Notify user
-      if (( cap <= CRITICAL_LEVEL )); then
+      elif (( cap <= CRITICAL_LEVEL )); then
         if [[ "$prev_status" != "discharging" ]]; then
           send_notification critical "Unplugged — Critically Low" "Only ${cap}% remaining!"
         elif [[ "$last_state" != "critical" ]]; then

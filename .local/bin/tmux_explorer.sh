@@ -106,11 +106,11 @@ open_in_tmux() {
 
   # inside tmux: avoid nesting
   if [[ -n "${TMUX:-}" ]]; then
-    if $TMUX_BIN has-session -t "$session" 2>/dev/null; then
-      $TMUX_BIN switch-client -t "$session"
+    if $TMUX_BIN has-session -t "=$session" 2>/dev/null; then
+      $TMUX_BIN switch-client -t "=$session"
     else
       $TMUX_BIN new-session -ds "$session" -c "$target_dir"
-      $TMUX_BIN switch-client -t "$session"
+      $TMUX_BIN switch-client -t "=$session"
     fi
   else
     $TMUX_BIN new-session -A -s "$session" -c "$target_dir"
@@ -123,7 +123,7 @@ open_in_tmux() {
     nvim_cmd="nvim ."
   fi
 
-  $TMUX_BIN send-keys -t "$session" "$nvim_cmd" C-m
+  $TMUX_BIN send-keys -t "=$session" "$nvim_cmd" C-m
 }
 
 # ────────────────────────────────
@@ -181,7 +181,18 @@ GREP() {
 # MAIN LOOP
 # ────────────────────────────────
 explore() {
-  current_dir="$(pwd)"
+  # Track first-time usage
+  local state_file="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-explorer-state"
+
+  if [[ ! -f "$state_file" ]]; then
+    # First time: start from home
+    current_dir="$HOME"
+    mkdir -p "$(dirname "$state_file")"
+    touch "$state_file"
+  else
+    # Otherwise: start from parent directory of current location
+    current_dir="$(dirname "$PWD")"
+  fi
 
   export -f preview_entry
   export current_dir BASE_DIR
