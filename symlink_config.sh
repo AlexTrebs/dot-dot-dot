@@ -6,11 +6,6 @@
 
 MODE="${1:-symlink}"
 
-if [[ "$MODE" != "copy" && "$MODE" != "symlink" ]]; then
-  echo "Usage: $0 [copy|symlink]"
-  exit 1
-fi
-
 echo "Running in $MODE mode..."
 
 # Paths
@@ -89,8 +84,11 @@ link_or_copy "$CONFIG_SRC" "$CONFIG_DST" "$MODE"
 # Run for .local
 link_or_copy "$LOCAL_SRC" "$LOCAL_DST" "$MODE"
 
+
+if [[ "$MODE" == "copy" ]]; then
+  copy_etc "$ETC_SRC" "$ETC_DST"
+fi
 # Run for /etc (copy with sudo)
-copy_etc "$ETC_SRC" "$ETC_DST"
 
 echo "All operations completed!"
 

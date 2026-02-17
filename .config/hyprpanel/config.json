@@ -12,6 +12,7 @@
       "right": [
         "volume",
         "network",
+        "custom/mullvad",
         "bluetooth",
         "battery",
         "notifications",

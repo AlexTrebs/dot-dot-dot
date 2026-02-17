@@ -1,7 +1,0 @@
-require("plugins.keymaps.navigation")
-require("plugins.keymaps.terminal")
-require("plugins.keymaps.lsp")
-require("plugins.keymaps.telescope")
-require("plugins.keymaps.dap")
-require("plugins.keymaps.harpoon")
-require("plugins.keymaps.barbar")

@@ -1,0 +1,13 @@
+{
+    "custom/mullvad": {
+        "icon": "󰖂",
+        "label": "{status}",
+        "tooltip": "{tooltip}",
+        "execute": "~/.config/hyprpanel/scripts/mullvad_status.sh",
+        "interval": 5000,
+        "actions": {
+            "onLeftClick": "~/.config/hyprpanel/scripts/mullvad_toggle.sh",
+            "onMiddleClick": "~/.config/hyprpanel/scripts/mullvad_menu.sh"
+        }
+    }
+}

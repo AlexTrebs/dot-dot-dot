@@ -109,7 +109,7 @@ thickness = 0.15
 #  WINDOW
 # ================================================================
 [window]
-opacity = 0.8
+opacity = 0.9
 blur = true
 decorations = "none"
 dynamic_padding = true

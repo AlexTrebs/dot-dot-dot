@@ -32,7 +32,7 @@ configuration {
 	drun-match-fields: "name,generic,exec,categories,keywords";
 	drun-show-actions: false;
 	drun-use-desktop-cache: true;
-	drun-reload-desktop-cache: false;
+	drun-reload-desktop-cache: true;
 	drun {
 		parse-user: true;
 		parse-system: true;
