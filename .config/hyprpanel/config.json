@@ -35,7 +35,7 @@
   "bar.workspaces.monitorSpecific": true,
   "bar.workspaces.hideUnoccupied": false,
   "bar.workspaces.showWsIcons": false,
-  "bar.workspaces.showApplicationIcons": false,
+  "bar.workspaces.showApplicationIcons": true,
   "bar.volume.label": true,
   "bar.volume.rightClick": "pavucontrol",
   "bar.volume.middleClick": "",

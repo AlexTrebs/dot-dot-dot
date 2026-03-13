@@ -74,6 +74,7 @@ application/x-xz=file-roller.desktop
 application/x-7z-compressed=file-roller.desktop
 application/x-rar=file-roller.desktop
 application/vnd.rar=file-roller.desktop
+x-scheme-handler/ror2mm=r2modman.desktop
 
 [Added Associations]
 application/json=nvim.desktop;
