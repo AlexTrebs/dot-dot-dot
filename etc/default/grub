@@ -9,7 +9,7 @@ GRUB_DEFAULT=0
 GRUB_TIMEOUT=5
 GRUB_DISTRIBUTOR="Arch"
 GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet nvidia_drm.modeset=1 nvidia_drm.fbdev=1"
-# TODO: Add after swap setup: resume=UUID=<ROOT_UUID> resume_offset=<SWAP_OFFSET>
+# TODO: Add resume params after swap setup — see README
 GRUB_CMDLINE_LINUX="zswap.enabled=0 rootfstype=ext4"
 
 GRUB_PRELOAD_MODULES="part_gpt part_msdos"
