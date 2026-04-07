@@ -19,7 +19,7 @@ configuration {
 	matching: "fuzzy";
 	run-command: "{cmd}";
 	run-shell-command: "{terminal} -e {cmd}";
-	terminal: "kitty";  /* better match with your setup */
+	terminal: "alacritty";
 	ssh-client: "ssh";
 	ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";
 	parse-hosts: true;

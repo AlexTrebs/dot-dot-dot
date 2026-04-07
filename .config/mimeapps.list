@@ -58,12 +58,12 @@ video/x-flv=mpv.desktop
 video/ogg=mpv.desktop
 
 # Audio
-audio/mpeg=audacious.desktop
-audio/mp4=audacious.desktop
-audio/ogg=audacious.desktop
-audio/flac=audacious.desktop
-audio/x-wav=audacious.desktop
-audio/aac=audacious.desktop
+audio/mpeg=mpv.desktop
+audio/mp4=mpv.desktop
+audio/ogg=mpv.desktop
+audio/flac=mpv.desktop
+audio/x-wav=mpv.desktop
+audio/aac=mpv.desktop
 
 # Archives (open with thunar's archive handling)
 application/zip=file-roller.desktop
@@ -75,6 +75,7 @@ application/x-7z-compressed=file-roller.desktop
 application/x-rar=file-roller.desktop
 application/vnd.rar=file-roller.desktop
 x-scheme-handler/ror2mm=r2modman.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 
 [Added Associations]
 application/json=nvim.desktop;

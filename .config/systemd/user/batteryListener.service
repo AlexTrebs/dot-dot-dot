@@ -7,9 +7,7 @@ ExecStart=%h/.local/bin/battery_listener.sh
 Restart=always
 StandardOutput=journal
 StandardError=journal
-Environment=DISPLAY=:0
-Environment=XDG_RUNTIME_DIR=%t/%u
-Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus
+Environment=XDG_RUNTIME_DIR=%t
 
 [Install]
 WantedBy=graphical-session.target

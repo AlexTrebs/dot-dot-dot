@@ -6,54 +6,42 @@ EDP_MODE="2560x1600@240"
 declare -A monitors_width
 declare -A monitors_height
 declare -A monitors_mode
-declare -A monitors_name
+declare -A monitors_scale
 external_monitors=()
 
 edp_scale="1"
-current_monitor=""
 max_external_height=0
 current_x=0
 
-# Parse monitors
-while IFS= read -r line; do
+# Parse monitors from JSON — uses active mode/scale, not text heuristics
+while IFS= read -r mon_json; do
+    name=$(jq -r '.name'        <<< "$mon_json")
+    width=$(jq -r '.width'      <<< "$mon_json")
+    height=$(jq -r '.height'    <<< "$mon_json")
+    refresh=$(jq -r '.refreshRate' <<< "$mon_json")
+    scale=$(jq -r '.scale'      <<< "$mon_json")
 
-    # Monitor identifier
-    if [[ $line =~ Monitor[[:space:]]+([^\ ]+) ]]; then
-        current_monitor="${BASH_REMATCH[1]}"
-        if [[ "$current_monitor" != "$EDP_NAME" ]]; then
-            external_monitors+=("$current_monitor")
-        fi
+    monitors_width["$name"]=$width
+    monitors_height["$name"]=$height
+    monitors_mode["$name"]="${width}x${height}@${refresh}"
+    monitors_scale["$name"]=$scale
+
+    if [[ "$name" == "$EDP_NAME" ]]; then
+        edp_scale=$scale
+    else
+        external_monitors+=("$name")
+        (( height > max_external_height )) && max_external_height=$height
     fi
-
-    # Resolution line
-    if [[ $line =~ ^[[:space:]]*([0-9]+)x([0-9]+)@([0-9]+(\.[0-9]+)?) ]]; then
-        width="${BASH_REMATCH[1]}"
-        height="${BASH_REMATCH[2]}"
-        refresh="${BASH_REMATCH[3]}"
-        monitors_width["$current_monitor"]=$width
-        monitors_height["$current_monitor"]=$height
-        monitors_mode["$current_monitor"]="${width}x${height}@${refresh}"
-
-        # For external monitors, track tallest
-        if [[ "$current_monitor" != "$EDP_NAME" ]]; then
-            (( height > max_external_height )) && max_external_height=$height
-        fi
-    fi
-
-    # eDP scale
-    if [[ "$current_monitor" == "$EDP_NAME" && $line =~ scale:[[:space:]]*([0-9]+(\.[0-9]+)?) ]]; then
-        edp_scale="${BASH_REMATCH[1]}"
-    fi
-
-done < <(hyprctl monitors)
+done < <(hyprctl monitors -j | jq -c '.[]')
 
 # Position external monitors in a row starting at x=0, y=0
 current_x=0
 for mon in "${external_monitors[@]}"; do
     width=${monitors_width[$mon]}
     mode=${monitors_mode[$mon]}
-    echo "Placing external monitor $mon at x=${current_x}, y=0, mode=$mode"
-    hyprctl keyword monitor $mon,$mode,${current_x}x0,1
+    scale=${monitors_scale[$mon]:-1}
+    echo "Placing external monitor $mon at x=${current_x}, y=0, mode=$mode, scale=$scale"
+    hyprctl keyword monitor $mon,$mode,${current_x}x0,$scale
     current_x=$((current_x + width))
 done
 

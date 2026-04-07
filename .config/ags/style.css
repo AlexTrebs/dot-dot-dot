@@ -1,0 +1,82 @@
+* {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 13px;
+}
+
+.Desktop {
+  background: transparent;
+}
+
+.panel {
+  background: rgba(19, 18, 13, 0.7);
+}
+
+/* --- Metrics --- */
+
+.metrics {
+  padding: 20px 18px 18px;
+  border-bottom: 1px solid rgba(108, 103, 89, 0.25);
+}
+
+.metric-row {
+  margin-bottom: 10px;
+}
+
+label.metric-key {
+  color: #6c6759;
+  font-size: 10px;
+  letter-spacing: 0.8px;
+}
+
+label.metric-val {
+  color: #d0cfcc;
+  font-size: 13px;
+}
+
+label.metric-val-cpu  { color: #8ac48a; }
+label.metric-val-ram  { color: #7ab8ae; }
+label.metric-val-disk { color: #98988d; }
+label.metric-val-net  { color: #4f8a72; }
+
+levelbar.stat-bar {
+  min-height: 4px;
+  border-radius: 2px;
+}
+
+levelbar.stat-bar block.filled {
+  border-radius: 2px;
+  min-height: 4px;
+}
+
+levelbar.stat-bar block.empty {
+  background: rgba(108, 103, 89, 0.2);
+  border-radius: 2px;
+  min-height: 4px;
+}
+
+levelbar.bar-cpu  block.filled { background: #8ac48a; }
+levelbar.bar-ram  block.filled { background: #7ab8ae; }
+levelbar.bar-disk block.filled { background: #98988d; }
+
+/* --- Icon grid --- */
+
+.grid {
+  padding: 10px 8px;
+}
+
+.card {
+  background: transparent;
+  border-radius: 8px;
+  padding: 8px 4px;
+  min-height: 75px;
+  transition: background 150ms;
+}
+
+.card:hover {
+  background: #4f8a7226;
+}
+
+label.card-label {
+  color: #98988d;
+  font-size: 10px;
+}

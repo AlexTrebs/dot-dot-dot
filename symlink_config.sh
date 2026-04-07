@@ -29,7 +29,7 @@ link_or_copy() {
         return 1
     fi
 
-    find "$src" -type f | while read -r file; do
+    find "$src" -type f -print0 | while IFS= read -r -d '' file; do
         local rel_path="${file#$src/}"
         local target="$dst/$rel_path"
         local target_dir
@@ -39,7 +39,7 @@ link_or_copy() {
 
         # Remove existing file or symlink
         if [ -e "$target" ] || [ -L "$target" ]; then
-            rm -rf "$target"
+            rm -f "$target"
         fi
 
         if [ "$mode" == "symlink" ]; then
@@ -66,7 +66,7 @@ copy_etc() {
     fi
 
     echo "Copying /etc files (requires sudo)..."
-    find "$src" -type f | while read -r file; do
+    find "$src" -type f -print0 | while IFS= read -r -d '' file; do
         local rel_path="${file#$src/}"
         local target="$dst/$rel_path"
         local target_dir
@@ -85,9 +85,8 @@ link_or_copy "$CONFIG_SRC" "$CONFIG_DST" "$MODE"
 link_or_copy "$LOCAL_SRC" "$LOCAL_DST" "$MODE"
 
 
-if [[ "$MODE" == "copy" ]]; then
-  copy_etc "$ETC_SRC" "$ETC_DST"
-fi
+# Always copy /etc (cannot symlink into /etc; copy regardless of mode)
+copy_etc "$ETC_SRC" "$ETC_DST"
 # Run for /etc (copy with sudo)
 
 echo "All operations completed!"

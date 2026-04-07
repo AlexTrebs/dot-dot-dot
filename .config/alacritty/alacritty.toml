@@ -3,7 +3,7 @@
 # ================================================================
 
 [env]
-TERM = "xterm-256color"
+TERM = "alacritty"
 
 # ================================================================
 #  COLORS
@@ -135,8 +135,4 @@ alphabet = "asdfghjkl"
 enabled = []
 # Example: open URLs directly
 # command = { program = "xdg-open", args = [] }
-
-[terminal.shell]
-program = "/bin/bash"
-args = ["--login"]
 

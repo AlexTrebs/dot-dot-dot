@@ -5,7 +5,6 @@ LOGFILE="$HOME/.local/share/update_all.log"
 exec > >(tee -a "$LOGFILE") 2>&1
 echo "===== Update script started at $(date) ====="
 
-export DISPLAY=:0
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 
 echo "Sending notification: Checking for updates..."
@@ -14,7 +13,7 @@ notify-send "Checking for updates…"
 # Wait for network to be ready (max 30 seconds)
 echo "Waiting for network..."
 for i in {1..30}; do
-    if ping -c 1 8.8.8.8 &>/dev/null; then
+    if ping -c 1 "$(ip route show default | awk '{print $3; exit}')" &>/dev/null; then
         echo "Network is ready"
         break
     fi
@@ -47,14 +46,11 @@ if [ -n "$repo_updates$aur_updates" ]; then
         echo "User approved updates, applying..."
         notify-send "Applying updates..."
 
-        # Use pkexec instead of sudo for graphical password prompt
-        if pkexec pacman -Syu --noconfirm; then
-            echo "Repository updates completed successfully"
-            yay -Syu --noconfirm
-            echo "AUR updates completed"
+        if alacritty -e bash -c "sudo pacman -Syu && yay -Syu --aur; echo 'Press enter to close'; read"; then
+            echo "Updates completed successfully"
             notify-send "Updates completed successfully!"
         else
-            echo "Repository updates failed or were cancelled"
+            echo "Update terminal closed or failed"
             notify-send "Update failed or cancelled"
         fi
     else

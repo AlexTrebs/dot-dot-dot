@@ -1,2 +1,4 @@
 #!/bin/bash
-grim - | wl-copy && wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png | notify-send -i image -a wl-copy -u normal "Screenshot of whole screen taken" -t 1000 # screenshot of the whole screen
+FILE=~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png
+mkdir -p ~/Pictures/Screenshots
+grim - | tee "$FILE" | wl-copy && notify-send -i image -a screenshot -u normal "Screenshot taken" "$FILE" -t 1000

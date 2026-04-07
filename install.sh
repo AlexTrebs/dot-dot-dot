@@ -18,23 +18,22 @@ packages=(
   # CPU/GPU drivers
   "intel-media-driver" "intel-ucode" "libva-intel-driver" "mesa-utils"
   "nvidia-open" "nvidia-prime" "nvidia-settings" "nvidia-utils"
-  "vulkan-intel" "vulkan-nouveau" "vulkan-radeon"
+  "vulkan-intel"
 
   # Audio
-  "alsa-firmware" "alsa-utils" "pamixer" "pavucontrol" "pipewire-alsa"
+  "alsa-firmware" "alsa-utils" "pamixer" "pipewire-alsa"
   "pipewire-jack" "pipewire-pulse" "wireplumber"
-  "audacious"
 
   # Bluetooth
-  "blueberry" "blueman" "bluez" "bluez-utils"
+  "bluez" "bluez-utils"
 
   # Network
-  "iwd" "networkmanager" "network-manager-applet" "nm-connection-editor"
-  "openssh" "wget" "wireless_tools" "wpa_supplicant"
+  "iwd" "networkmanager"
+  "openssh" "wget" "wpa_supplicant"
 
   # Hyprland & Wayland
   "hyprland" "hypridle" "hyprlock" "hyprpaper" "hyprpolkitagent" "hyprsunset"
-  "hyprpicker" "swww" "swayosd" "slurp" "grim" "wl-clipboard"
+  "hyprpicker" "swww" "slurp" "grim" "wl-clipboard"
   "xdg-desktop-portal-gtk" "xdg-desktop-portal-hyprland" "xdg-utils"
   "qt5-wayland" "qt6-wayland"
   "wf-recorder"
@@ -43,34 +42,34 @@ packages=(
   "sddm"
 
   # Terminal & Shell
-  "alacritty" "kitty" "tmux" "powerline" "fzf" "zram-generator"
+  "alacritty" "tmux" "fzf" "zram-generator"
 
   # File management
-  "dolphin" "thunar" "gvfs" "file-roller"
+  "thunar" "gvfs" "gvfs-mtp" "file-roller"
 
   # Text editors
   "nano" "neovim" "vim"
 
   # File viewers
   "zathura" "zathura-pdf-mupdf"
-  "imv" "feh"
+  "imv"
   "mpv"
 
   # Office
   "libreoffice-fresh"
 
   # Development
-  "fd" "git" "go" "jq" "stylua" "uv"
+  "fd" "git" "go" "jq" "playerctl" "stylua" "uv"
 
   # Apps
-  "discord" "firefox" "obs-studio" "rofi" "steam"
+  "discord" "firefox" "obs-studio" "rofi" "spotify-launcher" "steam" "zenity"
 
   # Fonts
   "noto-fonts-cjk" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
 
   # System utilities
-  "brightnessctl" "gnome-keyring" "gtk2" "htop" "less" "nwg-look"
-  "pacman-contrib" "polkit-gnome" "polkit-kde-agent" "reflector"
+  "brightnessctl" "gnome-keyring" "htop" "less" "nwg-look" "nvm" "power-profiles-daemon"
+  "pacman-contrib" "reflector"
   "rsync" "smartmontools" "socat" "tree" "uwsm" "wev"
 )
 
@@ -111,14 +110,19 @@ aur_packages=(
   "asdf-vm"
   "asusctl"
   "automatic-timezoned"
-  "betterlockscreen"
   "clipse"
-  "nvm"
+  "davinci-resolve"
+  "gtk2"
+  "mullvad-vpn-bin"
+  "ninjabrain-bot"
+  "obsidian"
   "pwvucontrol"
+  "r2modman-bin"
   "rog-control-center"
   "spotify"
-  "swaylock-effects-improved-git"
+  "supergfxctl"
   "tasks-git"
+  "unityhub"
   "vimix-cursors-git"
   "wlogout"
   "zen-browser-bin"
@@ -160,6 +164,7 @@ sudo systemctl enable --now bluetooth.service || true
 #   resume=UUID=$ROOT_UUID resume_offset=$SWAP_OFFSET
 # ==========================================
 echo "🖥️ Configuring NVIDIA hibernate support..."
+sudo cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
 
 # Configure mkinitcpio: simpledrm for early framebuffer, NO nvidia early loading
 if grep -q "^MODULES=()" /etc/mkinitcpio.conf; then
@@ -176,9 +181,9 @@ else
   echo "  simpledrm already configured"
 fi
 
-# Ensure resume hook is present for hibernate
-if ! grep -q "resume" /etc/mkinitcpio.conf; then
-  sudo sed -i 's/filesystems/filesystems resume/' /etc/mkinitcpio.conf
+# Ensure resume hook is present for hibernate (must come BEFORE filesystems)
+if ! grep -q "\bresume\b" /etc/mkinitcpio.conf; then
+  sudo sed -i 's/filesystems/resume filesystems/' /etc/mkinitcpio.conf
   echo "  Added resume hook"
 fi
 
@@ -214,7 +219,8 @@ done
 if ! command -v zed &>/dev/null; then
   echo "🪄 Installing Zed editor..."
   curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh
-  cp ./.config/zed/zed.desktop ~/.local/share/application/zed.desktop
+  mkdir -p ~/.local/share/applications
+  cp ./.config/zed/zed.desktop ~/.local/share/applications/zed.desktop
   update-desktop-database ~/.local/share/applications/
 else
   echo "✅ Zed already installed."
@@ -235,3 +241,6 @@ else
 fi
 
 echo "🎉 All setup steps completed successfully!"
+echo ""
+echo "⚠️  Manual step required: copy your avatar image to ~/.config/hypr/avatar.png"
+echo "   This is used by hyprlock for the profile picture on the lock screen."

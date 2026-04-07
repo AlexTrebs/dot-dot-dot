@@ -2,6 +2,12 @@
 # Sync package lists between install.sh and archinstall.yaml
 set -euo pipefail
 
+# Always run from repo root regardless of where script is called from
+cd "$(dirname "$0")"
+
+# Clean up temp files on exit
+trap 'rm -f /tmp/install_main.txt /tmp/install_aur.txt /tmp/install_all.txt /tmp/arch_pkg.txt /tmp/unified_packages.txt' EXIT
+
 echo "🔍 Analyzing package lists..."
 
 # Extract packages from install.sh

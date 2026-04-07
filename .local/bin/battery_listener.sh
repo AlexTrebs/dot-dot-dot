@@ -59,12 +59,12 @@ handle_update() {
           send_notification normal "Unplugged — Battery Low" "Battery at ${cap}%."
         elif [[ "$last_state" != "low" ]]; then
           send_notification normal "Battery low" "Battery at ${cap}%."
-          /usr/local/bin/battery_saver.sh on
+          $HOME/.local/bin/battery_saver.sh on
         fi
         echo "low" > "$STATE_FILE"
       elif (( cap > LOW_LEVEL )); then
         if [[ "$last_state" == "low" ]] || [[ "$last_state" == "critical" ]]; then
-          /usr/local/bin/battery_saver.sh off
+          $HOME/.local/bin/battery_saver.sh off
           send_notification low "Battery saver off" "Battery level restored (${cap}%)."
         fi
         echo "ok" > "$STATE_FILE"
@@ -76,6 +76,7 @@ handle_update() {
       if [[ "$prev_status" != "charging" ]]; then
         send_notification normal "Charging ⚡" "Battery is now charging (${cap}%)."
       fi
+      echo "charging" > "$STATE_FILE"
       ;;
 
     fully-charged)
@@ -104,7 +105,6 @@ while read -r _; do
 
   # Only react when status or capacity actually changes
   if [[ "$current_status" != "$last_status" ]] || [[ "$current_capacity" != "$last_capacity" ]]; then
-    echo $last_status
     handle_update "$current_status" "$current_capacity" "$last_status"
     last_status="$current_status"
     last_capacity="$current_capacity"

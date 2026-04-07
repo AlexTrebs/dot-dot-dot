@@ -12,18 +12,27 @@ TEMP_WALL="$WALLPAPER_DIR/tmp.jpg"
 command -v curl >/dev/null 2>&1 || { echo "Error: curl not installed"; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo "Error: jq not installed"; exit 1; }
 
-# Function to set wallpaper using swww
+# Wait for hyprpaper to be ready
+wait_for_hyprpaper() {
+    for _ in $(seq 1 20); do
+        hyprctl hyprpaper listloaded >/dev/null 2>&1 && return 0
+        sleep 0.5
+    done
+    echo "Error: hyprpaper did not start in time"
+    return 1
+}
+
+# Function to set wallpaper using hyprpaper IPC
 set_wallpaper() {
-    echo "Setting wallpaper with swww: $WALLPAPER"
+    echo "Setting wallpaper with hyprpaper: $WALLPAPER"
 
-    # Start swww-daemon if not running
-    if ! pgrep -x swww-daemon >/dev/null; then
-        swww-daemon &
-        sleep 1
-    fi
+    wait_for_hyprpaper || return 1
 
-    # Set the wallpaper with a nice transition
-    swww img "$WALLPAPER" --transition-type fade --transition-duration 2
+    hyprctl hyprpaper preload "$WALLPAPER"
+
+    hyprctl monitors -j | jq -r '.[].name' | while read -r monitor; do
+        hyprctl hyprpaper wallpaper "$monitor,$WALLPAPER"
+    done
 }
 
 # Try fetching Bing wallpaper, but don't let failure stop the script

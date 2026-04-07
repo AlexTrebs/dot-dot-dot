@@ -1,0 +1,39 @@
+# GRUB boot loader configuration
+# NOTE: After install, set resume= and resume_offset= for hibernate support:
+#   ROOT_UUID=$(findmnt / -o UUID -n)
+#   SWAP_OFFSET=$(sudo filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\.\.//')
+#   Then add: resume=UUID=$ROOT_UUID resume_offset=$SWAP_OFFSET
+#   Then run: sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="Arch"
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet nvidia_drm.modeset=1 nvidia_drm.fbdev=1"
+# TODO: Add after swap setup: resume=UUID=<ROOT_UUID> resume_offset=<SWAP_OFFSET>
+GRUB_CMDLINE_LINUX="zswap.enabled=0 rootfstype=ext4"
+
+GRUB_PRELOAD_MODULES="part_gpt part_msdos"
+
+#GRUB_ENABLE_CRYPTODISK=y
+
+GRUB_TIMEOUT_STYLE=menu
+GRUB_TERMINAL_INPUT=console
+#GRUB_TERMINAL_OUTPUT=console
+
+GRUB_GFXMODE=auto
+GRUB_GFXPAYLOAD_LINUX=keep
+
+#GRUB_DISABLE_LINUX_UUID=true
+GRUB_DISABLE_RECOVERY=true
+
+#GRUB_COLOR_NORMAL="light-blue/black"
+#GRUB_COLOR_HIGHLIGHT="light-cyan/blue"
+
+#GRUB_BACKGROUND="/path/to/wallpaper"
+#GRUB_THEME="/path/to/gfxtheme"
+
+#GRUB_INIT_TUNE="480 440 1"
+#GRUB_SAVEDEFAULT=true
+#GRUB_DISABLE_SUBMENU=y
+
+GRUB_DISABLE_OS_PROBER=false
