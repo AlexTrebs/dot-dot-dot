@@ -20,5 +20,20 @@
             "onLeftClick": "~/.config/hyprpanel/scripts/mullvad_toggle.sh",
             "onMiddleClick": "~/.config/hyprpanel/scripts/mullvad_menu.sh"
         }
+    },
+    "custom/g16-power": {
+        "icon": {
+            "performance": "󱐋",
+            "quiet": "󰾅",
+            "balanced": "󰈐",
+            "unknown": "󰋗"
+        },
+        "label": "{label}",
+        "tooltip": "{tooltip}",
+        "execute": "~/.config/hyprpanel/scripts/g16_power_status.sh",
+        "interval": 3000,
+        "actions": {
+            "onLeftClick": "~/.local/bin/g16-power.sh"
+        }
     }
 }

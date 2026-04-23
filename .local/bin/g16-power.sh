@@ -7,15 +7,36 @@ RES_LOW="2560x1600@60"
 CURRENT_PROFILE=$(asusctl profile -p | grep -oP '(?<=is ).*')
 
 if [ "$CURRENT_PROFILE" = "Quiet" ]; then
+    # ── OVERKILL ──────────────────────────────────────
     asusctl profile --profile Performance
+
+    # Display: full refresh rate + blur on
     hyprctl keyword monitor "$MONITOR,$RES_MAX,0x0,1.33"
     hyprctl keyword decoration:blur:enabled yes
+
+    # Screen brightness back to full
+    brightnessctl set 100%
+
+    # Keyboard LEDs: red
     asusctl aura static --colour ff0000
-    notify-send -u critical "MODE: OVERKILL" "240Hz | Performance Fans"
+
+    notify-send -u normal "MODE: OVERKILL" "240Hz | Performance | Full brightness"
 else
+    # ── CONSERVE ──────────────────────────────────────
     asusctl profile --profile Quiet
+
+    # Display: 60Hz + blur off (GPU savings)
     hyprctl keyword monitor "$MONITOR,$RES_LOW,0x0,1.33"
     hyprctl keyword decoration:blur:enabled no
-    asusctl aura static --colour 333333
-    notify-send -u low "MODE: CONSERVE" "60Hz | Silent Fans"
+
+    # Screen brightness: big battery win
+    brightnessctl set 30%
+
+    # Keyboard LEDs: off
+    asusctl aura static --colour 000000
+
+    # Reset PipeWire to default quantum (low-latency mode wastes CPU on battery)
+    pw-metadata -n settings 0 clock.force-quantum 0
+
+    notify-send -u low "MODE: CONSERVE" "60Hz | Quiet | 30% brightness | LEDs off"
 fi
