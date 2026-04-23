@@ -1,3 +1,23 @@
+opencode.json
+.agents/
 .claude
 tmp/
 .config/hyprpanel/config.json
+
+# Backup files
+*.bak
+
+# Secrets / local overrides
+.env
+.env.local
+*.secret
+
+# Sensitive config that shouldn't be public
+.config/gnome-keyring/
+.config/chromium/
+.config/BraveSoftware/
+.ssh/
+
+# Runtime / cache dirs
+.config/hypr/icons/
+.config/discord/

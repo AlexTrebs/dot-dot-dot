@@ -1,4 +1,15 @@
 {
+    "custom/wifi-ext": {
+        "icon": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+        "label": "{ssid}",
+        "tooltip": "External Wi-Fi",
+        "execute": "~/.config/hyprpanel/scripts/wifi_ext_status.sh",
+        "interval": 5000,
+        "hideOnEmpty": true,
+        "actions": {
+            "onLeftClick": "alacritty -e nmtui"
+        }
+    },
     "custom/mullvad": {
         "icon": "󰖂",
         "label": "{status}",

@@ -63,11 +63,17 @@ fi
 cat /tmp/install_all.txt /tmp/arch_pkg.txt | sort -u > /tmp/unified_packages.txt
 
 echo "📝 Updating archinstall.yaml..."
-# Update archinstall.yaml with unified list
 jq --argjson pkgs "$(jq -R -s 'split("\n") | map(select(length > 0))' /tmp/unified_packages.txt)" \
   '.packages = $pkgs' archinstall.yaml > archinstall.yaml.tmp
 mv archinstall.yaml.tmp archinstall.yaml
 
-echo "✅ Package lists synchronized!"
-echo "📌 Note: install.sh was not automatically updated. Please review the changes."
-echo "   Missing packages should be added to the appropriate section (main or AUR)."
+if [[ -n "$missing_from_install" ]]; then
+  echo ""
+  echo "⚠️  The following packages are in archinstall.yaml but not install.sh:"
+  echo "$missing_from_install" | sed 's/^/   - /'
+  echo ""
+  echo "   Add them manually to the correct section (packages or aur_packages) in install.sh."
+  echo "   install.sh was NOT modified automatically — its section structure must be preserved."
+fi
+
+echo "✅ archinstall.yaml updated. Review install.sh if packages were listed above."

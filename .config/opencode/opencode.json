@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openrouter/auto",
+  "plugin": [
+    "file:///home/alextrebs/Workspace/OpenOrchestra"
+  ],
+  "agent": {
+    "orchestrator": {
+      "model": "openrouter/minimax/minimax-m2.5"
+    }
+  }
+}

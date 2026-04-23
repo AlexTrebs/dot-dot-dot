@@ -84,12 +84,30 @@ link_or_copy "$CONFIG_SRC" "$CONFIG_DST" "$MODE"
 # Run for .local
 link_or_copy "$LOCAL_SRC" "$LOCAL_DST" "$MODE"
 
-
 # Always copy /etc (cannot symlink into /etc; copy regardless of mode)
 copy_etc "$ETC_SRC" "$ETC_DST"
-# Run for /etc (copy with sudo)
+
+# Link/copy home dotfiles (.bashrc, .gitconfig)
+REPO_ROOT="$(pwd)"
+for dotfile in .bashrc .gitconfig; do
+    src="$REPO_ROOT/$dotfile"
+    dst="$HOME/$dotfile"
+    if [ ! -f "$src" ]; then
+        continue
+    fi
+    [ -e "$dst" ] || [ -L "$dst" ] && rm -f "$dst"
+    if [ "$MODE" = "symlink" ]; then
+        ln -sf "$src" "$dst"
+        echo "Linked $dst"
+    else
+        cp -p "$src" "$dst"
+        echo "Copied $dst"
+    fi
+done
 
 echo "All operations completed!"
 
 # Reload Hyprland if available
-command -v hyprctl &> /dev/null && hyprctl reload
+if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+    hyprctl reload
+fi

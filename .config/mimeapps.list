@@ -1,5 +1,4 @@
 [Default Applications]
-# Web content
 text/html=zen.desktop
 application/xhtml+xml=zen.desktop
 x-scheme-handler/http=zen.desktop
@@ -10,11 +9,7 @@ application/x-extension-html=zen.desktop
 application/x-extension-shtml=zen.desktop
 application/x-extension-xht=zen.desktop
 application/x-extension-xhtml=zen.desktop
-
-# PDF
 application/pdf=org.pwmt.zathura.desktop
-
-# Plain text and code files
 text/plain=nvim.desktop
 text/x-python=nvim.desktop
 text/x-csrc=nvim.desktop
@@ -35,8 +30,6 @@ application/json=nvim.desktop
 application/xml=nvim.desktop
 application/x-yaml=nvim.desktop
 application/toml=nvim.desktop
-
-# Images
 image/png=imv.desktop
 image/jpeg=imv.desktop
 image/gif=imv.desktop
@@ -44,11 +37,7 @@ image/webp=imv.desktop
 image/bmp=imv.desktop
 image/svg+xml=imv.desktop
 image/tiff=imv.desktop
-
-# File manager
 inode/directory=thunar.desktop
-
-# Video
 video/mp4=mpv.desktop
 video/x-matroska=mpv.desktop
 video/webm=mpv.desktop
@@ -56,16 +45,12 @@ video/x-msvideo=mpv.desktop
 video/quicktime=mpv.desktop
 video/x-flv=mpv.desktop
 video/ogg=mpv.desktop
-
-# Audio
 audio/mpeg=mpv.desktop
 audio/mp4=mpv.desktop
 audio/ogg=mpv.desktop
 audio/flac=mpv.desktop
 audio/x-wav=mpv.desktop
 audio/aac=mpv.desktop
-
-# Archives (open with thunar's archive handling)
 application/zip=file-roller.desktop
 application/x-tar=file-roller.desktop
 application/gzip=file-roller.desktop
@@ -76,7 +61,15 @@ application/x-rar=file-roller.desktop
 application/vnd.rar=file-roller.desktop
 x-scheme-handler/ror2mm=r2modman.desktop
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+x-scheme-handler/about=firefox.desktop
+x-scheme-handler/unknown=firefox.desktop
+x-scheme-handler/claude=com.anthropic.claude-desktop.desktop
 
 [Added Associations]
 application/json=nvim.desktop;
 text/plain=nvim.desktop;
+application/x-zerosize=imv.desktop;blackmagicraw-player.desktop;
+x-scheme-handler/http=zen.desktop;
+x-scheme-handler/https=zen.desktop;
+x-scheme-handler/chrome=zen.desktop;
+text/html=zen.desktop;

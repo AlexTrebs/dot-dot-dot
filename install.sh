@@ -9,6 +9,12 @@ current_dir="$(pwd)"
 CONFIG_MODE="${1:-}"
 
 # ==========================================
+# Initialise submodules
+# ==========================================
+echo "🔄 Initialising git submodules..."
+git submodule update --init --recursive
+
+# ==========================================
 # Pacman Packages
 # ==========================================
 packages=(
@@ -59,13 +65,13 @@ packages=(
   "libreoffice-fresh"
 
   # Development
-  "fd" "git" "go" "jq" "playerctl" "stylua" "uv"
+  "fd" "git" "go" "jq" "playerctl" "ripgrep" "stylua" "uv"
 
   # Apps
-  "discord" "firefox" "obs-studio" "rofi" "spotify-launcher" "steam" "zenity"
+  "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "swaync" "zenity"
 
   # Fonts
-  "noto-fonts-cjk" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
+  "noto-fonts-cjk" "noto-fonts-emoji" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
 
   # System utilities
   "brightnessctl" "gnome-keyring" "htop" "less" "nwg-look" "nvm" "power-profiles-daemon"
@@ -107,7 +113,6 @@ fi
 # ==========================================
 aur_packages=(
   "ags-hyprpanel-git"
-  "asdf-vm"
   "asusctl"
   "automatic-timezoned"
   "clipse"
@@ -124,6 +129,7 @@ aur_packages=(
   "tasks-git"
   "unityhub"
   "vimix-cursors-git"
+  "timeshift"
   "wlogout"
   "zen-browser-bin"
 )
@@ -164,19 +170,21 @@ sudo systemctl enable --now bluetooth.service || true
 #   resume=UUID=$ROOT_UUID resume_offset=$SWAP_OFFSET
 # ==========================================
 echo "🖥️ Configuring NVIDIA hibernate support..."
-sudo cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
+INITRAMFS_CHANGED=false
 
 # Configure mkinitcpio: simpledrm for early framebuffer, NO nvidia early loading
 if grep -q "^MODULES=()" /etc/mkinitcpio.conf; then
   sudo sed -i 's/^MODULES=()/MODULES=(simpledrm)/' /etc/mkinitcpio.conf
   echo "  Added simpledrm to MODULES"
+  INITRAMFS_CHANGED=true
 elif grep -q "^MODULES=.*nvidia" /etc/mkinitcpio.conf; then
-  # Remove nvidia modules, add simpledrm
   sudo sed -i 's/^MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/MODULES=(simpledrm)/' /etc/mkinitcpio.conf
   echo "  Replaced nvidia early KMS with simpledrm"
+  INITRAMFS_CHANGED=true
 elif ! grep -q "simpledrm" /etc/mkinitcpio.conf; then
   sudo sed -i 's/^MODULES=(/MODULES=(simpledrm /' /etc/mkinitcpio.conf
   echo "  Added simpledrm to existing MODULES"
+  INITRAMFS_CHANGED=true
 else
   echo "  simpledrm already configured"
 fi
@@ -185,6 +193,7 @@ fi
 if ! grep -q "\bresume\b" /etc/mkinitcpio.conf; then
   sudo sed -i 's/filesystems/resume filesystems/' /etc/mkinitcpio.conf
   echo "  Added resume hook"
+  INITRAMFS_CHANGED=true
 fi
 
 # Enable nvidia power services
@@ -198,14 +207,26 @@ if ! grep -q "nvidia_drm.modeset=1" /etc/default/grub; then
   sudo grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
-# Rebuild initramfs
-echo "  Rebuilding initramfs..."
-sudo mkinitcpio -P
+if [ "$INITRAMFS_CHANGED" = true ]; then
+  echo "  Rebuilding initramfs..."
+  sudo mkinitcpio -P
+else
+  echo "  initramfs already up to date, skipping rebuild"
+fi
+
+# ==========================================
+# Reflector mirror config
+# ==========================================
+if [ -f "$current_dir/etc/xdg/reflector/reflector.conf" ]; then
+  sudo mkdir -p /etc/xdg/reflector
+  sudo cp "$current_dir/etc/xdg/reflector/reflector.conf" /etc/xdg/reflector/reflector.conf
+  echo "✅ Reflector config installed"
+fi
 
 # ==========================================
 # Add user to groups (ignore missing ones)
 # ==========================================
-for group in network video storage audio wheel kvm docker; do
+for group in network video storage audio wheel kvm; do
   if getent group "$group" &>/dev/null; then
     sudo usermod -aG "$group" "$USER"
   else
