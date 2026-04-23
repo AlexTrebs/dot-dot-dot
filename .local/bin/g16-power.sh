@@ -15,7 +15,7 @@ if [ "$CURRENT_PROFILE" = "Quiet" ]; then
     hyprctl keyword monitor "$MONITOR,$RES_MAX,0x0,1.33"
     hyprctl keyword decoration:blur:enabled yes
 
-    notify-send -u normal "MODE: OVERKILL" "240Hz | Performance | LEDs on"
+    notify-send -u normal "MODE: OVERKILL" "240Hz | Performance"
 else
     # ── CONSERVE ──────────────────────────────────────
     asusctl profile set Quiet
@@ -28,5 +28,5 @@ else
     # Reset PipeWire to default quantum (low-latency mode wastes CPU on battery)
     pw-metadata -n settings 0 clock.force-quantum 0
 
-    notify-send -u low "MODE: CONSERVE" "60Hz | Quiet | LEDs off"
+    notify-send -u low "MODE: CONSERVE" "60Hz | Quiet"
 fi
