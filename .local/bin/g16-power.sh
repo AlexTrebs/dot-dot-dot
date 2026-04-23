@@ -4,11 +4,12 @@ MONITOR="eDP-1"
 RES_MAX="2560x1600@240"
 RES_LOW="2560x1600@60"
 
-CURRENT_PROFILE=$(asusctl profile -p | grep -oP '(?<=is ).*')
+CURRENT_PROFILE=$(asusctl profile get | grep -oP 'Active profile: \K\w+')
 
 if [ "$CURRENT_PROFILE" = "Quiet" ]; then
     # ── OVERKILL ──────────────────────────────────────
-    asusctl profile --profile Performance
+    asusctl profile set Performance
+    powerprofilesctl set performance
 
     # Display: full refresh rate + blur on
     hyprctl keyword monitor "$MONITOR,$RES_MAX,0x0,1.33"
@@ -23,7 +24,8 @@ if [ "$CURRENT_PROFILE" = "Quiet" ]; then
     notify-send -u normal "MODE: OVERKILL" "240Hz | Performance | Full brightness"
 else
     # ── CONSERVE ──────────────────────────────────────
-    asusctl profile --profile Quiet
+    asusctl profile set Quiet
+    powerprofilesctl set power-saver
 
     # Display: 60Hz + blur off (GPU savings)
     hyprctl keyword monitor "$MONITOR,$RES_LOW,0x0,1.33"
