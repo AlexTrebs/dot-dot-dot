@@ -14,11 +14,7 @@ if [ "$CURRENT_PROFILE" = "Quiet" ]; then
     # Display: full refresh rate + blur on
     hyprctl keyword monitor "$MONITOR,$RES_MAX,0x0,1.33"
     hyprctl keyword decoration:blur:enabled yes
-
-    # Screen brightness back to full
     brightnessctl set 100%
-
-    # Keyboard LEDs: red
     asusctl aura static --colour ff0000
 
     notify-send -u normal "MODE: OVERKILL" "240Hz | Performance | Full brightness"
@@ -30,11 +26,7 @@ else
     # Display: 60Hz + blur off (GPU savings)
     hyprctl keyword monitor "$MONITOR,$RES_LOW,0x0,1.33"
     hyprctl keyword decoration:blur:enabled no
-
-    # Screen brightness: big battery win
     brightnessctl set 30%
-
-    # Keyboard LEDs: off
     asusctl aura static --colour 000000
 
     # Reset PipeWire to default quantum (low-latency mode wastes CPU on battery)
