@@ -11,7 +11,7 @@ ssid=$(nmcli -t -f DEVICE,CONNECTION device status | awk -F: -v d="$dev" '$1==d{
 
 if [ "$state" = "connected" ] && [ -n "$ssid" ] && [ "$ssid" != "--" ]; then
     strength=$(nmcli -t -f IN-USE,SIGNAL dev wifi list ifname "$dev" 2>/dev/null | awk -F: '/^\*/{print $2}' | head -1)
-    echo "{\"ssid\":\"$ssid\",\"percentage\":${strength:-0},\"alt\":\"connected\"}"
+    echo "{\"text\":\"$ssid\",\"percentage\":${strength:-0},\"alt\":\"connected\"}"
 else
-    echo "{\"ssid\":\"--\",\"percentage\":0,\"alt\":\"disconnected\"}"
+    echo "{\"text\":\"--\",\"percentage\":0,\"alt\":\"disconnected\"}"
 fi

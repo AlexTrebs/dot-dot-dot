@@ -1,5 +1,5 @@
 #!/bin/bash
-# Mullvad VPN toggle script for hyprpanel
+# Mullvad VPN toggle script
 # Toggles between connected and disconnected states
 
 status=$(mullvad status 2>/dev/null)

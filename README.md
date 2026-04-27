@@ -1,11 +1,11 @@
 # dot-dot-dot
 
-Arch Linux dotfiles and system setup for an ASUS laptop with Intel+NVIDIA hybrid GPU, Hyprland compositor, and hyprpanel.
+Arch Linux dotfiles and system setup for an ASUS laptop with Intel+NVIDIA hybrid GPU, Hyprland compositor, and Wayle.
 
 ## Stack
 
 - **WM**: Hyprland (via uwsm)
-- **Panel**: hyprpanel (AGS/TypeScript)
+- **Panel**: Wayle (Rust/GTK4)
 - **Terminal**: Alacritty + tmux
 - **Editor**: Neovim / Zed
 - **Launcher**: Rofi

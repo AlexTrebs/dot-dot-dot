@@ -1,0 +1,173 @@
+[general]
+font-sans = "JetBrainsMono Nerd Font"
+
+[styling]
+scale = 1.0
+
+[styling.palette]
+bg = "#13120d"
+surface = "#1e1e2e"
+elevated = "#262638"
+fg = "#d0cfcc"
+fg-muted = "#98988d"
+primary = "#4f8a72"
+green = "#4f8a72"
+red = "#9b574d"
+yellow = "#f9e2af"
+blue = "#74c7ec"
+
+[bar]
+bg = "#13120d"
+background-opacity = 70
+scale = 0.8
+dropdown-opacity = 95
+dropdown-shadow = true
+button-variant = "basic"
+button-bg-opacity = 0
+button-border-width = 0
+button-rounding = "none"
+padding = 0.15
+module-gap = 0.8
+button-icon-size = 0.72
+button-label-size = 0.95
+button-icon-padding = 1.0
+button-label-padding = 1.0
+button-gap = 0.8
+
+[[bar.layout]]
+monitor = "*"
+left = ["dashboard", "clock", "media"]
+center = ["hyprland-workspaces"]
+right = ["volume", "network", "custom-wifi-ext", "custom-dock-toggle", "bluetooth", "custom-g16-power", "battery", "notifications", "systray"]
+
+[modules.dashboard]
+icon-color = "#4f8a72"
+icon-bg-color = "transparent"
+border-show = false
+
+[modules.clock]
+format = "%H:%M  %d %b"
+icon-show = false
+label-color = "#dededd"
+
+[modules.media]
+format = "{{ artist }} - {{ title }}"
+label-max-length = 30
+active-only = true
+icon-show = false
+label-color = "#658676"
+
+[modules.hyprland-workspaces]
+monitor-specific = true
+show-special = true
+display-mode = "icon"
+icon-size = 0.72
+label-size = 0.88
+active-indicator = "underline"
+active-color = "#dededd"
+occupied-color = "#658676"
+empty-color = "#98988d"
+
+[modules.hyprland-workspaces.workspace-map.-98]
+icon = "utilities-terminal"
+color = "#fab387"
+
+[modules.hyprland-workspaces.workspace-map.-97]
+icon = "spotify"
+color = "#1db954"
+
+[modules.hyprland-workspaces.workspace-map.-96]
+icon = "discord"
+color = "#7289da"
+
+[modules.hyprland-workspaces.workspace-map.-95]
+icon = "steam"
+color = "#c6d4df"
+
+# hotswap: activate once, run `hyprctl workspaces -j | grep hotswap` to find its ID, then add:
+# [modules.hyprland-workspaces.workspace-map.-ID]
+# icon = "drive-removable-media"
+# color = "#a6e3a1"
+
+[modules.volume]
+label-show = true
+icon-color = "#74c7ec"
+label-color = "#74c7ec"
+right-click = "pwvucontrol"
+scroll-up = "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
+scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+
+[modules.network]
+label-show = true
+label-max-length = 12
+icon-color = "#f9e2af"
+label-color = "#f9e2af"
+
+[modules.bluetooth]
+label-show = true
+icon-color = "#b4a1c7"
+label-color = "#b4a1c7"
+
+[modules.battery]
+label-show = true
+low-threshold = 25
+critical-threshold = 10
+icon-color = "#7dc4a5"
+label-color = "#7dc4a5"
+
+[[modules.battery.thresholds]]
+below = 25
+icon-color = "#bfa45a"
+label-color = "#bfa45a"
+
+[[modules.battery.thresholds]]
+below = 10
+icon-color = "#9b574d"
+label-color = "#9b574d"
+
+[modules.notification]
+label-show = true
+icon-color = "#d4a373"
+
+[[modules.custom]]
+id = "wifi-ext"
+command = "~/.config/wayle/scripts/wifi_ext_status.sh"
+mode = "poll"
+interval-ms = 5000
+format = "{{ text }}"
+hide-if-empty = true
+left-click = "alacritty -e nmtui"
+icon-names = ["network-wireless-signal-none-symbolic", "network-wireless-signal-weak-symbolic", "network-wireless-signal-ok-symbolic", "network-wireless-signal-good-symbolic", "network-wireless-signal-excellent-symbolic"]
+icon-color = "#f9e2af"
+label-color = "#f9e2af"
+
+[[modules.custom]]
+id = "mullvad"
+command = "~/.config/wayle/scripts/mullvad_status.sh"
+mode = "poll"
+interval-ms = 5000
+icon-name = "network-vpn-symbolic"
+format = "{{ text }}"
+left-click = "bash ~/.config/wayle/scripts/mullvad_toggle.sh"
+middle-click = "bash ~/.config/wayle/scripts/mullvad_menu.sh"
+
+[[modules.custom]]
+id = "dock-toggle"
+command = "echo"
+interval-ms = 0
+icon-name = "view-app-grid-symbolic"
+icon-color = "#a05555"
+tooltip-format = "Toggle dock layout"
+left-click = "bash ~/.local/bin/dock-toggle.sh"
+hide-if-empty = false
+
+[[modules.custom]]
+id = "g16-power"
+command = "~/.config/wayle/scripts/g16_power_status.sh"
+mode = "poll"
+interval-ms = 3000
+format = "{{ text }}"
+left-click = "bash ~/.local/bin/g16-power.sh"
+icon-color = "#dededd"
+label-color = "#dededd"
+icon-map = { performance = "xsi-power-profile-performance-symbolic", quiet = "xsi-power-profile-power-saver-symbolic", balanced = "xsi-power-profile-balanced-symbolic", unknown = "battery-missing" }

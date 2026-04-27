@@ -49,6 +49,7 @@ packages=(
 
   # Terminal & Shell
   "alacritty" "tmux" "fzf" "zram-generator"
+  "zsh" "zsh-autosuggestions" "zsh-syntax-highlighting"
 
   # File management
   "thunar" "gvfs" "gvfs-mtp" "file-roller"
@@ -68,7 +69,7 @@ packages=(
   "fd" "git" "go" "jq" "playerctl" "ripgrep" "stylua" "uv"
 
   # Apps
-  "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "swaync" "zenity"
+  "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
 
   # Fonts
   "noto-fonts-cjk" "noto-fonts-emoji" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
@@ -94,6 +95,16 @@ else
 fi
 
 # ==========================================
+# Set zsh as default shell
+# ==========================================
+if [[ "$SHELL" != "/usr/bin/zsh" ]]; then
+  echo "🐚 Setting zsh as default shell..."
+  sudo chsh -s /usr/bin/zsh "$USER"
+else
+  echo "✅ zsh already default shell."
+fi
+
+# ==========================================
 # Install yay (AUR helper)
 # ==========================================
 if ! command -v yay &>/dev/null; then
@@ -112,8 +123,8 @@ fi
 # Install AUR Packages
 # ==========================================
 aur_packages=(
-  "ags-hyprpanel-git"
   "asusctl"
+  "wayle-git"
   "automatic-timezoned"
   "clipse"
   "davinci-resolve"
@@ -153,6 +164,10 @@ fi
 # ==========================================
 echo "🔌 Enabling Bluetooth..."
 sudo systemctl enable --now bluetooth.service || true
+
+echo "🔋 Enabling user services..."
+systemctl --user enable batteryListener.service || true
+systemctl --user enable wayle-resume.service || true
 
 # ==========================================
 # NVIDIA Hibernate Configuration

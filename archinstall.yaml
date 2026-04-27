@@ -15,7 +15,7 @@
     "sys_lang": "en_GB"
   },
   "packages": [
-    "ags-hyprpanel-git",
+    "wayle-git",
     "alacritty",
     "alsa-firmware",
     "alsa-utils",
@@ -104,7 +104,6 @@
     "steam",
     "stylua",
     "supergfxctl",
-    "swaync",
     "swww",
     "tasks-git",
     "thunar",

@@ -1,11 +1,11 @@
 [Unit]
-Description=Restart hyprpanel after resume from sleep/hibernate
+Description=Restart Wayle bar after resume from sleep/hibernate
 After=suspend.target hibernate.target hybrid-sleep.target
 
 [Service]
 Type=oneshot
 ExecStartPre=/bin/sleep 3
-ExecStart=/usr/bin/bash -c 'pkill hyprpanel || true; hyprpanel &'
+ExecStart=/usr/bin/bash -c 'pkill wayle || true; wayle shell &'
 Environment=XDG_RUNTIME_DIR=%t
 Environment=WAYLAND_DISPLAY=wayland-1
 
