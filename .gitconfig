@@ -1,5 +1,5 @@
 [user]
-    name  = AlexTrebs
+	name = Alex
     email = snalex2539@gmail.com
 
 [init]
@@ -26,3 +26,8 @@
     co   = checkout
     lg   = log --oneline --graph --decorate -20
     undo = reset HEAD~1 --mixed
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

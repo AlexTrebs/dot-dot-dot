@@ -7,6 +7,54 @@
   "agent": {
     "orchestrator": {
       "model": "openrouter/minimax/minimax-m2.5"
+    },
+    "orchestra-architect": {
+      "model": "openrouter/google/gemini-2.5-flash-preview-05-20",
+      "mode": "subagent"
+    },
+    "orchestra-developer": {
+      "model": "openrouter/moonshotai/kimi-k2",
+      "mode": "subagent"
+    },
+    "orchestra-tester": {
+      "model": "openrouter/moonshotai/kimi-k2",
+      "mode": "subagent"
+    },
+    "orchestra-reviewer": {
+      "model": "openrouter/moonshotai/kimi-k2",
+      "mode": "subagent",
+      "permission": {
+        "read": "deny",
+        "edit": "deny",
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "bash": { "*": "deny" }
+      }
+    },
+    "orchestra-security-auditor": {
+      "model": "openrouter/deepseek/deepseek-chat-v3-0324",
+      "mode": "subagent"
+    },
+    "orchestra-documenter": {
+      "model": "openrouter/google/gemini-2.5-flash-preview-05-20",
+      "mode": "subagent"
+    },
+    "orchestra-devops": {
+      "model": "openrouter/google/gemini-2.5-flash-preview-05-20",
+      "mode": "subagent"
+    },
+    "orchestra-analyst": {
+      "model": "openrouter/moonshotai/kimi-k2",
+      "mode": "subagent",
+      "permission": {
+        "read": "deny",
+        "edit": "deny",
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "bash": { "*": "deny" }
+      }
     }
   }
 }

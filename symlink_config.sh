@@ -89,7 +89,7 @@ copy_etc "$ETC_SRC" "$ETC_DST"
 
 # Link/copy home dotfiles (.bashrc, .gitconfig)
 REPO_ROOT="$(pwd)"
-for dotfile in .bashrc .gitconfig; do
+for dotfile in .bashrc .zshrc .gitconfig; do
     src="$REPO_ROOT/$dotfile"
     dst="$HOME/$dotfile"
     if [ ! -f "$src" ]; then

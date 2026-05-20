@@ -1,0 +1,390 @@
+{
+  "project_meta": {
+    "name": "OpenOrchestra",
+    "version": "0.1",
+    "mode": "rigid",
+    "max_parallel": 4,
+    "budget_guardrail_usd": 5.00,
+    "default_branch": "main"
+  },
+
+  "git_workflow": {
+    "mode": "branch",
+    "auto_merge": false,
+    "branch_prefix": "orchestra"
+  },
+
+  "skills": {
+    "global": ["security-best-practices", "standard-logging"],
+    "project_specific": []
+  },
+
+  "roles": {
+    "architect": {
+      "model": "openrouter/google/gemini-2.5-flash-preview-05-20",
+      "agent": "orchestra-architect",
+      "description": "Technical planning, spec writing, and DAG generation. Read-only — never edits files.",
+      "temperature": 0.3,
+      "steps": 30,
+      "permissions": {
+        "edit": "deny",
+        "bash": { "*": "ask", "grep *": "allow", "cat *": "allow", "find *": "allow" }
+      }
+    },
+
+    "developer": {
+      "model": "openrouter/moonshotai/kimi-k2",
+      "agent": "orchestra-developer",
+      "description": "Feature development, refactoring, debugging, and unit tests.",
+      "skills": ["standard-logging"],
+      "temperature": 0.2,
+      "steps": 50,
+      "permissions": {
+        "edit": "allow",
+        "bash": {
+          "*": "ask",
+          "npm *": "allow",
+          "npx *": "allow",
+          "bun *": "allow",
+          "git status": "allow",
+          "git diff *": "allow"
+        }
+      }
+    },
+
+    "tester": {
+      "model": "openrouter/moonshotai/kimi-k2",
+      "agent": "orchestra-tester",
+      "description": "Writes and improves tests. Maximises coverage, edge cases, and test clarity. Does not modify production code.",
+      "temperature": 0.2,
+      "steps": 40,
+      "permissions": {
+        "edit": "allow",
+        "bash": {
+          "*": "ask",
+          "npm test*": "allow",
+          "bun test*": "allow",
+          "npx vitest*": "allow",
+          "npm run test*": "allow"
+        }
+      }
+    },
+
+    "reviewer": {
+      "model": "openrouter/deepseek/deepseek-chat-v3-0324",
+      "agent": "orchestra-reviewer",
+      "description": "Read-only code reviewer. Spots bugs, anti-patterns, and improvement opportunities. Produces structured review report.",
+      "temperature": 0.1,
+      "steps": 25,
+      "permissions": {
+        "edit": "deny",
+        "read": "deny",
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "bash": { "*": "deny" }
+      }
+    },
+
+    "security-auditor": {
+      "model": "openrouter/deepseek/deepseek-chat-v3-0324",
+      "agent": "orchestra-security-auditor",
+      "description": "Code security audit. Finds vulnerabilities, produces structured findings report. Never writes files.",
+      "skills": ["owasp-top-10"],
+      "temperature": 0.1,
+      "steps": 25,
+      "permissions": {
+        "edit": "deny",
+        "bash": { "*": "deny", "grep *": "allow", "cat *": "allow" }
+      }
+    },
+
+    "documenter": {
+      "model": "openrouter/google/gemini-2.5-flash-preview-05-20",
+      "agent": "orchestra-documenter",
+      "description": "Writes and updates technical documentation, READMEs, and API docs.",
+      "temperature": 0.4,
+      "steps": 30,
+      "permissions": {
+        "edit": "allow",
+        "bash": "deny"
+      }
+    },
+
+    "devops": {
+      "model": "openrouter/google/gemini-2.5-flash-preview-05-20",
+      "agent": "orchestra-devops",
+      "description": "CI/CD pipelines, Docker, infrastructure-as-code, environment configuration.",
+      "temperature": 0.2,
+      "steps": 40,
+      "permissions": {
+        "edit": "allow",
+        "bash": { "*": "ask", "docker *": "allow", "npm run *": "allow", "bun run *": "allow" }
+      }
+    },
+
+    "analyst": {
+      "model": "openrouter/deepseek/deepseek-chat-v3-0324",
+      "agent": "orchestra-analyst",
+      "description": "Read-only codebase analyst. Understands structure, dependencies, and patterns. Produces summaries and impact assessments.",
+      "temperature": 0.2,
+      "steps": 30,
+      "permissions": {
+        "edit": "deny",
+        "read": "deny",
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "bash": { "*": "deny" }
+      }
+    }
+  },
+
+  "pipelines": {
+    "smoke": {
+      "nodes": [
+        {
+          "id": "hello",
+          "role": "developer",
+          "task": "Reply with exactly: ORCHESTRA_OK",
+          "timeout": 60,
+          "retries": 0
+        }
+      ]
+    },
+
+    "feature-sprint": {
+      "nodes": [
+        {
+          "id": "blueprint",
+          "role": "architect",
+          "task": "Review the current codebase and write a concise technical spec for: {user_prompt}. Include: affected files, API changes, data model changes, implementation sub-tasks.",
+          "export": "spec_doc",
+          "retries": 2,
+          "retry_policy": "fixed",
+          "timeout": 300
+        },
+        {
+          "id": "coding",
+          "role": "developer",
+          "depends_on": ["blueprint"],
+          "task": "Implement the feature described in this specification:\n\n{spec_doc}\n\nFollow the existing code style. Write unit tests alongside the implementation. Do not modify files outside the scope of this spec.",
+          "export": "coding_output",
+          "validate": { "cmd": "bun run build && bun test", "on_fail": "recursive_fix" },
+          "retries": 3,
+          "retry_policy": "exponential",
+          "timeout": 600
+        },
+        {
+          "id": "security-check",
+          "role": "security-auditor",
+          "depends_on": ["coding"],
+          "task": "Audit the code changes in {coding_output}. Focus on: injection vulnerabilities, exposed secrets, broken access control, insecure dependencies. Return a structured findings report with an 'approved' boolean.",
+          "export": "security_findings",
+          "require_approval": true,
+          "retries": 1,
+          "timeout": 300
+        },
+        {
+          "id": "update-docs",
+          "role": "documenter",
+          "depends_on": ["security-check"],
+          "task": "Based on {coding_output}, update any relevant documentation. Update the changelog. Do not modify source code.",
+          "export": "docs_output",
+          "retries": 2,
+          "timeout": 180
+        }
+      ]
+    },
+
+    "hotfix": {
+      "nodes": [
+        {
+          "id": "reproduce",
+          "role": "developer",
+          "task": "Write a failing test that reproduces this bug: {user_prompt}. The test must fail on the current codebase. Save it and export its path.",
+          "export": "test_file",
+          "retries": 2,
+          "timeout": 180
+        },
+        {
+          "id": "fix",
+          "role": "developer",
+          "depends_on": ["reproduce"],
+          "task": "Fix the bug so the test at {test_file} passes. Make the minimal change necessary. Do not refactor unrelated code.",
+          "export": "fix_output",
+          "validate": { "cmd": "bun test", "on_fail": "recursive_fix" },
+          "retries": 4,
+          "retry_policy": "exponential",
+          "timeout": 300
+        }
+      ]
+    },
+
+    "code-review": {
+      "nodes": [
+        {
+          "id": "diff-summary",
+          "role": "analyst",
+          "task": "Run `git diff --stat main | head -25` and `git status --short | head -25` to summarise changes vs main. List file names and the type of change (added/modified/deleted) with a one-line description per file. Do NOT read individual file contents. Keep total output under 200 words.",
+          "export": "diff_summary",
+          "timeout": 180,
+          "retries": 1
+        },
+        {
+          "id": "review",
+          "role": "reviewer",
+          "depends_on": ["diff-summary"],
+          "task": "Review the following changes:\n\n{diff_summary}\n\nFor each file, identify: bugs, security issues, performance problems, style violations, missing error handling, and missing tests. Return a structured report with severity (critical/high/medium/low) per finding. Work only from the provided diff summary — do NOT read individual file contents.",
+          "export": "review_report",
+          "require_approval": true,
+          "timeout": 300,
+          "retries": 1
+        },
+        {
+          "id": "fix-criticals",
+          "role": "developer",
+          "depends_on": ["review"],
+          "task": "Fix all critical and high severity findings from this review report:\n\n{review_report}\n\nDo not touch findings rated medium or low. Do not refactor unrelated code.",
+          "export": "fixes_output",
+          "validate": { "cmd": "bun run build && bun test", "on_fail": "recursive_fix" },
+          "retries": 3,
+          "timeout": 600
+        }
+      ]
+    },
+
+    "test-suite": {
+      "nodes": [
+        {
+          "id": "analyse",
+          "role": "analyst",
+          "task": "Analyse the codebase for: {user_prompt}. List every function, class, and module that lacks test coverage. Note edge cases and error paths that should be tested.",
+          "export": "coverage_gaps",
+          "timeout": 180,
+          "retries": 1
+        },
+        {
+          "id": "write-tests",
+          "role": "tester",
+          "depends_on": ["analyse"],
+          "task": "Write comprehensive tests for the coverage gaps identified here:\n\n{coverage_gaps}\n\nUse the existing test framework and conventions in this repo. Cover happy paths, edge cases, and error conditions. Do not modify production code.",
+          "export": "test_output",
+          "validate": { "cmd": "bun test", "on_fail": "recursive_fix" },
+          "retries": 3,
+          "retry_policy": "exponential",
+          "timeout": 600
+        }
+      ]
+    },
+
+    "refactor": {
+      "nodes": [
+        {
+          "id": "plan",
+          "role": "architect",
+          "task": "Plan a safe refactor for: {user_prompt}. Identify exactly which files and functions to change, what the new structure should be, and what must not change. List risks.",
+          "export": "refactor_plan",
+          "retries": 2,
+          "timeout": 300
+        },
+        {
+          "id": "execute",
+          "role": "developer",
+          "depends_on": ["plan"],
+          "task": "Execute this refactor plan:\n\n{refactor_plan}\n\nDo not change behaviour — only structure. Keep all existing tests passing.",
+          "export": "refactor_output",
+          "validate": { "cmd": "bun run build && bun test", "on_fail": "recursive_fix" },
+          "retries": 3,
+          "retry_policy": "exponential",
+          "timeout": 600
+        },
+        {
+          "id": "verify",
+          "role": "reviewer",
+          "depends_on": ["execute"],
+          "task": "Verify the refactor in {refactor_output} matches the plan in {refactor_plan}. Confirm no behaviour changes were introduced. Flag any deviations.",
+          "export": "verify_output",
+          "require_approval": true,
+          "timeout": 300,
+          "retries": 1
+        }
+      ]
+    },
+
+    "pr-prep": {
+      "nodes": [
+        {
+          "id": "lint-fix",
+          "role": "developer",
+          "task": "Run the linter and formatter on the current branch changes and fix all auto-fixable issues. Do not change logic.",
+          "export": "lint_output",
+          "validate": { "cmd": "bun run build", "on_fail": "recursive_fix" },
+          "retries": 2,
+          "timeout": 180
+        },
+        {
+          "id": "test-check",
+          "role": "tester",
+          "depends_on": ["lint-fix"],
+          "task": "Run the full test suite. If any tests fail, fix them. Do not modify production code to make tests pass — fix the tests or flag the issue.",
+          "export": "test_status",
+          "validate": { "cmd": "bun test", "on_fail": "recursive_fix" },
+          "retries": 2,
+          "timeout": 300
+        },
+        {
+          "id": "pr-description",
+          "role": "documenter",
+          "depends_on": ["lint-fix", "test-check"],
+          "task": "Write a pull request description for the current branch changes. Include: summary of changes, motivation, testing notes, and any breaking changes. Format as markdown.",
+          "export": "pr_description",
+          "timeout": 180,
+          "retries": 1
+        }
+      ]
+    },
+
+    "dependency-audit": {
+      "nodes": [
+        {
+          "id": "scan",
+          "role": "devops",
+          "task": "Run a dependency audit: check for outdated packages and known vulnerabilities. Output a structured list of issues grouped by severity.",
+          "export": "dep_report",
+          "validate": { "cmd": "bun install", "on_fail": "escalate" },
+          "timeout": 180,
+          "retries": 1
+        },
+        {
+          "id": "security-review",
+          "role": "security-auditor",
+          "depends_on": ["scan"],
+          "task": "Review these dependency findings:\n\n{dep_report}\n\nClassify each CVE by exploitability in this codebase. Return a prioritised list of what must be updated now vs can wait.",
+          "export": "dep_security",
+          "require_approval": true,
+          "timeout": 300,
+          "retries": 1
+        },
+        {
+          "id": "apply-updates",
+          "role": "devops",
+          "depends_on": ["security-review"],
+          "task": "Apply the safe dependency updates from {dep_security}. Only update packages rated as must-fix. Run tests after.",
+          "export": "update_output",
+          "validate": { "cmd": "bun test", "on_fail": "require_approval" },
+          "retries": 2,
+          "timeout": 300
+        }
+      ]
+    }
+  },
+
+  "guardrails": {
+    "enabled": true,
+    "max_nodes": 20,
+    "max_depth": 6,
+    "max_runtime_minutes": 60,
+    "allow_cycles": false
+  }
+}

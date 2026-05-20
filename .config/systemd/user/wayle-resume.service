@@ -5,7 +5,7 @@ After=suspend.target hibernate.target hybrid-sleep.target
 [Service]
 Type=oneshot
 ExecStartPre=/bin/sleep 3
-ExecStart=/usr/bin/bash -c 'pkill wayle || true; wayle shell &'
+ExecStart=/usr/bin/bash -c 'pkill wayle || true; /home/alextrebs/Workspace/wayle/target/release/wayle panel start &'
 Environment=XDG_RUNTIME_DIR=%t
 Environment=WAYLAND_DISPLAY=wayland-1
 

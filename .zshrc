@@ -1,4 +1,5 @@
 # ~/.zshrc
+export PATH="$PATH:/home/alextrebs/.dotnet/tools"
 
 [[ $- != *i* ]] && return
 
@@ -9,7 +10,8 @@ HISTFILE=~/.zsh_history
 setopt HIST_IGNORE_DUPS HIST_IGNORE_SPACE SHARE_HISTORY APPEND_HISTORY
 
 # ── Completion ────────────────────────────────────────────────
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+[[ ~/.zcompdump(#qN.mh+24) ]] && compinit || compinit -C
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
@@ -20,8 +22,14 @@ setopt CORRECT
 # ── Navigation ────────────────────────────────────────────────
 alias ..='cd ..'
 alias ...='cd ../..'
-alias ll='ls -lah --color=auto'
-alias ls='ls --color=auto'
+if command -v eza &>/dev/null; then
+  alias ls='eza --color=auto --group-directories-first'
+  alias ll='eza -lah --color=auto --group-directories-first'
+  alias lt='eza --tree --color=auto'
+else
+  alias ls='ls --color=auto'
+  alias ll='ls -lah --color=auto'
+fi
 alias grep='grep --color=auto'
 
 # ── Git ───────────────────────────────────────────────────────
@@ -80,6 +88,9 @@ npx()  { _nvm_load; npx  "$@"; }
 # ── Bun ───────────────────────────────────────────────────────
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# ── Zoxide (smart cd) ─────────────────────────────────────────
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # ── Starship ──────────────────────────────────────────────────
 command -v starship &>/dev/null && eval "$(starship init zsh)"

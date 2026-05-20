@@ -68,26 +68,25 @@ active-color = "#dededd"
 occupied-color = "#658676"
 empty-color = "#98988d"
 
-[modules.hyprland-workspaces.workspace-map.-98]
+[modules.hyprland-workspaces.workspace-map."special:tilde"]
 icon = "utilities-terminal"
 color = "#fab387"
 
-[modules.hyprland-workspaces.workspace-map.-97]
+[modules.hyprland-workspaces.workspace-map."special:spotify"]
 icon = "spotify"
 color = "#1db954"
 
-[modules.hyprland-workspaces.workspace-map.-96]
+[modules.hyprland-workspaces.workspace-map."special:discord"]
 icon = "discord"
 color = "#7289da"
 
-[modules.hyprland-workspaces.workspace-map.-95]
+[modules.hyprland-workspaces.workspace-map."special:steam"]
 icon = "steam"
 color = "#c6d4df"
 
-# hotswap: activate once, run `hyprctl workspaces -j | grep hotswap` to find its ID, then add:
-# [modules.hyprland-workspaces.workspace-map.-ID]
-# icon = "drive-removable-media"
-# color = "#a6e3a1"
+[modules.hyprland-workspaces.workspace-map."special:hotswap"]
+icon = "drive-removable-media"
+color = "#a6e3a1"
 
 [modules.volume]
 label-show = true

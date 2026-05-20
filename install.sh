@@ -66,7 +66,7 @@ packages=(
   "libreoffice-fresh"
 
   # Development
-  "fd" "git" "go" "jq" "playerctl" "ripgrep" "stylua" "uv"
+  "bat" "eza" "fd" "git" "go" "jq" "playerctl" "ripgrep" "stylua" "uv" "zoxide"
 
   # Apps
   "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
@@ -77,7 +77,7 @@ packages=(
   # System utilities
   "brightnessctl" "gnome-keyring" "htop" "less" "nwg-look" "nvm" "power-profiles-daemon"
   "pacman-contrib" "reflector"
-  "rsync" "smartmontools" "socat" "tree" "uwsm" "wev"
+  "rsync" "sbctl" "smartmontools" "socat" "tree" "uwsm" "wev"
 )
 
 to_install=()
@@ -138,7 +138,7 @@ aur_packages=(
   "spotify"
   "supergfxctl"
   "tasks-git"
-  "unityhub"
+
   "vimix-cursors-git"
   "timeshift"
   "wlogout"
@@ -236,6 +236,20 @@ if [ -f "$current_dir/etc/xdg/reflector/reflector.conf" ]; then
   sudo mkdir -p /etc/xdg/reflector
   sudo cp "$current_dir/etc/xdg/reflector/reflector.conf" /etc/xdg/reflector/reflector.conf
   echo "✅ Reflector config installed"
+fi
+
+# ==========================================
+# Secure Boot / Windows direct-boot initramfs
+# ==========================================
+if sbctl status 2>/dev/null | grep -qi "secure boot.*enabled"; then
+  echo "🔐 Secure Boot active — building Windows direct-boot initramfs..."
+  sudo bash "$current_dir/secure-boot/build-win-initramfs.sh"
+else
+  echo "⚠️  Secure Boot not configured. To set up:"
+  echo "   1. Enter BIOS → reset Secure Boot keys → enable Setup Mode"
+  echo "   2. Boot Arch, run: sudo bash $current_dir/secure-boot/setup-secure-boot.sh"
+  echo "   3. Reboot → BIOS → enable Secure Boot"
+  echo "   4. Re-run install.sh to build the Windows initramfs"
 fi
 
 # ==========================================
