@@ -89,10 +89,15 @@ if [ -f /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substrin
   bindkey '^[[A' history-substring-search-up
   bindkey '^[[B' history-substring-search-down
 fi
+[ -f /usr/share/zsh/plugins/zsh-you-should-use/you-should-use.plugin.zsh ] && \
+  source /usr/share/zsh/plugins/zsh-you-should-use/you-should-use.plugin.zsh
 
 # ── Bun ───────────────────────────────────────────────────────
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# ── Direnv (per-directory env vars) ──────────────────────────
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
 # ── Zoxide (smart cd) ─────────────────────────────────────────
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"

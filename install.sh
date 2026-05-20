@@ -66,7 +66,7 @@ packages=(
   "libreoffice-fresh"
 
   # Development
-  "bat" "eza" "fd" "git" "go" "jq" "playerctl" "ripgrep" "stylua" "uv" "zoxide"
+  "bat" "eza" "fd" "git" "go" "jq" "lazygit" "playerctl" "ripgrep" "stylua" "uv" "yazi" "zoxide"
 
   # Apps
   "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
@@ -75,8 +75,8 @@ packages=(
   "noto-fonts-cjk" "noto-fonts-emoji" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
 
   # System utilities
-  "brightnessctl" "gnome-keyring" "htop" "less" "nwg-look" "nvm" "power-profiles-daemon"
-  "pacman-contrib" "reflector"
+  "brightnessctl" "btop" "direnv" "dust" "gnome-keyring" "less" "nwg-look" "nvm" "power-profiles-daemon"
+  "pacman-contrib" "procs" "reflector"
   "rsync" "sbctl" "smartmontools" "socat" "tree" "uwsm" "wev"
   "zsh-history-substring-search"
 )
@@ -140,10 +140,13 @@ aur_packages=(
   "supergfxctl"
   "tasks-git"
 
+  "paru"
   "vimix-cursors-git"
   "timeshift"
+  "wl-clip-persist-git"
   "wlogout"
   "zen-browser-bin"
+  "zsh-you-should-use"
 )
 aur_to_install=()
 
@@ -169,6 +172,9 @@ sudo systemctl enable --now bluetooth.service || true
 echo "🔋 Enabling user services..."
 systemctl --user enable batteryListener.service || true
 systemctl --user enable wayle-resume.service || true
+
+echo "🪞 Enabling reflector mirror update timer..."
+sudo systemctl enable --now reflector.timer || true
 
 # ==========================================
 # NVIDIA Hibernate Configuration
