@@ -3,6 +3,9 @@ export PATH="$PATH:$HOME/.dotnet/tools"
 
 [[ $- != *i* ]] && return
 
+export EDITOR=nvim
+export VISUAL=nvim
+
 # ── History ───────────────────────────────────────────────────
 HISTSIZE=10000
 SAVEHIST=10000
