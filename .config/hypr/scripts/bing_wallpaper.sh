@@ -36,14 +36,14 @@ set_wallpaper() {
 }
 
 # Try fetching Bing wallpaper, but don't let failure stop the script
-if JSON=$(curl -fsSL "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US" 2>/dev/null); then
+if JSON=$(curl -fsSL --max-time 10 "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US" 2>/dev/null); then
     BASE_URL=$(echo "$JSON" | jq -r '.images[0].url')
 
     # Try resolutions in order
     SUCCESS=false
     for RES in "3840x2160" "UHD" "1920x1080"; do
         URL="https://www.bing.com${BASE_URL/1920x1080/$RES}"
-        if curl -fsSL -o "$TEMP_WALL" "$URL"; then
+        if curl -fsSL --max-time 10 -o "$TEMP_WALL" "$URL"; then
             mv "$TEMP_WALL" "$WALLPAPER"
             echo "$JSON" > "$INFO_FILE"
             echo "Downloaded Bing wallpaper at $RES"
