@@ -7,7 +7,7 @@ export PATH="$PATH:$HOME/.dotnet/tools"
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.zsh_history
-setopt HIST_IGNORE_DUPS HIST_IGNORE_SPACE SHARE_HISTORY APPEND_HISTORY
+setopt HIST_IGNORE_DUPS HIST_IGNORE_SPACE HIST_EXPIRE_DUPS_FIRST SHARE_HISTORY APPEND_HISTORY
 
 # ── Completion ────────────────────────────────────────────────
 autoload -Uz compinit
