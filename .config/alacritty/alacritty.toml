@@ -110,7 +110,7 @@ thickness = 0.15
 # ================================================================
 [window]
 opacity = 0.95
-blur = true
+blur = false
 decorations = "none"
 dynamic_padding = true
 padding = { x = 0, y = 1 }
