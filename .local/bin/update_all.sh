@@ -33,7 +33,7 @@ fi
 echo "Repository updates found: $(echo "$repo_updates" | grep -c '^ ' || echo 0) packages"
 
 echo "Checking AUR updates..."
-aur_updates=$(timeout 30 yay -Qua 2>&1)
+aur_updates=$(timeout 30 paru -Qua 2>&1)
 aur_exit_code=$?
 if [ $aur_exit_code -eq 124 ]; then
     echo "AUR check timed out"
@@ -46,7 +46,7 @@ if [ -n "$repo_updates$aur_updates" ]; then
         echo "User approved updates, applying..."
         notify-send "Applying updates..."
 
-        if alacritty -e bash -c "sudo pacman -Syu && yay -Syu --aur; echo 'Press enter to close'; read"; then
+        if alacritty -e bash -c "sudo pacman -Syu && paru -Syu --aur; echo 'Press enter to close'; read"; then
             echo "Updates completed successfully"
             notify-send "Updates completed successfully!"
         else

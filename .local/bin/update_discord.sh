@@ -1,4 +1,4 @@
 #!/bin/bash
 # Update Discord only
-yay -S discord --noconfirm
+paru -S discord --noconfirm
 
