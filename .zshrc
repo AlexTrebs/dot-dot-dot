@@ -79,11 +79,16 @@ npx()  { _nvm_load; npx  "$@"; }
 [ -f /usr/share/fzf/key-bindings.zsh ] && source /usr/share/fzf/key-bindings.zsh
 [ -f /usr/share/fzf/completion.zsh ] && source /usr/share/fzf/completion.zsh
 
-# ── Plugins (install with: sudo pacman -S zsh-autosuggestions zsh-syntax-highlighting) ──
+# ── Plugins ───────────────────────────────────────────────────
 [ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
   source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 [ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
   source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if [ -f /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
+  source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+  bindkey '^[[A' history-substring-search-up
+  bindkey '^[[B' history-substring-search-down
+fi
 
 # ── Bun ───────────────────────────────────────────────────────
 export BUN_INSTALL="$HOME/.bun"

@@ -78,6 +78,7 @@ packages=(
   "brightnessctl" "gnome-keyring" "htop" "less" "nwg-look" "nvm" "power-profiles-daemon"
   "pacman-contrib" "reflector"
   "rsync" "sbctl" "smartmontools" "socat" "tree" "uwsm" "wev"
+  "zsh-history-substring-search"
 )
 
 to_install=()

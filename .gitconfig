@@ -12,6 +12,9 @@
 [pull]
     rebase = false
 
+[rebase]
+    autostash = true
+
 [core]
     editor = nvim
 
