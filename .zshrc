@@ -50,7 +50,7 @@ alias tl='tmux list-sessions'
 alias dots='cd ~/Workspace/dot-dot-dot'
 
 # ── Wayland ───────────────────────────────────────────────────
-export QT_QPA_PLATFORM=wayland;xcb
+export QT_QPA_PLATFORM=wayland:xcb
 
 # ── App fixes ─────────────────────────────────────────────────
 alias pavucontrol='GDK_BACKEND=x11 pavucontrol'
