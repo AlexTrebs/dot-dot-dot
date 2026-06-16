@@ -50,7 +50,7 @@ alias tl='tmux list-sessions'
 alias dots='cd ~/Workspace/dot-dot-dot'
 
 # ── Wayland ───────────────────────────────────────────────────
-export QT_QPA_PLATFORM=wayland:xcb
+export QT_QPA_PLATFORM='wayland;xcb'
 
 # ── App fixes ─────────────────────────────────────────────────
 alias pavucontrol='GDK_BACKEND=x11 pavucontrol'
@@ -110,3 +110,10 @@ command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # ── Starship ──────────────────────────────────────────────────
 command -v starship &>/dev/null && eval "$(starship init zsh)"
+
+# ── TTY sane guard ────────────────────────────────────────────
+# Recover terminal from raw-mode corruption (e.g. crashed TUI, paste into
+# non-shell prompt leaving ^M echoed) by restoring cooked mode before each prompt.
+autoload -Uz add-zsh-hook
+_tty_sane() { [[ -t 0 ]] && stty sane 2>/dev/null }
+add-zsh-hook precmd _tty_sane

@@ -1,0 +1,29 @@
+[overlay]
+position = [1631, 20]
+opacity = 0.75
+font_size = 14
+text = "rgba(255, 255, 255, 0.75)"
+
+[apps.alacritty]
+name = "Terminal"
+position = [1183, 126]
+
+[apps.alacritty.shortcuts]
+nvim = [{ keys = "Space fd", label = "Find file" }, { keys = "Space fg", label = "Grep project" }, { keys = "Space fb", label = "Buffers" }, { keys = "Space /", label = "Fuzzy current buffer" }, { keys = "Space gw", label = "Grep word under cursor" }, { keys = "gd / Ctrl+O", label = "Definition / jump back" }, { keys = "gr / gD / gT", label = "References / Decl / Type" }, { keys = "K", label = "Hover docs" }, { keys = "Space ca", label = "Code actions" }, { keys = "Space cr", label = "Rename symbol" }, { keys = "Space f", label = "Format" }, { keys = "Space ww", label = "All diagnostics" }, { keys = "Leader e", label = "Diagnostic float" }, { keys = "Leader ha / hm", label = "Harpoon mark / menu" }, { keys = "Leader q", label = "Close buffer" }, { keys = "gcc", label = "Toggle comment" }, { keys = "s", label = "Flash jump" }]
+tmux = [{ keys = "Ctrl+Space N", label = "New window" }, { keys = "Alt+Left / Alt+Right", label = "Prev / next window" }, { keys = "Ctrl+Space |", label = "Split vertical" }, { keys = "Ctrl+Space -", label = "Split horizontal" }, { keys = "Ctrl+Space Z", label = "Zoom pane" }, { keys = "Ctrl+Space Q", label = "Kill pane" }, { keys = "Ctrl+Space D", label = "Detach" }, { keys = "Ctrl+H/J/K/L", label = "Navigate panes" }]
+
+[apps.nvim-terminal]
+name = "Neovim"
+
+[apps.nvim-terminal.shortcuts]
+nvim = [{ keys = ":w", label = "Save" }, { keys = ":q", label = "Quit" }, { keys = "gg / G", label = "Top / Bottom" }, { keys = "Ctrl+]", label = "Jump to definition" }, { keys = "Space", label = "Leader key" }]
+tmux = [{ keys = "Ctrl+B C", label = "New window" }, { keys = "Ctrl+B %", label = "Split vertical" }, { keys = 'Ctrl+B "', label = "Split horizontal" }, { keys = "Ctrl+B Arrow", label = "Navigate pane" }, { keys = "Ctrl+B Z", label = "Zoom pane" }]
+
+[apps.resolve]
+name = "DaVinci Resolve"
+position = [17, 270]
+
+[apps.resolve.shortcuts]
+editing = [{ keys = "Ctrl+B", label = "Blade (cut)" }, { keys = "Ctrl+Z", label = "Undo" }, { keys = "Ctrl+Shift+Z", label = "Redo" }, { keys = "Ctrl+D", label = "Delete gap" }]
+playback = [{ keys = "Space", label = "Play / Pause" }, { keys = "J / K / L", label = "Reverse / Stop / Forward" }, { keys = "I / O", label = "In / Out point" }]
+
