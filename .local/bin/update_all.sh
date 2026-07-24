@@ -46,7 +46,7 @@ if [ -n "$repo_updates$aur_updates" ]; then
         echo "User approved updates, applying..."
         notify-send "Applying updates..."
 
-        if alacritty -e bash -c "sudo pacman -Syu && paru -Syu --aur; echo 'Press enter to close'; read"; then
+        if alacritty -e bash -c "sudo pacman -Syu && paru -Syu --aur && hyprpm update && hyprpm reload; echo 'Press enter to close'; read"; then
             echo "Updates completed successfully"
             notify-send "Updates completed successfully!"
         else

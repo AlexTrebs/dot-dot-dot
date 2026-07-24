@@ -66,7 +66,7 @@ packages=(
   "libreoffice-fresh"
 
   # Development
-  "bat" "eza" "fd" "git" "go" "jq" "lazygit" "playerctl" "ripgrep" "stylua" "uv" "yazi" "zoxide"
+  "bat" "eza" "fd" "git" "git-lfs" "go" "jq" "lazygit" "playerctl" "ripgrep" "stylua" "uv" "yazi" "zoxide"
 
   # Apps
   "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
@@ -282,6 +282,16 @@ if ! command -v zed &>/dev/null; then
 else
   echo "✅ Zed already installed."
 fi
+
+# ==========================================
+# Manual build steps (not automated)
+# ==========================================
+# The following tools are built locally from source and not installed by this script.
+# Configs reference them but the binaries must be present for the related autostart
+# entries in hyprland.conf to succeed:
+#   - hyprcut  : keymap overlay   -> build from your fork, install to ~/.local/bin/hyprcut
+#   - wayle    : status bar / etc -> cd ~/Workspace/wayle && cargo build --release
+# After building, ensure the binaries are on PATH (or matched in hyprland exec-once).
 
 # ==========================================
 # Run symlink/copy config (if mode specified)
