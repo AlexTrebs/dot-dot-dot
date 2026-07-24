@@ -71,6 +71,10 @@ packages=(
   # Apps
   "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
 
+  # Gaming — gamescope sits in every game's launch options; mangohud is how you
+  # tell whether a change helped. lib32 variant is required for 32-bit titles.
+  "gamescope" "mangohud" "lib32-mangohud"
+
   # Fonts
   "noto-fonts-cjk" "noto-fonts-emoji" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
 
@@ -305,6 +309,28 @@ if [[ -n "$CONFIG_MODE" ]]; then
   fi
 else
   echo "ℹ️ Skipping config files. Run './symlink_config.sh' or './install.sh copy|symlink' to set up configs."
+fi
+
+# ==========================================
+# Post-install state that lives outside the repo
+# ==========================================
+# Must run AFTER symlink_config.sh — it is what copies etc/ into /etc, and both
+# steps below depend on files it puts there.
+
+# etc/pacman.d/hooks/99-gamescope-setcap.hook reapplies CAP_SYS_NICE on every
+# gamescope upgrade, but the first install predates the hook — grant it now.
+# Without it gamescope cannot take realtime priority and frame pacing suffers
+# under load, with no visible error to explain why.
+if command -v gamescope &>/dev/null; then
+  sudo setcap 'CAP_SYS_NICE=eip' /usr/bin/gamescope
+  echo "✅ gamescope: $(getcap /usr/bin/gamescope)"
+fi
+
+# asusd holds fan curves in memory and rewrites /etc/asusd/fan_curves.ron on
+# exit, so the copied file only takes effect after a restart.
+if systemctl is-active --quiet asusd; then
+  sudo systemctl restart asusd
+  echo "✅ asusd restarted — fan curves from etc/asusd/fan_curves.ron applied."
 fi
 
 echo "🎉 All setup steps completed successfully!"
