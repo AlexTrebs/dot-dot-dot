@@ -290,8 +290,8 @@ fi
 # Configs reference them but the binaries must be present for the related autostart
 # entries in hyprland.conf to succeed:
 #   - hyprcut  : keymap overlay   -> build from your fork, install to ~/.local/bin/hyprcut
-#   - wayle    : status bar / etc -> cd ~/Workspace/wayle && cargo build --release
 # After building, ensure the binaries are on PATH (or matched in hyprland exec-once).
+# wayle is NOT manual — it comes from the wayle-git AUR package above (/usr/bin/wayle).
 
 # ==========================================
 # Run symlink/copy config (if mode specified)
