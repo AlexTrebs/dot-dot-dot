@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# =============================================================
+#  Language runtimes Mason needs to install your LSP servers
+# =============================================================
+# `:checkhealth mason` showed mason itself is fine — registry, core utils and
+# version all OK. The failures are missing language runtimes, because most LSP
+# servers are distributed as npm or Go packages:
+#
+#   bashls, svelte, cssls, ts_ls  -> node + npm
+#   gopls, templ                  -> Go
+#   lua_ls, rust_analyzer         -> prebuilt arm64 binaries, already fine
+#
+# Note on nvm: your .zshrc lazy-loads nvm from ~/.nvm, which isn't installed
+# here. That's harmless — _nvm_load unfunctions the wrappers and falls through
+# to the real binary. apt's node is also better for Mason specifically, because
+# nvim launched from a desktop keybind never sources your shell rc, so an
+# nvm-only node would be invisible to it.
+set -euo pipefail
+
+if [ "$(id -u)" -ne 0 ]; then
+  exec sudo -- "$(readlink -f "$0")" "$@"
+fi
+
+PKGS=(nodejs npm golang-go)
+
+to_install=()
+for p in "${PKGS[@]}"; do
+  dpkg-query -W -f='${Status}' "$p" 2>/dev/null | grep -q "ok installed" || to_install+=("$p")
+done
+
+if (( ${#to_install[@]} > 0 )); then
+  echo "==> installing: ${to_install[*]}"
+  apt update
+  apt install -y "${to_install[@]}"
+else
+  echo "✅ runtimes already installed"
+fi
+
+echo
+echo "==> versions"
+for c in node npm go; do
+  printf "  %-5s %s\n" "$c" "$(command -v "$c" >/dev/null && "$c" --version 2>/dev/null | head -1 || echo MISSING)"
+done
+
+cat <<'EOF'
+
+============================================================
+Now install the servers (as your normal user, NOT root — Mason writes
+into ~/.local/share/nvim):
+
+    nvim +MasonToolsInstall
+
+Watch progress with :Mason  (q to close). Then re-check:
+
+    nvim +"checkhealth mason"
+
+Go, node and npm warnings should be gone. The remaining warnings
+(Ruby, PHP, Julia, composer, luarocks, java) are expected — nothing in
+your server list needs them, and Mason always probes for every runtime
+it knows about.
+============================================================
+EOF
