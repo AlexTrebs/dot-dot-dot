@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# =============================================================
+#  Disable services this Pi doesn't need
+# =============================================================
+# Findings from auditing the running units on 2026-07-30. Each is justified
+# below — nothing is disabled on a hunch, and nothing that the appliance,
+# Docker stack, Tailscale or the Samba share depends on is touched.
+#
+# Run with:  pi-trim-services          (dry run, shows what it would do)
+#            pi-trim-services --apply  (actually disable)
+set -uo pipefail
+
+APPLY=false
+[ "${1:-}" = "--apply" ] && APPLY=true
+
+# unit|reason
+CANDIDATES=(
+  "rpcbind.socket|NFS portmapper. No NFS mounts and nothing in /etc/fstab, yet it LISTENS ON 0.0.0.0:111 — the only service on this box bound to a wildcard address rather than Tailscale or localhost. On a shared Wi-Fi network that is an unnecessary exposure."
+  "rpcbind.service|Same as above (the socket activates it)."
+  "nfs-blkmap.service|pNFS block-layout mapper. Only meaningful with NFS mounts, of which there are none."
+  "winbind.service|Samba AD/NT-domain integration. smb.conf is a plain standalone share (workgroup = WORKGROUP, no realm/security=ads), so winbind does nothing here."
+)
+
+# Deliberately NOT touched, and why:
+#   avahi-daemon  — mDNS; this is how the Samba archive share is discovered.
+#   bluetooth     — nothing paired, but the panel has a Bluetooth widget and
+#                   disabling it makes that widget dead. Left to you; disable
+#                   with: sudo systemctl disable --now bluetooth
+#   docker/containerd, tailscaled, smbd, screen-control — all in active use.
+#   serial-getty@ttyAMA10 — the EEPROM has BOOT_UART=1; this is the console
+#                   you'd need to debug a failed USB boot. Costs ~2 MB.
+
+echo "Services proposed for disabling:"
+echo
+for entry in "${CANDIDATES[@]}"; do
+  unit="${entry%%|*}"; reason="${entry#*|}"
+  state=$(systemctl is-enabled "$unit" 2>/dev/null || echo "not-found")
+  active=$(systemctl is-active "$unit" 2>/dev/null || echo inactive)
+  printf '  \033[1m%s\033[0m  [enabled=%s active=%s]\n' "$unit" "$state" "$active"
+  printf '     %s\n\n' "$reason"
+done
+
+if ! $APPLY; then
+  echo "Dry run — nothing changed. Re-run with --apply to disable these."
+  exit 0
+fi
+
+for entry in "${CANDIDATES[@]}"; do
+  unit="${entry%%|*}"
+  systemctl is-enabled "$unit" >/dev/null 2>&1 || { echo "skip $unit (not enabled)"; continue; }
+  echo "==> disabling $unit"
+  sudo systemctl disable --now "$unit"
+done
+
+echo
+echo "Done. Verify port 111 is gone:"
+echo "  ss -tulnp | grep 111    # should print nothing"
+echo
+echo "To undo any of these:  sudo systemctl enable --now <unit>"

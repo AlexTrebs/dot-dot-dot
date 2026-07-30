@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Desktop-side extras for the "Earth Arch" look on Raspberry Pi OS.
+# Separate from `pi-setup` (terminal stack) because these back the new labwc
+# keybinds in ~/.config/labwc/rc.xml.
+#
+#   wofi          -> Super+R app launcher (Wayland-native rofi equivalent;
+#                    rofi itself is X11-only and would need XWayland)
+#   wlogout       -> optional logout/power menu
+#   libnotify-bin -> notify-send, used by the screenshot scripts
+#
+# swaylock (Super+L) is already installed on this box.
+set -euo pipefail
+
+PKGS=(wofi wlogout libnotify-bin)
+
+to_install=()
+for p in "${PKGS[@]}"; do
+  dpkg-query -W -f='${Status}' "$p" 2>/dev/null | grep -q "ok installed" || to_install+=("$p")
+done
+
+if (( ${#to_install[@]} == 0 )); then
+  echo "✅ Everything already installed."
+  exit 0
+fi
+
+echo "==> installing: ${to_install[*]}"
+sudo apt update
+sudo apt install -y "${to_install[@]}"
+
+echo
+echo "✅ Done. Now live:"
+echo "   Super+R  app launcher (wofi)"
+echo "   Super+L  lock screen (swaylock, earth palette)"
+echo "   Super+S  region screenshot -> file + clipboard, with notification"

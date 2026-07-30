@@ -1,0 +1,107 @@
+/* ================================================================
+   GTK4 — "Earth Arch" palette
+   GTK4 apps draw their own client-side decorations, so headerbar and
+   window styling here is what makes them match labwc's server-side
+   titlebars (~/.config/labwc/themerc-override).
+   GTK4 dropped several GTK3 node names, so this is a compatible subset.
+   ================================================================ */
+
+@define-color earth_bg          #13120d;
+@define-color earth_bg_alt      #1b1a14;
+@define-color earth_fg          #d0cfcc;
+@define-color earth_fg_dim      #98988d;
+@define-color earth_border      #28342c;
+@define-color earth_border_hi   #658676;
+@define-color earth_accent      #4f8a72;
+@define-color earth_warning     #bfa45a;
+@define-color earth_critical    #9b574d;
+
+/* GTK4's named colours */
+@define-color window_bg_color        @earth_bg;
+@define-color window_fg_color        @earth_fg;
+@define-color view_bg_color          @earth_bg;
+@define-color view_fg_color          @earth_fg;
+@define-color headerbar_bg_color     @earth_bg;
+@define-color headerbar_fg_color     @earth_fg;
+@define-color popover_bg_color       @earth_bg;
+@define-color popover_fg_color       @earth_fg;
+@define-color card_bg_color          @earth_bg_alt;
+@define-color dialog_bg_color        @earth_bg;
+@define-color accent_bg_color        @earth_accent;
+@define-color accent_fg_color        @earth_bg;
+@define-color accent_color           @earth_accent;
+@define-color destructive_bg_color   @earth_critical;
+@define-color warning_bg_color       @earth_warning;
+@define-color borders                @earth_border;
+
+window, .background {
+  background-color: @earth_bg;
+  color: @earth_fg;
+}
+
+/* Client-side decorations — match labwc's cornerRadius: 6 and shadow */
+window.csd {
+  border-radius: 6px;
+  box-shadow: 0 0 6px 0 rgba(13, 12, 9, 0.87);
+}
+
+headerbar, .titlebar {
+  background-image: none;
+  background-color: @earth_bg;
+  color: @earth_fg;
+  border-bottom: 1px solid @earth_border;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  min-height: 32px;
+}
+headerbar:backdrop, .titlebar:backdrop {
+  color: @earth_fg_dim;
+}
+headerbar windowtitle { color: @earth_fg; font-weight: bold; }
+
+button {
+  background-image: none;
+  background-color: @earth_bg_alt;
+  color: @earth_fg;
+  border: 1px solid @earth_border;
+  border-radius: 4px;
+}
+button:hover   { background-color: @earth_border; }
+button:active,
+button:checked { background-color: @earth_accent; color: @earth_bg; }
+button.flat    { background-color: transparent; border-color: transparent; }
+button.flat:hover { background-color: @earth_border; }
+
+entry, .entry {
+  background-color: @earth_bg_alt;
+  color: @earth_fg;
+  border: 1px solid @earth_border;
+  border-radius: 4px;
+}
+entry:focus { border-color: @earth_border_hi; }
+
+popover > contents, popover > arrow {
+  background-color: @earth_bg;
+  color: @earth_fg;
+  border: 1px solid @earth_border;
+  border-radius: 6px;
+}
+
+scrollbar { background-color: transparent; }
+scrollbar > range > trough > slider {
+  background-color: @earth_border;
+  border-radius: 8px;
+}
+scrollbar > range > trough > slider:hover {
+  background-color: @earth_border_hi;
+}
+
+progressbar > trough > progress { background-color: @earth_accent; }
+scale > trough > highlight      { background-color: @earth_accent; }
+
+tooltip {
+  background-color: @earth_bg_alt;
+  color: @earth_fg;
+  border: 1px solid @earth_border;
+  border-radius: 4px;
+}

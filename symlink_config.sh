@@ -45,6 +45,11 @@ ALLOW=(
   # (touchscreen mapping, monitor binding). Those live in pi-appliance/ as
   # versioned reference copies and are deliberately never symlinked.
   ".config/gtk-3.0"
+  ".config/gtk-4.0"
+  ".gtkrc-2.0"
+  ".config/qt5ct"
+  ".config/qt6ct"
+  ".config/environment.d/theme.conf"
   ".config/labwc/themerc-override"
   ".config/wf-panel-pi/panel.css"
 

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# One-shot package install for the Pi OS port of the dot-dot-dot terminal setup.
+# Created because copy/paste between terminals was broken — just type `pi-setup`.
+#
+# Everything here is in Debian Trixie's apt. Two notes on Debian renames:
+#   bat -> batcat, fd -> fdfind   (the zshrc aliases both back)
+# Not packaged for Debian, vendored as git clones later:
+#   yazi, zsh-history-substring-search, zsh-you-should-use, JetBrains Mono Nerd Font
+set -euo pipefail
+
+PKGS=(
+  # Terminal, multiplexer, shell
+  alacritty tmux zsh zsh-autosuggestions zsh-syntax-highlighting
+
+  # Prompt + fuzzy/dir navigation
+  starship fzf zoxide
+
+  # Modern CLI replacements
+  eza bat fd-find ripgrep jq tree procs du-dust
+
+  # Dev / system
+  neovim git lazygit btop direnv curl unzip
+
+  # Clipboard — wl-clipboard is the Wayland one this session was missing
+  wl-clipboard xclip
+
+  # Fonts (Nerd-patched JetBrains Mono is installed separately, no sudo needed)
+  fonts-jetbrains-mono fonts-noto-color-emoji
+)
+
+echo "==> apt update"
+sudo apt update
+
+echo "==> installing ${#PKGS[@]} packages"
+sudo apt install -y "${PKGS[@]}"
+
+echo
+echo "Done. Installed:"
+for p in "${PKGS[@]}"; do printf '  %s\n' "$p"; done
+echo
+echo "Next: Claude sets up the configs + symlinks and the pi-os branch."

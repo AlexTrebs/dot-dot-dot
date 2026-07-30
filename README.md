@@ -54,6 +54,40 @@ These are the porting gotchas, all marked `[debian]` in `.zshrc`:
 - **Editor**: Neovim
 - **Clipboard**: `wl-clipboard` (Wayland) + `xclip` (XWayland)
 
+## Verify
+
+```bash
+./test-setup.sh
+```
+
+Read-only: checks binaries, that every symlink resolves into the repo, that
+zsh/alacritty/tmux/labwc configs actually parse, that theming is wired up, that
+every `command=` in `rc.xml` resolves — and that the appliance is still intact
+(touchscreen mapping present, `rc.xml` not symlinked, exactly one panel, no
+squeekboard). Exit code is the number of failures.
+
+## Helper scripts (`bin/`, on PATH via `~/bin`)
+
+| Script | Purpose |
+|---|---|
+| `pi-setup` | One-shot apt install of the terminal stack |
+| `pi-desktop-setup` | `wofi`, `wlogout`, `libnotify-bin` for the labwc keybinds |
+| `pi-trim-services` | Audits services this Pi doesn't need. Dry run by default; `--apply` to disable |
+| `push-pi-os` | Tests GitHub SSH auth, then pushes this branch |
+
+## Theming coverage
+
+Every toolkit is themed so decorations match across apps:
+
+| Toolkit | Files |
+|---|---|
+| labwc (server-side decorations) | `.config/labwc/themerc-override` + `cornerRadius` in `rc.xml` |
+| GTK3 | `.config/gtk-3.0/{settings.ini,gtk.css}` |
+| GTK4 (client-side decorations) | `.config/gtk-4.0/{settings.ini,gtk.css}` |
+| GTK2 (legacy) | `.gtkrc-2.0` |
+| Qt5 / Qt6 (e.g. VLC) | `.config/qt5ct`, `.config/qt6ct` + `QT_QPA_PLATFORMTHEME=qt5ct` |
+| wf-panel-pi | `.config/wf-panel-pi/panel.css` via `panel/css_path` |
+
 ## Notes
 
 - The kiosk's on-screen keyboard (squeekboard) is disabled via

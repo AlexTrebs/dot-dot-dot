@@ -1,0 +1,15 @@
+# GTK2 — "Earth Arch"
+# Only for legacy GTK2 apps. GTK2 has no CSS engine, so this is limited to
+# theme/font selection plus a colour scheme the stock engines honour.
+gtk-theme-name="Adwaita-dark"
+gtk-icon-theme-name="Adwaita"
+gtk-font-name="JetBrainsMono Nerd Font 10"
+gtk-cursor-theme-name="Adwaita"
+gtk-cursor-theme-size=24
+gtk-enable-animations=1
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle="hintslight"
+gtk-xft-rgba="rgb"
+
+gtk-color-scheme = "bg_color:#13120d\nfg_color:#d0cfcc\nbase_color:#1b1a14\ntext_color:#d0cfcc\nselected_bg_color:#4f8a72\nselected_fg_color:#13120d\ntooltip_bg_color:#1b1a14\ntooltip_fg_color:#d0cfcc"
