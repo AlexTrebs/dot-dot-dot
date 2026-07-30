@@ -111,7 +111,10 @@ thickness = 0.15
 [window]
 opacity = 0.95
 blur = false
-decorations = "none"
+# [debian/pi] "full" so labwc draws a real titlebar with move/close buttons.
+# The Arch branch uses "none" because Hyprland draws its own borders and the
+# window is managed entirely by keybinds.
+decorations = "full"
 dynamic_padding = true
 padding = { x = 0, y = 1 }
 dimensions = { columns = 100, lines = 26 }

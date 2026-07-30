@@ -1,303 +1,120 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# =============================================================
+#  dot-dot-dot — Raspberry Pi OS (Debian Trixie) install
+# =============================================================
+# This is the pi-os branch. The Arch/pacman + Hyprland/NVIDIA/SDDM/secure-boot
+# logic from main does not apply here: this box runs Raspberry Pi OS Trixie on
+# labwc (Wayland) with the stock LXDE-pi desktop and wf-panel-pi, and it is also
+# a kiosk appliance (see ~/screen-control). So this script installs ONLY the
+# terminal stack + theming and leaves the desktop/compositor alone.
+#
 # Usage: ./install.sh [copy|symlink]
-#   (no args) - Install packages and configure system only
-#   copy      - Also copy all config files
-#   symlink   - Also symlink .config/.local (for development/updates)
+#   (no args) - packages + fonts + plugins only
+#   symlink   - also symlink configs (best for editing them in-repo)
+#   copy      - also copy configs
+set -euo pipefail
 
-current_dir="$(pwd)"
+current_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_MODE="${1:-}"
 
-# ==========================================
-# Initialise submodules
-# ==========================================
 echo "🔄 Initialising git submodules..."
-git submodule update --init --recursive
+git -C "$current_dir" submodule update --init --recursive
 
 # ==========================================
-# Pacman Packages
+#  apt packages
 # ==========================================
+# Debian renames two of these binaries: bat -> batcat, fd -> fdfind.
+# The .zshrc aliases them back.
 packages=(
-  # Base system
-  "base" "base-devel" "linux" "linux-firmware" "grub" "efibootmgr" "os-prober"
+  # Terminal, multiplexer, shell
+  alacritty tmux zsh zsh-autosuggestions zsh-syntax-highlighting
 
-  # CPU/GPU drivers
-  "intel-media-driver" "intel-ucode" "libva-intel-driver" "mesa-utils"
-  "nvidia-open" "nvidia-prime" "nvidia-settings" "nvidia-utils"
-  "vulkan-intel"
+  # Prompt + navigation
+  starship fzf zoxide
 
-  # Audio
-  "alsa-firmware" "alsa-utils" "pamixer" "pipewire-alsa"
-  "pipewire-jack" "pipewire-pulse" "wireplumber"
+  # Modern CLI replacements
+  eza bat fd-find ripgrep jq tree procs du-dust
 
-  # Bluetooth
-  "bluez" "bluez-utils"
+  # Dev / system
+  neovim git lazygit btop direnv curl unzip
 
-  # Network
-  "iwd" "networkmanager"
-  "openssh" "wget" "wpa_supplicant"
+  # Clipboard (Wayland + XWayland)
+  wl-clipboard xclip
 
-  # Hyprland & Wayland
-  "hyprland" "hypridle" "hyprlock" "hyprpaper" "hyprpolkitagent" "hyprsunset"
-  "hyprpicker" "swww" "slurp" "grim" "wl-clipboard"
-  "xdg-desktop-portal-gtk" "xdg-desktop-portal-hyprland" "xdg-utils"
-  "qt5-wayland" "qt6-wayland"
-  "wf-recorder"
-
-  # Display manager
-  "sddm"
-
-  # Terminal & Shell
-  "alacritty" "tmux" "fzf" "zram-generator"
-  "zsh" "zsh-autosuggestions" "zsh-syntax-highlighting"
-
-  # File management
-  "thunar" "gvfs" "gvfs-mtp" "file-roller"
-
-  # Text editors
-  "nano" "neovim" "vim"
-
-  # File viewers
-  "zathura" "zathura-pdf-mupdf"
-  "imv"
-  "mpv"
-
-  # Office
-  "libreoffice-fresh"
-
-  # Development
-  "bat" "eza" "fd" "git" "go" "jq" "lazygit" "playerctl" "ripgrep" "stylua" "uv" "yazi" "zoxide"
-
-  # Apps
-  "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
-
-  # Fonts
-  "noto-fonts-cjk" "noto-fonts-emoji" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
-
-  # System utilities
-  "brightnessctl" "btop" "direnv" "dust" "gnome-keyring" "less" "nwg-look" "nvm" "power-profiles-daemon"
-  "pacman-contrib" "procs" "reflector"
-  "rsync" "sbctl" "smartmontools" "socat" "tree" "uwsm" "wev"
-  "zsh-history-substring-search"
+  # Fonts (Nerd-patched JetBrains Mono is fetched separately below)
+  fonts-jetbrains-mono fonts-noto-color-emoji
 )
 
 to_install=()
 for pkg in "${packages[@]}"; do
-  if ! pacman -Qq "$pkg" &>/dev/null; then
-    to_install+=("$pkg")
-  fi
+  dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed" || to_install+=("$pkg")
 done
 
 if (( ${#to_install[@]} > 0 )); then
-  echo "📦 Installing missing packages..."
-  sudo pacman -S --noconfirm --needed "${to_install[@]}"
+  echo "📦 Installing ${#to_install[@]} missing packages..."
+  sudo apt update
+  sudo apt install -y "${to_install[@]}"
 else
-  echo "✅ All pacman packages already installed."
+  echo "✅ All apt packages already installed."
 fi
 
 # ==========================================
-# Set zsh as default shell
+#  Nerd Font (not packaged for Debian)
 # ==========================================
-if [[ "$SHELL" != "/usr/bin/zsh" ]]; then
-  echo "🐚 Setting zsh as default shell..."
-  sudo chsh -s /usr/bin/zsh "$USER"
-else
-  echo "✅ zsh already default shell."
-fi
-
-# ==========================================
-# Install yay (AUR helper)
-# ==========================================
-if ! command -v yay &>/dev/null; then
-  echo "🚀 Installing yay..."
-  tmpdir=$(mktemp -d)
-  git clone https://aur.archlinux.org/yay-bin.git "$tmpdir/yay-bin"
-  cd "$tmpdir/yay-bin"
-  makepkg -si --noconfirm
-  cd "$current_dir"
-  rm -rf "$tmpdir"
-else
-  echo "✅ yay already installed."
-fi
-
-# ==========================================
-# Install AUR Packages
-# ==========================================
-aur_packages=(
-  "asusctl"
-  "wayle-git"
-  "automatic-timezoned"
-  "clipse"
-  "davinci-resolve"
-  "gtk2"
-  "mullvad-vpn-bin"
-  "ninjabrain-bot"
-  "obsidian"
-  "pwvucontrol"
-  "r2modman-bin"
-  "rog-control-center"
-  "spotify"
-  "supergfxctl"
-  "tasks-git"
-
-  "paru"
-  "vimix-cursors-git"
-  "timeshift"
-  "wl-clip-persist-git"
-  "wlogout"
-  "zen-browser-bin"
-  "zsh-you-should-use"
-)
-aur_to_install=()
-
-for pkg in "${aur_packages[@]}"; do
-  if ! pacman -Qq "$pkg" &>/dev/null; then
-    aur_to_install+=("$pkg")
-  fi
-done
-
-if (( ${#aur_to_install[@]} > 0 )); then
-  echo "📦 Installing missing AUR packages..."
-  yay -S --noconfirm --needed --skipreview "${aur_to_install[@]}"
-else
-  echo "✅ All AUR packages already installed."
-fi
-
-# ==========================================
-# Enable services
-# ==========================================
-echo "🔌 Enabling Bluetooth..."
-sudo systemctl enable --now bluetooth.service || true
-
-echo "🔋 Enabling user services..."
-systemctl --user enable batteryListener.service || true
-systemctl --user enable wayle-resume.service || true
-
-echo "🪞 Enabling reflector mirror update timer..."
-sudo systemctl enable --now reflector.timer || true
-
-# ==========================================
-# NVIDIA Hibernate Configuration
-# ==========================================
-# nvidia-open requires special config for hibernate to work:
-# 1. Do NOT load nvidia in early KMS (initramfs can't access /var/tmp)
-# 2. Use simpledrm for early framebuffer instead
-# 3. Enable nvidia power management services
-#
-# NOTE: For hibernate to work, you also need to configure resume parameters
-# in GRUB after setting up swap. Run these commands:
-#   ROOT_UUID=$(findmnt / -o UUID -n)
-#   SWAP_OFFSET=$(sudo filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\.\.//')
-#   Then add to GRUB_CMDLINE_LINUX_DEFAULT:
-#   resume=UUID=$ROOT_UUID resume_offset=$SWAP_OFFSET
-# ==========================================
-echo "🖥️ Configuring NVIDIA hibernate support..."
-INITRAMFS_CHANGED=false
-
-# Configure mkinitcpio: simpledrm for early framebuffer, NO nvidia early loading
-if grep -q "^MODULES=()" /etc/mkinitcpio.conf; then
-  sudo sed -i 's/^MODULES=()/MODULES=(simpledrm)/' /etc/mkinitcpio.conf
-  echo "  Added simpledrm to MODULES"
-  INITRAMFS_CHANGED=true
-elif grep -q "^MODULES=.*nvidia" /etc/mkinitcpio.conf; then
-  sudo sed -i 's/^MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/MODULES=(simpledrm)/' /etc/mkinitcpio.conf
-  echo "  Replaced nvidia early KMS with simpledrm"
-  INITRAMFS_CHANGED=true
-elif ! grep -q "simpledrm" /etc/mkinitcpio.conf; then
-  sudo sed -i 's/^MODULES=(/MODULES=(simpledrm /' /etc/mkinitcpio.conf
-  echo "  Added simpledrm to existing MODULES"
-  INITRAMFS_CHANGED=true
-else
-  echo "  simpledrm already configured"
-fi
-
-# Ensure resume hook is present for hibernate (must come BEFORE filesystems)
-if ! grep -q "\bresume\b" /etc/mkinitcpio.conf; then
-  sudo sed -i 's/filesystems/resume filesystems/' /etc/mkinitcpio.conf
-  echo "  Added resume hook"
-  INITRAMFS_CHANGED=true
-fi
-
-# Enable nvidia power services
-sudo systemctl enable nvidia-suspend nvidia-hibernate nvidia-resume || true
-echo "  Enabled nvidia power services"
-
-# Ensure GRUB has nvidia_drm.modeset=1 for Wayland
-if ! grep -q "nvidia_drm.modeset=1" /etc/default/grub; then
-  sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="nvidia_drm.modeset=1 nvidia_drm.fbdev=1 /' /etc/default/grub
-  echo "  Added nvidia kernel parameters to GRUB"
-  sudo grub-mkconfig -o /boot/grub/grub.cfg
-fi
-
-if [ "$INITRAMFS_CHANGED" = true ]; then
-  echo "  Rebuilding initramfs..."
-  sudo mkinitcpio -P
-else
-  echo "  initramfs already up to date, skipping rebuild"
-fi
-
-# ==========================================
-# Reflector mirror config
-# ==========================================
-if [ -f "$current_dir/etc/xdg/reflector/reflector.conf" ]; then
-  sudo mkdir -p /etc/xdg/reflector
-  sudo cp "$current_dir/etc/xdg/reflector/reflector.conf" /etc/xdg/reflector/reflector.conf
-  echo "✅ Reflector config installed"
-fi
-
-# ==========================================
-# Secure Boot / Windows direct-boot initramfs
-# ==========================================
-if sbctl status 2>/dev/null | grep -qi "secure boot.*enabled"; then
-  echo "🔐 Secure Boot active — building Windows direct-boot initramfs..."
-  sudo bash "$current_dir/secure-boot/build-win-initramfs.sh"
-else
-  echo "⚠️  Secure Boot not configured. To set up:"
-  echo "   1. Enter BIOS → reset Secure Boot keys → enable Setup Mode"
-  echo "   2. Boot Arch, run: sudo bash $current_dir/secure-boot/setup-secure-boot.sh"
-  echo "   3. Reboot → BIOS → enable Secure Boot"
-  echo "   4. Re-run install.sh to build the Windows initramfs"
-fi
-
-# ==========================================
-# Add user to groups (ignore missing ones)
-# ==========================================
-for group in network video storage audio wheel kvm; do
-  if getent group "$group" &>/dev/null; then
-    sudo usermod -aG "$group" "$USER"
+FONTDIR="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
+if ! fc-list -f '%{family[0]}\n' 2>/dev/null | grep -qx "JetBrainsMono Nerd Font"; then
+  echo "🔤 Installing JetBrainsMono Nerd Font..."
+  mkdir -p "$FONTDIR"
+  tmp=$(mktemp -d)
+  tag=$(curl -fsSL https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest \
+        | grep -m1 '"tag_name"' | cut -d'"' -f4)
+  if [ -n "$tag" ] && curl -fL --retry 3 -o "$tmp/JetBrainsMono.zip" \
+       "https://github.com/ryanoasis/nerd-fonts/releases/download/${tag}/JetBrainsMono.zip"; then
+    unzip -q -o "$tmp/JetBrainsMono.zip" -d "$tmp/jb"
+    find "$tmp/jb" -name '*.ttf' -exec cp -f {} "$FONTDIR/" \;
+    fc-cache -f "$FONTDIR" >/dev/null
+    echo "  installed $(ls -1 "$FONTDIR" | wc -l) ttf files ($tag)"
   else
-    echo "⚠️ Group '$group' does not exist, skipping."
+    echo "  ⚠️  font download failed — Alacritty will fall back to fonts-jetbrains-mono (no glyphs)"
+  fi
+  rm -rf "$tmp"
+else
+  echo "✅ JetBrainsMono Nerd Font already installed."
+fi
+
+# ==========================================
+#  zsh plugins Debian doesn't package
+# ==========================================
+ZSH_VENDOR="$HOME/.local/share/zsh/plugins"
+mkdir -p "$ZSH_VENDOR"
+for repo in "zsh-users/zsh-history-substring-search" "MichaelAquilina/zsh-you-should-use"; do
+  name="${repo##*/}"
+  if [ -d "$ZSH_VENDOR/$name" ]; then
+    echo "✅ $name already vendored."
+  else
+    echo "🔌 Cloning $name..."
+    git clone --depth 1 "https://github.com/$repo.git" "$ZSH_VENDOR/$name"
   fi
 done
 
 # ==========================================
-# Install Zed (if not already)
+#  Default shell
 # ==========================================
-if ! command -v zed &>/dev/null; then
-  echo "🪄 Installing Zed editor..."
-  curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh
-  mkdir -p ~/.local/share/applications
-  cp ./.config/zed/zed.desktop ~/.local/share/applications/zed.desktop
-  update-desktop-database ~/.local/share/applications/
+if [ "$(getent passwd "$USER" | cut -d: -f7)" != "/usr/bin/zsh" ]; then
+  echo "🐚 Setting zsh as default shell (prompts for password)..."
+  chsh -s /usr/bin/zsh "$USER" || echo "  ⚠️  chsh failed — run it yourself: chsh -s /usr/bin/zsh"
 else
-  echo "✅ Zed already installed."
+  echo "✅ zsh already the default shell."
 fi
 
 # ==========================================
-# Run symlink/copy config (if mode specified)
+#  Configs
 # ==========================================
 if [[ -n "$CONFIG_MODE" ]]; then
-  if [[ -x "$current_dir/symlink_config.sh" ]]; then
-    echo "🔗 Running symlink_config.sh ($CONFIG_MODE mode)..."
-    "$current_dir/symlink_config.sh" "$CONFIG_MODE"
-  else
-    echo "⚠️ symlink_config.sh not found or not executable."
-  fi
+  "$current_dir/symlink_config.sh" "$CONFIG_MODE"
 else
-  echo "ℹ️ Skipping config files. Run './symlink_config.sh' or './install.sh copy|symlink' to set up configs."
+  echo "ℹ️  Skipping configs. Run './symlink_config.sh symlink' to set them up."
 fi
 
-echo "🎉 All setup steps completed successfully!"
-echo ""
-echo "⚠️  Manual step required: copy your avatar image to ~/.config/hypr/avatar.png"
-echo "   This is used by hyprlock for the profile picture on the lock screen."
+echo
+echo "🎉 Done. Open a new Alacritty window (or run 'zsh') to pick up the new shell."

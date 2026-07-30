@@ -1,84 +1,64 @@
-# dot-dot-dot
+# dot-dot-dot — `pi-os` branch
 
-Arch Linux dotfiles and system setup for an ASUS laptop with Intel+NVIDIA hybrid GPU, Hyprland compositor, and Wayle.
+Terminal setup and theming for a **Raspberry Pi 5** running **Raspberry Pi OS Trixie**
+(Debian 13) on **labwc / Wayland**.
+
+This is a port of the Arch branch (`main`). It deliberately covers **only the terminal
+stack and its theming** — the desktop side is left alone, because this Pi is also a
+kiosk appliance and its compositor is completely different.
+
+## What this branch does and doesn't touch
+
+| | |
+|---|---|
+| ✅ Installs | Alacritty, tmux, zsh + plugins, starship, fzf/zoxide/eza/bat/fd/ripgrep, Neovim, JetBrainsMono Nerd Font |
+| ❌ Leaves alone | labwc, kanshi, wf-panel-pi, `~/screen-control` (the kiosk appliance) |
+| ❌ Dropped from `main` | Hyprland, Wayle, SDDM/uwsm, NVIDIA, GRUB/secure-boot, rofi, AUR/`yay` |
+
+The Hyprland/Wayle/rofi configs still exist in `.config/` so the branch can be diffed
+and merged against `main`, but `symlink_config.sh` uses an **explicit allowlist** and
+never installs them.
+
+## Install
+
+```bash
+git clone --recurse-submodules https://github.com/AlexTrebs/dot-dot-dot.git ~/dot-dot-dot
+cd ~/dot-dot-dot && git checkout pi-os
+./install.sh symlink
+```
+
+`symlink_config.sh` backs up anything it replaces to `<file>.pre-dotdotdot`.
+
+## Debian vs Arch differences
+
+These are the porting gotchas, all marked `[debian]` in `.zshrc`:
+
+| Thing | Arch | Debian Trixie |
+|---|---|---|
+| `bat` binary | `bat` | **`batcat`** (aliased back) |
+| `fd` binary | `fd` | **`fdfind`** (aliased back) |
+| zsh plugins | `/usr/share/zsh/plugins/<name>/` | **`/usr/share/<name>/`** |
+| fzf shell integration | `/usr/share/fzf/` | **`/usr/share/doc/fzf/examples/`** |
+| `zsh-history-substring-search` | package | **not packaged** — vendored to `~/.local/share/zsh/plugins/` |
+| `zsh-you-should-use` | AUR | **not packaged** — vendored |
+| JetBrainsMono Nerd Font | `ttf-jetbrains-mono-nerd` | **not packaged** — fetched from nerd-fonts releases |
+| `yazi` | package | **not in Debian** — omitted |
+| Package manager | `pacman` + `yay` | `apt` |
 
 ## Stack
 
-- **WM**: Hyprland (via uwsm)
-- **Panel**: Wayle (Rust/GTK4)
-- **Terminal**: Alacritty + tmux
-- **Editor**: Neovim / Zed
-- **Launcher**: Rofi
-- **Browser**: Zen Browser
-- **Session**: uwsm + SDDM
-- **GPU**: Intel iGPU + NVIDIA (nvidia-open, nvidia-prime, supergfxctl)
-- **Audio**: PipeWire + WirePlumber
-- **Lockscreen**: hyprlock
-- **Wallpaper**: hyprpaper + Bing daily wallpaper script
+- **Terminal**: Alacritty (Catppuccin Mocha, JetBrainsMono Nerd Font SemiBold 10.5)
+- **Multiplexer**: tmux — `C-Space` prefix, earth-palette status bar, `wl-copy` clipboard
+- **Shell**: zsh + autosuggestions, syntax-highlighting, history-substring-search, you-should-use
+- **Prompt**: starship (`λ` character, git branch/status)
+- **Editor**: Neovim
+- **Clipboard**: `wl-clipboard` (Wayland) + `xclip` (XWayland)
 
-## Fresh Install
+## Notes
 
-### 1. Boot and install Arch
-
-Use `archinstall.yaml` with the `archinstall` tool:
-
-```bash
-archinstall --config archinstall.yaml
-```
-
-### 2. Clone this repo
-
-```bash
-git clone --recurse-submodules https://github.com/AlexTrebs/dot-dot-dot.git ~/Workspace/dot-dot-dot
-cd ~/Workspace/dot-dot-dot
-```
-
-### 3. Run install script
-
-```bash
-./install.sh symlink   # installs packages, symlinks configs
-# or
-./install.sh copy      # installs packages, copies configs
-```
-
-This will:
-- Install all pacman and AUR packages
-- Configure NVIDIA hibernate support (mkinitcpio, GRUB, nvidia power services)
-- Symlink/copy `.config/` and `.local/` to `$HOME`
-- Copy `etc/` files to `/etc/` (requires sudo)
-- Enable Bluetooth
-
-### 4. Manual steps after install
-
-- **Hibernate**: Set `resume=` and `resume_offset=` in `/etc/default/grub` after configuring swap:
-  ```bash
-  ROOT_UUID=$(findmnt / -o UUID -n)
-  SWAP_OFFSET=$(sudo filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\.\.//')
-  # Add to GRUB_CMDLINE_LINUX_DEFAULT, then:
-  sudo grub-mkconfig -o /boot/grub/grub.cfg
-  ```
-- **Lock screen avatar**: Copy your profile picture to `~/.config/hypr/avatar.png`
-- **NuPhy wired keyboard**: Run `hyprctl devices | grep -i nuphy` while plugged in via USB and update the `TODO-nuphy-wired-device-name` device block in `hyprland.conf`
-- **Zed**: Installed separately via `curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh` (handled by install.sh)
-
-## Submodules
-
-| Path | Repo |
-|---|---|
-| `.config/nvim` | [AlexTrebs/nvim-config](https://github.com/AlexTrebs/nvim-config) |
-| `.config/tmux` | [AlexTrebs/tmux-config](https://github.com/AlexTrebs/tmux-config) |
-| `claude-personality-gen` | [AlexTrebs/claude-personality-gen](https://github.com/AlexTrebs/claude-personality-gen) |
-
-## Keyboard Layouts
-
-- Built-in ASUS keyboard: UK (`gb`)
-- NuPhy Air75 V2 (dongle): US (`us`)
-- NuPhy Air75 V2 (USB): US (`us`) — update device name in `hyprland.conf`
-
-## Package List Sync
-
-`archinstall.yaml` and `install.sh` should have matching package lists. To check and sync:
-
-```bash
-./sync_package_lists.sh
-```
+- The kiosk's on-screen keyboard (squeekboard) is disabled via
+  `~/.config/autostart/squeekboard.desktop` — unrelated to this repo, but it's why
+  no keyboard pops up over terminals.
+- Neovim on Trixie is **0.10.4**. If the `nvim` submodule config needs 0.11+, either
+  unlink `~/.config/nvim` or install a newer Neovim outside apt.
+- tmux plugins install themselves via TPM on first launch (`prefix + I`).

@@ -1,4 +1,12 @@
-# ~/.zshrc
+# ~/.zshrc  —  Raspberry Pi OS (Debian Trixie) edition
+#
+# Ported from the Arch branch. Debian differences are marked [debian]:
+#   - zsh plugins live in /usr/share/<plugin>/, not /usr/share/zsh/plugins/<plugin>/
+#   - fzf shell integration ships under /usr/share/doc/fzf/examples/
+#   - bat and fd are renamed to batcat / fdfind (binary name clashes)
+#   - zsh-history-substring-search and zsh-you-should-use aren't packaged,
+#     so they're vendored into ~/.local/share/zsh/plugins/
+
 export PATH="$PATH:$HOME/.dotnet/tools"
 
 [[ $- != *i* ]] && return
@@ -35,6 +43,11 @@ else
 fi
 alias grep='grep --color=auto'
 
+# [debian] Debian renames these binaries to avoid clashes; alias them back so
+# muscle memory (and anything expecting `bat`/`fd`) keeps working.
+command -v batcat &>/dev/null && alias bat='batcat'
+command -v fdfind &>/dev/null && alias fd='fdfind'
+
 # ── Git ───────────────────────────────────────────────────────
 alias gs='git status'
 alias gd='git diff'
@@ -47,13 +60,16 @@ alias tn='tmux new -s'
 alias tl='tmux list-sessions'
 
 # ── Dotfiles ──────────────────────────────────────────────────
-alias dots='cd ~/Workspace/dot-dot-dot'
+# [debian] cloned to ~/dot-dot-dot on this box, not ~/Workspace/dot-dot-dot
+alias dots='cd ~/dot-dot-dot'
 
-# ── App fixes ─────────────────────────────────────────────────
-alias pavucontrol='GDK_BACKEND=x11 pavucontrol'
+# ── Pi appliance ──────────────────────────────────────────────
+alias screenctl='sudo systemctl restart screen-control'
+alias kiosklog='journalctl -u screen-control -f'
 
 # ── PATH ──────────────────────────────────────────────────────
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
 
 # ── pnpm ──────────────────────────────────────────────────────
@@ -64,10 +80,10 @@ case ":$PATH:" in
 esac
 
 # ── nvm (lazy-loaded) ─────────────────────────────────────────
+# [debian] no /usr/share/nvm package; uses the git-installed $NVM_DIR only
 export NVM_DIR="$HOME/.nvm"
 _nvm_load() {
   unfunction nvm node npm npx 2>/dev/null
-  [ -s "/usr/share/nvm/init-nvm.sh" ] && source /usr/share/nvm/init-nvm.sh
   [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 }
 nvm()  { _nvm_load; nvm  "$@"; }
@@ -79,21 +95,30 @@ npx()  { _nvm_load; npx  "$@"; }
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 # ── fzf ───────────────────────────────────────────────────────
-[ -f /usr/share/fzf/key-bindings.zsh ] && source /usr/share/fzf/key-bindings.zsh
-[ -f /usr/share/fzf/completion.zsh ] && source /usr/share/fzf/completion.zsh
+# [debian] shipped under /usr/share/doc/fzf/examples/ instead of /usr/share/fzf/
+[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && \
+  source /usr/share/doc/fzf/examples/key-bindings.zsh
+[ -f /usr/share/doc/fzf/examples/completion.zsh ] && \
+  source /usr/share/doc/fzf/examples/completion.zsh
 
 # ── Plugins ───────────────────────────────────────────────────
-[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
-  source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
-  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-if [ -f /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
-  source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+# [debian] apt-packaged plugins sit directly in /usr/share/<name>/
+[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
+  source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# [debian] vendored — not in Debian's archive
+ZSH_VENDOR="$HOME/.local/share/zsh/plugins"
+if [ -f "$ZSH_VENDOR/zsh-history-substring-search/zsh-history-substring-search.zsh" ]; then
+  source "$ZSH_VENDOR/zsh-history-substring-search/zsh-history-substring-search.zsh"
   bindkey '^[[A' history-substring-search-up
   bindkey '^[[B' history-substring-search-down
 fi
-[ -f /usr/share/zsh/plugins/zsh-you-should-use/you-should-use.plugin.zsh ] && \
-  source /usr/share/zsh/plugins/zsh-you-should-use/you-should-use.plugin.zsh
+[ -f "$ZSH_VENDOR/zsh-you-should-use/you-should-use.plugin.zsh" ] && \
+  source "$ZSH_VENDOR/zsh-you-should-use/you-should-use.plugin.zsh"
+
+# syntax-highlighting must be sourced LAST of the plugins
+[ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ── Bun ───────────────────────────────────────────────────────
 export BUN_INSTALL="$HOME/.bun"

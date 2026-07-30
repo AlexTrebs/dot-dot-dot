@@ -1,113 +1,81 @@
 #!/usr/bin/env bash
-# Link or copy files from your dotfiles repo into target directories
+# =============================================================
+#  Link/copy configs — Raspberry Pi OS (pi-os branch)
+# =============================================================
 # Usage: ./symlink_config.sh [copy|symlink]
-#   copy    - Copy all files (for fresh installs)
-#   symlink - Symlink .config/.local, copy /etc (default)
+#
+# Differs from the Arch branch in two important ways:
+#
+#  1. EXPLICIT ALLOWLIST. The Arch script walks all of .config/ and links
+#     everything. On this box that would scatter hypr/, wayle/, rofi/ and
+#     xdg-desktop-portal configs into ~/.config where nothing reads them —
+#     this machine runs labwc + wf-panel-pi, not Hyprland. Only the terminal
+#     stack is linked here.
+#
+#  2. BACKS UP whatever it replaces to <file>.pre-dotdotdot, so an existing
+#     hand-tuned config is never silently destroyed. The appliance configs
+#     (labwc, kanshi, wf-panel-pi, screen-control) are NOT in the allowlist
+#     and are never touched.
+set -uo pipefail
 
 MODE="${1:-symlink}"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Running in $MODE mode..."
+case "$MODE" in
+  symlink|copy) ;;
+  *) echo "Unknown mode: $MODE (use 'symlink' or 'copy')" >&2; exit 2 ;;
+esac
 
-# Paths
-CONFIG_SRC="$(pwd)/.config"
-LOCAL_SRC="$(pwd)/.local"
-ETC_SRC="$(pwd)/etc"
-CONFIG_DST="$HOME/.config"
-LOCAL_DST="$HOME/.local"
-ETC_DST="/etc"
+echo "Running in $MODE mode from $REPO"
 
-# Generic function to link or copy files
-# Usage: link_or_copy <source_dir> <target_dir> <mode>
-# mode: "symlink" or "copy"
-link_or_copy() {
-    local src="$1"
-    local dst="$2"
-    local mode="$3"
+# Repo-relative paths to install into $HOME. Directories are linked/copied
+# recursively; files individually.
+ALLOW=(
+  ".config/alacritty"
+  ".config/starship.toml"
+  ".config/tmux"
+  ".config/nvim"
+  ".zshrc"
+  ".gitconfig"
+)
 
-    if [ ! -d "$src" ]; then
-        echo "Source directory not found: $src"
-        return 1
-    fi
-
-    find "$src" -type f -print0 | while IFS= read -r -d '' file; do
-        local rel_path="${file#$src/}"
-        local target="$dst/$rel_path"
-        local target_dir
-        target_dir=$(dirname "$target")
-
-        mkdir -p "$target_dir"
-
-        # Remove existing file or symlink
-        if [ -e "$target" ] || [ -L "$target" ]; then
-            rm -f "$target"
-        fi
-
-        if [ "$mode" == "symlink" ]; then
-            ln -sf "$file" "$target"
-            echo "Linked $target"
-        elif [ "$mode" == "copy" ]; then
-            cp -p "$file" "$target"
-            echo "Copied $target"
-        else
-            echo "Unknown mode: $mode"
-            return 1
-        fi
-    done
+backup() {
+  local target="$1"
+  if [ -e "$target" ] && [ ! -L "$target" ]; then
+    mv -f "$target" "$target.pre-dotdotdot"
+    echo "  backed up existing -> $target.pre-dotdotdot"
+  elif [ -L "$target" ]; then
+    rm -f "$target"
+  fi
 }
 
-# Copy /etc files (requires sudo)
-copy_etc() {
-    local src="$1"
-    local dst="$2"
+install_path() {
+  local rel="$1"
+  local src="$REPO/$rel"
+  local dst="$HOME/$rel"
 
-    if [ ! -d "$src" ]; then
-        echo "No etc/ directory found, skipping."
-        return 0
-    fi
+  if [ ! -e "$src" ]; then
+    echo "⚠️  missing in repo, skipping: $rel"
+    return
+  fi
 
-    echo "Copying /etc files (requires sudo)..."
-    find "$src" -type f -print0 | while IFS= read -r -d '' file; do
-        local rel_path="${file#$src/}"
-        local target="$dst/$rel_path"
-        local target_dir
-        target_dir=$(dirname "$target")
+  mkdir -p "$(dirname "$dst")"
 
-        sudo mkdir -p "$target_dir"
-        sudo cp -p "$file" "$target"
-        echo "Copied $target"
-    done
+  if [ "$MODE" = "symlink" ]; then
+    backup "$dst"
+    ln -sfn "$src" "$dst"
+    echo "🔗 $dst -> $src"
+  else
+    backup "$dst"
+    cp -a "$src" "$dst"
+    echo "📄 $dst"
+  fi
 }
 
-# Run for .config
-link_or_copy "$CONFIG_SRC" "$CONFIG_DST" "$MODE"
-
-# Run for .local
-link_or_copy "$LOCAL_SRC" "$LOCAL_DST" "$MODE"
-
-# Always copy /etc (cannot symlink into /etc; copy regardless of mode)
-copy_etc "$ETC_SRC" "$ETC_DST"
-
-# Link/copy home dotfiles (.bashrc, .gitconfig)
-REPO_ROOT="$(pwd)"
-for dotfile in .bashrc .zshrc .gitconfig; do
-    src="$REPO_ROOT/$dotfile"
-    dst="$HOME/$dotfile"
-    if [ ! -f "$src" ]; then
-        continue
-    fi
-    [ -e "$dst" ] || [ -L "$dst" ] && rm -f "$dst"
-    if [ "$MODE" = "symlink" ]; then
-        ln -sf "$src" "$dst"
-        echo "Linked $dst"
-    else
-        cp -p "$src" "$dst"
-        echo "Copied $dst"
-    fi
+for rel in "${ALLOW[@]}"; do
+  install_path "$rel"
 done
 
-echo "All operations completed!"
-
-# Reload Hyprland if available
-if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-    hyprctl reload
-fi
+echo
+echo "Done. Not touched (appliance configs): ~/.config/labwc, ~/.config/kanshi,"
+echo "~/.config/wf-panel-pi, ~/screen-control"
