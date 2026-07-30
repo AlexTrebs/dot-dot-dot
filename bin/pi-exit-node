@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# =============================================================
+#  Make the Pi a Tailscale exit node (+ optional subnet router)
+# =============================================================
+# This is the VPN option that actually works on this network.
+#
+# Why not self-hosted WireGuard: the Pi sits behind THREE layers of NAT
+# (192.168.68.1 -> 192.168.31.1 -> 192.168.90.1, all RFC1918), so no inbound
+# UDP port can reach it without port-forward rules on all three routers — and
+# the upstream two belong to the shared network. Tailscale sidesteps this
+# entirely with NAT traversal and DERP relays: the Pi makes only OUTBOUND
+# connections, so no forwarding is needed anywhere.
+#
+# Run with:  sudo pi-exit-node
+set -euo pipefail
+
+[ "$(id -u)" -eq 0 ] || { echo "Run with sudo: sudo pi-exit-node"; exit 1; }
+
+LAN_CIDR=$(ip -4 route show dev wlan0 proto kernel scope link | awk '{print $1; exit}')
+echo "==> detected LAN: ${LAN_CIDR:-<none>}"
+
+# Persist forwarding (Docker sets it at runtime, but not durably)
+cat > /etc/sysctl.d/99-tailscale-exit.conf <<'EOF'
+net.ipv4.ip_forward = 1
+net.ipv6.conf.all.forwarding = 1
+EOF
+sysctl -q --system
+echo "==> IP forwarding persisted (v4 + v6)"
+
+echo "==> advertising exit node${LAN_CIDR:+ and subnet $LAN_CIDR}"
+if [ -n "$LAN_CIDR" ]; then
+  tailscale set --advertise-exit-node --advertise-routes="$LAN_CIDR"
+else
+  tailscale set --advertise-exit-node
+fi
+
+echo
+echo "==> current advertisement"
+tailscale debug prefs | grep -E '"AdvertiseRoutes"|"AdvertiseExitNode"|Advertise' -A2 | head -12
+
+cat <<EOF
+
+============================================================
+✅ Advertised. ONE MANUAL STEP REMAINS:
+
+Approve it in the admin console — Tailscale will not route through an
+exit node until you explicitly approve it:
+
+    https://login.tailscale.com/admin/machines
+    -> pi -> "..." -> Edit route settings
+    -> tick "Use as exit node"${LAN_CIDR:+ and the $LAN_CIDR subnet route}
+
+Then, on a client (e.g. your Arch box or phone):
+
+    tailscale set --exit-node=pi --exit-node-allow-lan-access
+    tailscale set --exit-node=          # turn it back off
+
+Honest caveats:
+  - The Pi egresses via the SHARED Wi-Fi. This protects you on untrusted
+    remote networks and gives you a home IP, but it does not hide traffic
+    from whoever runs that Wi-Fi.
+  - Throughput is capped by the Pi's Wi-Fi — there is no ethernet on this
+    box — and by three layers of upstream NAT. Expect modest speeds.
+============================================================
+EOF

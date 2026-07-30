@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Enable Tailscale SSH on this Pi.
+#
+# Why Tailscale SSH rather than sshd: nothing listens on the LAN at all, so the
+# shared Wi-Fi never sees an SSH port. Auth is your Tailscale identity plus the
+# tailnet ACLs, not a key file that can leak. openssh-server stays installed but
+# disabled, so you can fall back to it if you ever need to.
+#
+# After this, from any device on your tailnet:
+#     ssh alex@pi           (Tailscale MagicDNS)
+#     ssh alex@100.80.211.20
+set -euo pipefail
+
+echo "==> current state"
+tailscale debug prefs 2>/dev/null | grep -E '"RunSSH"' || true
+
+echo "==> enabling Tailscale SSH"
+sudo tailscale set --ssh
+
+echo
+echo "==> verifying"
+if tailscale debug prefs 2>/dev/null | grep -q '"RunSSH": true'; then
+  echo "  ✅ RunSSH is now true"
+else
+  echo "  ❌ RunSSH still false — check 'sudo tailscale set --ssh' output above"
+  exit 1
+fi
+
+echo
+echo "Test it from your Arch box (100.108.56.2):"
+echo "    ssh alex@pi"
+echo
+echo "Note: if your tailnet ACLs are customised, you may need an 'ssh' rule in"
+echo "the admin console. The default policy allows it between your own devices."
+echo "Admin console: https://login.tailscale.com/admin/machines"

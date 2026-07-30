@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+# =============================================================
+#  Self-hosted WireGuard server on the Pi
+# =============================================================
+# Run once:  sudo pi-wireguard-setup
+#
+# Generates all keys itself so no private key is ever written to a user
+# directory. Server keys land in /etc/wireguard (root, 0600); client configs go
+# to ~/wireguard-clients (your user, 0600) because you need to read them.
+#
+# ⚠️  READ THIS FIRST — inbound reachability
+# WireGuard needs an inbound UDP port from the internet. Your Pi is behind a
+# Google Wifi/Nest router (192.168.68.1) on a SHARED network. This only works if
+# you can add a port-forward rule:
+#     UDP 51820  ->  192.168.68.58  (this Pi)
+# in the Google Home app: Wi-Fi > Settings > Advanced > Port management.
+# If you don't own that router, WireGuard cannot accept inbound connections and
+# Tailscale (already working here) is the realistic alternative.
+#
+# Your public IP is currently NOT CGNAT, so forwarding is technically possible.
+# It is probably DYNAMIC though — see the DDNS note at the end.
+set -euo pipefail
+
+[ "$(id -u)" -eq 0 ] || { echo "Run with sudo: sudo pi-wireguard-setup"; exit 1; }
+
+REAL_USER="${SUDO_USER:-alex}"
+REAL_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+
+WG_IF=wg0
+WG_NET=10.8.0
+WG_PORT=51820
+WAN_IF=$(ip route show default | awk '{print $5; exit}')
+CLIENT_DIR="$REAL_HOME/wireguard-clients"
+# name:ip-suffix
+CLIENTS=("archlinux:2" "pixel:3" "lappy:4")
+
+echo "==> WAN interface: $WAN_IF"
+
+# ── Packages ──────────────────────────────────────────────────
+echo "==> installing wireguard-tools + qrencode"
+apt update
+apt install -y wireguard-tools qrencode
+
+# ── Persist IP forwarding ─────────────────────────────────────
+# Docker already sets ip_forward=1 at runtime, but that is not persistent on its
+# own — make it explicit so a Docker-less boot still routes.
+echo "==> persisting net.ipv4.ip_forward"
+cat > /etc/sysctl.d/99-wireguard.conf <<EOF
+net.ipv4.ip_forward = 1
+EOF
+sysctl -q --system
+
+# ── Keys ──────────────────────────────────────────────────────
+umask 077
+mkdir -p /etc/wireguard
+cd /etc/wireguard
+
+if [ -f "${WG_IF}.conf" ]; then
+  echo "❌ /etc/wireguard/${WG_IF}.conf already exists — refusing to overwrite."
+  echo "   Move it aside first if you really want to regenerate."
+  exit 1
+fi
+
+echo "==> generating server keypair"
+wg genkey | tee server_private.key | wg pubkey > server_public.key
+SERVER_PRIV=$(cat server_private.key)
+SERVER_PUB=$(cat server_public.key)
+
+# ── Server config ─────────────────────────────────────────────
+echo "==> writing /etc/wireguard/${WG_IF}.conf"
+cat > "${WG_IF}.conf" <<EOF
+# WireGuard server — generated $(date -Iseconds)
+[Interface]
+Address = ${WG_NET}.1/24
+ListenPort = ${WG_PORT}
+PrivateKey = ${SERVER_PRIV}
+
+# NAT client traffic out of ${WAN_IF}. Uses explicit rule add/delete rather
+# than a blanket flush so Docker's own iptables rules are left alone.
+PostUp   = iptables -A FORWARD -i %i -j ACCEPT
+PostUp   = iptables -A FORWARD -o %i -j ACCEPT
+PostUp   = iptables -t nat -A POSTROUTING -s ${WG_NET}.0/24 -o ${WAN_IF} -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT
+PostDown = iptables -D FORWARD -o %i -j ACCEPT
+PostDown = iptables -t nat -D POSTROUTING -s ${WG_NET}.0/24 -o ${WAN_IF} -j MASQUERADE
+EOF
+
+# ── Clients ───────────────────────────────────────────────────
+mkdir -p "$CLIENT_DIR"
+ENDPOINT_IP=$(curl -fsS --max-time 10 https://api.ipify.org 2>/dev/null || echo "YOUR.PUBLIC.IP")
+
+for entry in "${CLIENTS[@]}"; do
+  name="${entry%%:*}"; suffix="${entry##*:}"
+  echo "==> client: $name (${WG_NET}.${suffix})"
+
+  wg genkey | tee "${name}_private.key" | wg pubkey > "${name}_public.key"
+  wg genpsk > "${name}_psk.key"
+  CPRIV=$(cat "${name}_private.key")
+  CPUB=$(cat "${name}_public.key")
+  CPSK=$(cat "${name}_psk.key")
+
+  # Append peer to the server config
+  cat >> "${WG_IF}.conf" <<EOF
+
+[Peer]
+# ${name}
+PublicKey = ${CPUB}
+PresharedKey = ${CPSK}
+AllowedIPs = ${WG_NET}.${suffix}/32
+EOF
+
+  # Client config: full tunnel, so all traffic egresses via the Pi
+  cat > "$CLIENT_DIR/${name}.conf" <<EOF
+# WireGuard client: ${name}
+[Interface]
+PrivateKey = ${CPRIV}
+Address = ${WG_NET}.${suffix}/24
+DNS = 1.1.1.1
+
+[Peer]
+PublicKey = ${SERVER_PUB}
+PresharedKey = ${CPSK}
+Endpoint = ${ENDPOINT_IP}:${WG_PORT}
+# Full tunnel. For split tunnel (only reach the home LAN), replace with:
+#   AllowedIPs = 10.8.0.0/24, 192.168.68.0/22
+AllowedIPs = 0.0.0.0/0, ::/0
+PersistentKeepalive = 25
+EOF
+done
+
+chmod 600 "$CLIENT_DIR"/*.conf
+chown -R "$REAL_USER:$REAL_USER" "$CLIENT_DIR"
+chmod 700 "$CLIENT_DIR"
+chmod 600 /etc/wireguard/*.key /etc/wireguard/*.conf
+
+# ── Bring it up ───────────────────────────────────────────────
+echo "==> enabling wg-quick@${WG_IF}"
+systemctl enable --now "wg-quick@${WG_IF}"
+sleep 2
+wg show "${WG_IF}" || { echo "❌ interface did not come up"; exit 1; }
+
+cat <<EOF
+
+============================================================
+✅ WireGuard is up on UDP ${WG_PORT}
+
+Client configs (chmod 600, owned by ${REAL_USER}):
+$(ls -1 "$CLIENT_DIR"/*.conf | sed 's/^/    /')
+
+NEXT — the part that is NOT automatic:
+
+1. Port-forward on the router (Google Home app):
+       UDP ${WG_PORT} -> 192.168.68.58
+   Without this, clients outside the house cannot connect at all.
+
+2. Your endpoint is currently ${ENDPOINT_IP}, which is almost certainly a
+   DYNAMIC IP — it will change and silently break every client config.
+   Set up dynamic DNS (duckdns.org is free) and replace the Endpoint line
+   in each client config with your hostname.
+
+3. Phone: show a scannable QR with
+       sudo qrencode -t ansiutf8 < ${CLIENT_DIR}/pixel.conf
+
+4. Verify from OUTSIDE the network (mobile data, not the Wi-Fi):
+       wg show          # on the Pi, look for a recent handshake
+
+Useful:
+    sudo wg show                      # peer status and handshakes
+    sudo systemctl status wg-quick@${WG_IF}
+    sudo systemctl disable --now wg-quick@${WG_IF}   # undo
+============================================================
+EOF
