@@ -66,8 +66,11 @@ if ! fc-list -f '%{family[0]}\n' 2>/dev/null | grep -qx "JetBrainsMono Nerd Font
   echo "🔤 Installing JetBrainsMono Nerd Font..."
   mkdir -p "$FONTDIR"
   tmp=$(mktemp -d)
-  tag=$(curl -fsSL https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest \
-        | grep -m1 '"tag_name"' | cut -d'"' -f4)
+  # Capture the response BEFORE grepping: piping curl into `grep -m1` makes
+  # grep close the pipe at the first match, killing curl with SIGPIPE
+  # ("curl: (23)"), which `set -o pipefail` turns into a fatal error.
+  _json=$(curl -fsSL https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest)
+  tag=$(printf '%s' "$_json" | grep '"tag_name"' | head -1 | cut -d'"' -f4)
   if [ -n "$tag" ] && curl -fL --retry 3 -o "$tmp/JetBrainsMono.zip" \
        "https://github.com/ryanoasis/nerd-fonts/releases/download/${tag}/JetBrainsMono.zip"; then
     unzip -q -o "$tmp/JetBrainsMono.zip" -d "$tmp/jb"

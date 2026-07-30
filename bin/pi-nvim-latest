@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# =============================================================
+#  Install current Neovim from official releases (no sudo)
+# =============================================================
+# Debian Trixie ships Neovim 0.10.4, which is too old for the plugin set in
+# the shared nvim-config submodule:
+#     blink.cmp v2    requires 0.12+
+#     telescope.nvim  requires 0.11+
+#     nvim-lspconfig  deprecates 0.10
+#
+# Pinning those plugins would also degrade the Arch box, since the submodule is
+# shared. So instead install upstream Neovim into ~/.local — which already
+# precedes /usr/bin on PATH — and leave the apt package alone as a fallback.
+set -euo pipefail
+
+DEST="$HOME/.local/share/nvim-release"
+ARCH_TARBALL="nvim-linux-arm64.tar.gz"
+
+echo "==> resolving latest Neovim release"
+# Capture the whole response BEFORE grepping. Piping curl straight into
+# `grep -m1` makes grep exit at the first match and close the pipe, so curl
+# dies with SIGPIPE ("curl: (23) Failure writing output to destination") —
+# which `set -o pipefail` then turns into a fatal error.
+_json=$(curl -fsSL https://api.github.com/repos/neovim/neovim/releases/latest)
+TAG=$(printf '%s' "$_json" | grep '"tag_name"' | head -1 | cut -d'"' -f4)
+[ -n "$TAG" ] || { echo "could not resolve tag"; exit 1; }
+echo "    $TAG"
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+echo "==> downloading $ARCH_TARBALL"
+curl -fL --retry 3 -o "$tmp/nvim.tar.gz" \
+  "https://github.com/neovim/neovim/releases/download/${TAG}/${ARCH_TARBALL}"
+
+echo "==> extracting to $DEST"
+rm -rf "$DEST"
+mkdir -p "$DEST"
+tar -xzf "$tmp/nvim.tar.gz" -C "$DEST" --strip-components=1
+
+mkdir -p "$HOME/.local/bin"
+ln -sfn "$DEST/bin/nvim" "$HOME/.local/bin/nvim"
+
+echo "==> installed"
+"$HOME/.local/bin/nvim" --version | head -2
+echo
+echo "PATH resolution: $(command -v nvim)"
+echo "apt's 0.10.4 remains at /usr/bin/nvim as a fallback."
