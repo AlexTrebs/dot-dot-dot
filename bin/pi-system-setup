@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# =============================================================
+#  System-level gaps: persistent logs + automatic security updates
+# =============================================================
+# Run:  pi-system-setup     (self-elevates)
+set -euo pipefail
+
+if [ "$(id -u)" -ne 0 ]; then
+  exec sudo -- "$(readlink -f "$0")" "$@"
+fi
+
+# ── 1. Persistent journal ─────────────────────────────────────
+# Raspberry Pi OS ships /usr/lib/systemd/journald.conf.d/40-rpi-volatile-storage.conf
+# with Storage=volatile, so the journal lives in /run and is WIPED EVERY REBOOT.
+# That is exactly why the failed USB-3.0 boot left no evidence — `journalctl -b -1`
+# reported "no persistent journal was found". Capped so logs can't fill the SSD.
+echo "==> enabling persistent journald"
+mkdir -p /etc/systemd/journald.conf.d
+cat > /etc/systemd/journald.conf.d/50-persistent.conf <<'EOF'
+# Overrides the Pi OS default of Storage=volatile so logs survive reboots.
+# Without this there is no way to diagnose a boot that failed last time.
+[Journal]
+Storage=persistent
+# Keep the SSD safe: hard cap total journal size and per-file size.
+SystemMaxUse=200M
+SystemMaxFileSize=20M
+# Keep at least the last 5 boots' worth around.
+SystemMaxFiles=10
+EOF
+
+mkdir -p /var/log/journal
+systemd-tmpfiles --create --prefix /var/log/journal >/dev/null 2>&1 || true
+systemctl restart systemd-journald
+sleep 2
+
+if [ -n "$(ls -A /var/log/journal 2>/dev/null)" ]; then
+  echo "  ✅ persistent journal active: $(du -sh /var/log/journal 2>/dev/null | cut -f1)"
+else
+  echo "  ⚠️  /var/log/journal still empty — check: systemctl status systemd-journald"
+fi
+
+# ── 2. Unattended security upgrades ───────────────────────────
+# Security patches only — full upgrades stay manual so a kernel or firmware
+# bump never reboots the kiosk unexpectedly.
+echo "==> installing unattended-upgrades (security patches only)"
+apt update
+apt install -y unattended-upgrades
+
+cat > /etc/apt/apt.conf.d/51-pi-unattended <<'EOF'
+// Security updates only. Deliberately NOT enabling the main archive: an
+// unattended kernel/firmware bump on an appliance that also runs Docker and
+// a kiosk is a good way to find out something broke while you were away.
+Unattended-Upgrade::Origins-Pattern {
+    "origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+    "origin=Raspbian,codename=${distro_codename},label=Raspbian";
+};
+// Never reboot on its own — this box drives a kiosk display.
+Unattended-Upgrade::Automatic-Reboot "false";
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+EOF
+
+cat > /etc/apt/apt.conf.d/20auto-upgrades <<'EOF'
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+EOF
+
+echo "==> dry-run check"
+unattended-upgrade --dry-run --debug 2>&1 | tail -5 || true
+
+cat <<'EOF'
+
+============================================================
+✅ Done.
+
+Persistent logs — from now on you can actually investigate a failed boot:
+    journalctl --list-boots        # previous boots now listed
+    journalctl -b -1 -k            # last boot's kernel log
+    journalctl -b -1 -p err        # errors only
+
+This is what was missing when the USB 3.0 boot failed. If you retry that
+drive in a blue port, the failure will now be recorded — assuming it gets
+far enough to mount the root filesystem. If it fails before that, it never
+reaches Linux, and the serial console (BOOT_UART=1 is already set) is the
+only way to see it.
+
+Security updates run automatically; reboots do NOT. Check with:
+    systemctl status unattended-upgrades
+    cat /var/log/unattended-upgrades/unattended-upgrades.log
+============================================================
+EOF
