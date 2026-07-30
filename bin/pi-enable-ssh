@@ -11,6 +11,12 @@
 #     ssh alex@100.80.211.20
 set -euo pipefail
 
+# Run this WITHOUT sudo — it calls sudo itself where needed. Prefixing sudo
+# fails with "command not found" because sudo's secure_path drops ~/bin.
+if [ "$(id -u)" -eq 0 ] && [ -n "${SUDO_USER:-}" ]; then
+  echo "note: this doesn't need sudo — it elevates only for the one command."
+fi
+
 echo "==> current state"
 tailscale debug prefs 2>/dev/null | grep -E '"RunSSH"' || true
 

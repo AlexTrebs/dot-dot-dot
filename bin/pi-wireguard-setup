@@ -21,7 +21,11 @@
 # It is probably DYNAMIC though — see the DDNS note at the end.
 set -euo pipefail
 
-[ "$(id -u)" -eq 0 ] || { echo "Run with sudo: sudo pi-wireguard-setup"; exit 1; }
+# Self-elevate. `sudo pi-wireguard-setup` fails on its own because sudo's
+# secure_path resets PATH and drops ~/bin, so re-exec via the absolute path.
+if [ "$(id -u)" -ne 0 ]; then
+  exec sudo -- "$(readlink -f "$0")" "$@"
+fi
 
 REAL_USER="${SUDO_USER:-alex}"
 REAL_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)

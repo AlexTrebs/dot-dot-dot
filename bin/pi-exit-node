@@ -14,7 +14,11 @@
 # Run with:  sudo pi-exit-node
 set -euo pipefail
 
-[ "$(id -u)" -eq 0 ] || { echo "Run with sudo: sudo pi-exit-node"; exit 1; }
+# Self-elevate. `sudo pi-exit-node` fails on its own because sudo's secure_path
+# resets PATH and drops ~/bin, so re-exec via the script's absolute path.
+if [ "$(id -u)" -ne 0 ]; then
+  exec sudo -- "$(readlink -f "$0")" "$@"
+fi
 
 LAN_CIDR=$(ip -4 route show dev wlan0 proto kernel scope link | awk '{print $1; exit}')
 echo "==> detected LAN: ${LAN_CIDR:-<none>}"
