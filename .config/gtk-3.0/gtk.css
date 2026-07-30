@@ -1,0 +1,117 @@
+/* ================================================================
+   GTK3 — "Earth Arch" palette
+   Ported from ~/dot-dot-dot/.config/colours.css so GTK apps on the Pi
+   match the Arch/Hyprland box. Layered on top of Adwaita-dark.
+   ================================================================ */
+
+@define-color earth_bg          #13120d;
+@define-color earth_bg_alt      #1b1a14;
+@define-color earth_fg          #d0cfcc;
+@define-color earth_fg_dim      #98988d;
+@define-color earth_border      #28342c;
+@define-color earth_border_hi   #658676;
+@define-color earth_accent      #4f8a72;
+@define-color earth_success     #3E867D;
+@define-color earth_warning     #bfa45a;
+@define-color earth_critical    #9b574d;
+
+/* Map GTK's own theme colours onto the palette so unstyled widgets follow */
+@define-color theme_bg_color            @earth_bg;
+@define-color theme_base_color          @earth_bg;
+@define-color theme_fg_color            @earth_fg;
+@define-color theme_text_color          @earth_fg;
+@define-color theme_selected_bg_color   @earth_accent;
+@define-color theme_selected_fg_color   @earth_bg;
+@define-color insensitive_fg_color      @earth_fg_dim;
+@define-color borders                   @earth_border;
+@define-color warning_color             @earth_warning;
+@define-color error_color               @earth_critical;
+@define-color success_color             @earth_success;
+@define-color accent_bg_color           @earth_accent;
+@define-color accent_color              @earth_accent;
+
+window, .background {
+  background-color: @earth_bg;
+  color: @earth_fg;
+}
+
+/* Rounded corners to echo Hyprland's rounding = 6 */
+window.csd, .window-frame, popover.background, menu, .menu {
+  border-radius: 6px;
+}
+
+entry, textview, .view {
+  background-color: @earth_bg_alt;
+  color: @earth_fg;
+  border-color: @earth_border;
+  border-radius: 4px;
+}
+entry:focus {
+  border-color: @earth_border_hi;
+  box-shadow: inset 0 0 0 1px @earth_accent;
+}
+
+button {
+  background-image: none;
+  background-color: @earth_bg_alt;
+  color: @earth_fg;
+  border: 1px solid @earth_border;
+  border-radius: 4px;
+}
+button:hover      { background-color: @earth_border; }
+button:active,
+button:checked    { background-color: @earth_accent; color: @earth_bg; }
+
+selection, ::selection {
+  background-color: @earth_accent;
+  color: @earth_bg;
+}
+
+/* Menus / popovers */
+menu, .menu, popover.background {
+  background-color: @earth_bg;
+  border: 1px solid @earth_border;
+}
+menuitem:hover, .menuitem:hover {
+  background-color: @earth_border;
+  color: @earth_fg;
+}
+
+/* Headerbars / notebooks */
+headerbar {
+  background-image: none;
+  background-color: @earth_bg;
+  color: @earth_fg;
+  border-bottom: 1px solid @earth_border;
+}
+notebook > header { background-color: @earth_bg; }
+notebook > header tab:checked {
+  background-color: @earth_bg_alt;
+  box-shadow: inset 0 -2px @earth_accent;
+}
+
+/* Scrollbars */
+scrollbar { background-color: @earth_bg; }
+scrollbar slider {
+  background-color: @earth_border;
+  border-radius: 8px;
+  min-width: 6px;
+  min-height: 6px;
+}
+scrollbar slider:hover { background-color: @earth_border_hi; }
+
+/* Progress / sliders */
+progressbar progress, scale highlight {
+  background-color: @earth_accent;
+}
+scale slider {
+  background-color: @earth_fg;
+  border: 1px solid @earth_border_hi;
+}
+
+tooltip, tooltip.background {
+  background-color: @earth_bg_alt;
+  color: @earth_fg;
+  border: 1px solid @earth_border;
+  border-radius: 4px;
+}

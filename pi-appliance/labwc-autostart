@@ -1,0 +1,15 @@
+# NOTE: labwc runs BOTH /etc/xdg/labwc/autostart (system) and this file on
+# login. The system autostart already starts pcmanfm-pi, wf-panel-pi, kanshi
+# and lxsession-xdg-autostart — do NOT repeat them here or every desktop
+# component starts twice (two panels, two file managers, etc.).
+#
+# This file only adds what the appliance needs on top of the stock desktop:
+
+# The second (HDMI) top panel is NOT started here any more. wf-panel-pi's
+# panel/monitor key is a preference, not a binding: with HDMI unplugged that
+# instance fell back onto the touchscreen and drew a second top bar. It is now
+# started/stopped by kanshi's per-profile exec lines (~/.config/kanshi/config)
+# -> ~/screen-control/hdmi-panel.sh, so it exists only while HDMI is connected.
+
+# Screen Control kiosk (Chromium on the HyperPixel touchscreen)
+/home/alex/screen-control/kiosk.sh &

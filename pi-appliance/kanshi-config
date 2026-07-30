@@ -1,0 +1,19 @@
+# kanshi picks the FIRST profile whose outputs exactly match what's connected.
+# Two profiles so the touchscreen stays rotated whether or not HDMI is present.
+
+# Touchscreen + desktop monitor
+profile dual {
+	output HDMI-A-2 enable mode 2560x1440@60Hz position 0,0 transform normal scale 1.0
+	# HyperPixel rotated 90° clockwise to landscape (800x480), right of HDMI.
+	output DPI-1 enable mode 480x800 position 2560,0 transform 270 scale 1.0
+	# HDMI is present -> bring up its top panel.
+	exec /home/alex/screen-control/hdmi-panel.sh start
+}
+
+# Touchscreen ONLY (HDMI unplugged) — must still be rotated to landscape.
+profile touchonly {
+	output DPI-1 enable mode 480x800 position 0,0 transform 270 scale 1.0
+	# No HDMI -> kill its panel, otherwise it falls back onto the touchscreen
+	# and you get two stacked top bars.
+	exec /home/alex/screen-control/hdmi-panel.sh stop
+}

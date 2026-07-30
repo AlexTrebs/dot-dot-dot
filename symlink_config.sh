@@ -31,12 +31,28 @@ echo "Running in $MODE mode from $REPO"
 # Repo-relative paths to install into $HOME. Directories are linked/copied
 # recursively; files individually.
 ALLOW=(
+  # Terminal stack
   ".config/alacritty"
   ".config/starship.toml"
   ".config/tmux"
   ".config/nvim"
   ".zshrc"
   ".gitconfig"
+
+  # "Earth Arch" theming. Note these are single FILES, not directories —
+  # linking .config/labwc or .config/wf-panel-pi wholesale would clobber
+  # rc.xml and the panel .ini files, which carry appliance-critical settings
+  # (touchscreen mapping, monitor binding). Those live in pi-appliance/ as
+  # versioned reference copies and are deliberately never symlinked.
+  ".config/gtk-3.0"
+  ".config/labwc/themerc-override"
+  ".config/wf-panel-pi/panel.css"
+
+  # Helper scripts backing the labwc keybinds
+  ".local/bin/screenshot.sh"
+  ".local/bin/full_screenshot.sh"
+  ".local/bin/auto_tmux.sh"
+  ".local/bin/lock.sh"
 )
 
 backup() {

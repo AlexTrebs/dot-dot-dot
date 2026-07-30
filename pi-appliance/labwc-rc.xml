@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<!--
+  labwc config — Pi 5 kiosk appliance + "Earth Arch" desktop parity.
+
+  Keybinds mirror the Arch/Hyprland box (~/dot-dot-dot/.config/hypr/hyprland.conf)
+  wherever labwc has an equivalent action. Hyprland-only concepts that have NO
+  labwc equivalent are deliberately NOT ported:
+    - special/scratchpad workspaces (Super+grave, Super+D/G/M/H)
+    - window groups / tabbed groups (Super+A, Alt+1..9)
+    - pseudo / dwindle layout messages (Super+P, Super+J)
+  labwc is a stacking compositor, so there is no tiling layout to message.
+
+  Colours live in ~/.config/labwc/themerc-override.
+-->
+<labwc_config>
+
+  <!-- Rounded server-side decorations, matching Hyprland's decoration
+       { rounding = 6 }. -->
+  <theme>
+    <cornerRadius>6</cornerRadius>
+  </theme>
+
+  <!-- Ten workspaces, as on the Arch box (Super+1..0). -->
+  <desktops>
+    <number>10</number>
+    <popupTime>1000</popupTime>
+  </desktops>
+
+  <!-- Map the HyperPixel touchscreen's touch input to the DPI-1 output.
+       Without this, wlroots stretches touch coordinates across the whole
+       multi-monitor layout (HDMI + touchscreen), so taps land on the wrong
+       screen. wlroots already applies DPI-1's rotation to the touch points,
+       so NO calibrationMatrix is needed here — adding one double-rotates and
+       breaks touch. -->
+  <touch deviceName="Goodix Capacitive TouchScreen" mapToOutput="DPI-1"/>
+
+  <keyboard>
+    <!-- ── Window management ──────────────────────────────────── -->
+    <!-- Minimise the focused kiosk with Super+M (triggered by the app's
+         Minimise button via wtype). Restore by tapping it in the panel. -->
+    <keybind key="W-m">
+      <action name="Iconify"/>
+    </keybind>
+    <keybind key="W-q">
+      <action name="Close"/>
+    </keybind>
+    <keybind key="W-f">
+      <action name="ToggleFullscreen"/>
+    </keybind>
+    <keybind key="W-S-f">
+      <action name="ToggleMaximize"/>
+    </keybind>
+    <keybind key="W-S-Escape">
+      <action name="Exit"/>
+    </keybind>
+
+    <!-- Focus by direction (Hyprland: Super+arrows movefocus) -->
+    <keybind key="W-Left">
+      <action name="Focus" direction="left"/>
+    </keybind>
+    <keybind key="W-Right">
+      <action name="Focus" direction="right"/>
+    </keybind>
+    <keybind key="W-Up">
+      <action name="Focus" direction="up"/>
+    </keybind>
+    <keybind key="W-Down">
+      <action name="Focus" direction="down"/>
+    </keybind>
+
+    <!-- Snap window to edge (Hyprland: Super+Shift+arrows movewindow).
+         labwc snaps rather than swapping tiles — closest available. -->
+    <keybind key="W-S-Left">
+      <action name="SnapToEdge" direction="left"/>
+    </keybind>
+    <keybind key="W-S-Right">
+      <action name="SnapToEdge" direction="right"/>
+    </keybind>
+    <keybind key="W-S-Up">
+      <action name="SnapToEdge" direction="up"/>
+    </keybind>
+    <keybind key="W-S-Down">
+      <action name="SnapToEdge" direction="down"/>
+    </keybind>
+
+    <!-- ── Workspaces ─────────────────────────────────────────── -->
+    <keybind key="W-1"><action name="GoToDesktop" to="1"/></keybind>
+    <keybind key="W-2"><action name="GoToDesktop" to="2"/></keybind>
+    <keybind key="W-3"><action name="GoToDesktop" to="3"/></keybind>
+    <keybind key="W-4"><action name="GoToDesktop" to="4"/></keybind>
+    <keybind key="W-5"><action name="GoToDesktop" to="5"/></keybind>
+    <keybind key="W-6"><action name="GoToDesktop" to="6"/></keybind>
+    <keybind key="W-7"><action name="GoToDesktop" to="7"/></keybind>
+    <keybind key="W-8"><action name="GoToDesktop" to="8"/></keybind>
+    <keybind key="W-9"><action name="GoToDesktop" to="9"/></keybind>
+    <keybind key="W-0"><action name="GoToDesktop" to="10"/></keybind>
+
+    <keybind key="W-S-1"><action name="SendToDesktop" to="1"/></keybind>
+    <keybind key="W-S-2"><action name="SendToDesktop" to="2"/></keybind>
+    <keybind key="W-S-3"><action name="SendToDesktop" to="3"/></keybind>
+    <keybind key="W-S-4"><action name="SendToDesktop" to="4"/></keybind>
+    <keybind key="W-S-5"><action name="SendToDesktop" to="5"/></keybind>
+    <keybind key="W-S-6"><action name="SendToDesktop" to="6"/></keybind>
+    <keybind key="W-S-7"><action name="SendToDesktop" to="7"/></keybind>
+    <keybind key="W-S-8"><action name="SendToDesktop" to="8"/></keybind>
+    <keybind key="W-S-9"><action name="SendToDesktop" to="9"/></keybind>
+    <keybind key="W-S-0"><action name="SendToDesktop" to="10"/></keybind>
+
+    <!-- Super+Ctrl+arrows: previous/next workspace -->
+    <keybind key="W-C-Left">
+      <action name="GoToDesktop" to="left" wrap="yes"/>
+    </keybind>
+    <keybind key="W-C-Right">
+      <action name="GoToDesktop" to="right" wrap="yes"/>
+    </keybind>
+
+    <!-- ── Applications ───────────────────────────────────────── -->
+    <!-- Super+E: file manager -->
+    <keybind key="W-e">
+      <action name="Execute" command="pcmanfm"/>
+    </keybind>
+    <!-- Super+T: terminal attached to tmux; Super+Shift+T / Super+Return: plain -->
+    <keybind key="W-t">
+      <action name="Execute" command="alacritty -e /home/alex/.local/bin/auto_tmux.sh"/>
+    </keybind>
+    <keybind key="W-S-t">
+      <action name="Execute" command="alacritty"/>
+    </keybind>
+    <keybind key="W-Return">
+      <action name="Execute" command="alacritty"/>
+    </keybind>
+    <!-- Super+R: app launcher (wofi = the Wayland-native rofi equivalent) -->
+    <keybind key="W-r">
+      <action name="Execute" command="wofi --show drun"/>
+    </keybind>
+    <!-- Super+Z: browser (Zen Browser isn't packaged for arm64/Debian) -->
+    <keybind key="W-z">
+      <action name="Execute" command="chromium"/>
+    </keybind>
+    <!-- Super+L: lock screen (swaylock stands in for hyprlock) -->
+    <keybind key="W-l">
+      <action name="Execute" command="/home/alex/.local/bin/lock.sh"/>
+    </keybind>
+
+    <!-- ── Screenshots (same scripts as the Arch box) ─────────── -->
+    <keybind key="W-s">
+      <action name="Execute" command="/home/alex/.local/bin/screenshot.sh"/>
+    </keybind>
+    <keybind key="W-S-s">
+      <action name="Execute" command="/home/alex/.local/bin/full_screenshot.sh"/>
+    </keybind>
+  </keyboard>
+
+  <mouse>
+    <!-- Super+drag to move, Super+Shift+drag to resize (Hyprland bindm). -->
+    <context name="Frame">
+      <mousebind button="W-Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="W-Left" action="Drag">
+        <action name="Move"/>
+      </mousebind>
+      <mousebind button="W-S-Left" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+    </context>
+  </mouse>
+
+</labwc_config>

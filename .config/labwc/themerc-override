@@ -1,0 +1,66 @@
+# labwc theme override — "Earth Arch" palette
+#
+# Ports the look of the Arch/Hyprland box to labwc's server-side decorations.
+# Source palette: ~/dot-dot-dot/.config/colours.css
+# Hyprland equivalents this mirrors (from hypr/hyprland.conf):
+#   col.active_border   = #658676 -> #4F6858 gradient   (labwc has no gradient,
+#                                                        so the lighter stop is used)
+#   col.inactive_border = #28342c
+#   border_size = 1, rounding = 6 (radius lives in rc.xml <theme><cornerRadius>)
+#   shadow: range 6, color #0d0c09dd
+#
+# Only keys documented in labwc-theme(5) are used here.
+
+# ── Borders ───────────────────────────────────────────────────
+border.width: 1
+window.active.border.color: #658676
+window.inactive.border.color: #28342c
+
+# ── Titlebars ─────────────────────────────────────────────────
+window.active.title.bg.color: #13120d
+window.inactive.title.bg.color: #13120d
+window.active.label.text.color: #d0cfcc
+window.inactive.label.text.color: #98988d
+window.label.text.justify: center
+window.titlebar.padding.height: 2
+window.titlebar.padding.width: 4
+
+# ── Titlebar buttons ──────────────────────────────────────────
+window.active.button.unpressed.image.color: #4f8a72
+window.inactive.button.unpressed.image.color: #6c6759
+window.button.hover.bg.color: #28342c
+window.button.hover.bg.corner-radius: 3
+window.button.spacing: 4
+
+# ── Shadows (matches Hyprland's range 6 / #0d0c09dd) ──────────
+window.active.shadow.size: 6
+window.inactive.shadow.size: 3
+window.active.shadow.color: #0d0c09dd
+window.inactive.shadow.color: #0d0c0999
+
+# ── Root/right-click menu ─────────────────────────────────────
+menu.border.color: #28342c
+menu.border.width: 1
+menu.items.bg.color: #13120d
+menu.items.text.color: #d0cfcc
+menu.items.active.bg.color: #28342c
+menu.items.active.text.color: #dededd
+menu.items.padding.x: 8
+menu.items.padding.y: 4
+menu.separator.color: #28342c
+menu.title.bg.color: #4f8a72
+menu.title.text.color: #13120d
+
+# ── On-screen display / alt-tab switcher ──────────────────────
+osd.bg.color: #13120d
+osd.border.color: #658676
+osd.border.width: 1
+osd.label.text.color: #d0cfcc
+osd.window-switcher.style-thumbnail.item.active.bg.color: #28342c
+
+# ── Snapping overlay ──────────────────────────────────────────
+snapping.overlay.region.bg.enabled: yes
+snapping.overlay.region.bg.color: #4f8a7255
+snapping.overlay.region.border.enabled: yes
+snapping.overlay.region.border.color: #658676
+snapping.overlay.region.border.width: 1
