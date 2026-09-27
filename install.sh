@@ -217,12 +217,9 @@ sudo systemctl enable --now cups.socket || true
 # 2. Use simpledrm for early framebuffer instead
 # 3. Enable nvidia power management services
 #
-# NOTE: For hibernate to work, you also need to configure resume parameters
-# in GRUB after setting up swap. Run these commands:
-#   ROOT_UUID=$(findmnt / -o UUID -n)
-#   SWAP_OFFSET=$(sudo filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\.\.//')
-#   Then add to GRUB_CMDLINE_LINUX_DEFAULT:
-#   resume=UUID=$ROOT_UUID resume_offset=$SWAP_OFFSET
+# No resume= needed on the kernel command line: systemd (255+) stores the
+# swapfile location in an EFI variable when hibernating, and the resume hook
+# added below reads it at boot. Needs a swapfile big enough for the RAM image.
 # ==========================================
 echo "🖥️ Configuring NVIDIA hibernate support..."
 INITRAMFS_CHANGED=false

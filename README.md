@@ -15,6 +15,7 @@ Arch Linux dotfiles and system setup for an ASUS laptop with Intel+NVIDIA hybrid
 - **Audio**: PipeWire + WirePlumber
 - **Lockscreen**: hyprlock
 - **Wallpaper**: hyprpaper + Bing daily wallpaper script
+- **Theme**: HyprEarth (`.config/colours.css`) for the desktop: Hyprland, Wayle, rofi, Plasma. Catppuccin Mocha for apps (Alacritty, opencode)
 
 ## Fresh Install
 
@@ -50,13 +51,9 @@ This will:
 
 ### 4. Manual steps after install
 
-- **Hibernate**: Set `resume=` and `resume_offset=` in `/etc/default/grub` after configuring swap:
-  ```bash
-  ROOT_UUID=$(findmnt / -o UUID -n)
-  SWAP_OFFSET=$(sudo filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\.\.//')
-  # Add to GRUB_CMDLINE_LINUX_DEFAULT, then:
-  sudo grub-mkconfig -o /boot/grub/grub.cfg
-  ```
+- **Hibernate**: Needs a swapfile big enough for the RAM image (30G `/swapfile` here). No `resume=` kernel
+  parameter is needed: systemd stores the swapfile location in an EFI variable when hibernating,
+  and the `resume` hook that `install.sh` adds reads it at boot.
 - **Lock screen avatar**: Copy your profile picture to `~/.config/hypr/avatar.png`
 - **NuPhy wired keyboard**: Run `hyprctl devices | grep -i nuphy` while plugged in via USB and check it matches the NuPhy name list in `hypr/lua/input.lua`
 - **Hyprland logout fix**: See [Out-of-repo system overrides](#out-of-repo-system-overrides) below — logout leaves a black TTY without it.
