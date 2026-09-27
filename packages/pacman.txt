@@ -136,11 +136,8 @@ noto-fonts-emoji
 ttf-fira-code
 ttf-jetbrains-mono-nerd
 
-# Peripherals. None of this is Hyprland's problem — it is all portal/CUPS/SANE
-# level — but none of it was installed either, so a printer or scanner simply
-# did nothing in the Plasma session. sane-airscan is the driverless backend
-# that makes modern network and USB scanners work without hunting for a
-# vendor driver; print-manager and skanpage are the KDE front ends.
+# Printing and scanning. sane-airscan is the driverless scanner backend;
+# print-manager and skanpage are the KDE front ends.
 cups
 cups-pdf
 print-manager

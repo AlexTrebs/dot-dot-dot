@@ -8,10 +8,8 @@ MODE="${1:-symlink}"
 
 echo "Running in $MODE mode..."
 
-# Paths — anchored to this script's own location, not the caller's cwd.
-# Using $(pwd) meant running the script from $HOME made src == dst; the
-# rm-then-link below then deleted every real file and replaced it with a
-# symlink to itself. Guard below is the backstop if anchoring ever fails.
+# Anchored to this script, not the caller's cwd: if src == dst, the rm-then-link
+# below replaces every file with a symlink to itself. The guard is the backstop.
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 CONFIG_SRC="$REPO_ROOT/.config"
 LOCAL_SRC="$REPO_ROOT/.local"
@@ -137,9 +135,6 @@ for dotfile in .bashrc .zshrc .gitconfig .profile; do
         echo "SKIP (src == dst): $dst"
         continue
     fi
-    # Was: [ -e "$dst" ] || [ -L "$dst" ] && rm -f "$dst"
-    # `||`/`&&` bind left-to-right, so that parsed as
-    # [ -e ] || ([ -L ] && rm) — the rm was skipped whenever $dst existed.
     if [ -e "$dst" ] || [ -L "$dst" ]; then
         rm -f "$dst"
     fi

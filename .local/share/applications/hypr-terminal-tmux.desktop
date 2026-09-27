@@ -1,11 +1,7 @@
 [Desktop Entry]
-# Exists so the Plasma session can bind Meta+T to the same thing hypr/lua/binds.lua
-# binds it to. Plasma 6 dropped khotkeys: custom global shortcuts are now
-# attached to a .desktop file via kglobalshortcutsrc's [services] section, so a
-# shortcut that runs a command needs a launcher entry to hang off.
-#
-# NoDisplay because this is a keybind target, not something to browse to in the
-# application menu — Alacritty's own entry already lives there.
+# Keybind target so Plasma's Meta+T matches hypr/lua/binds.lua. Plasma 6 attaches
+# custom shortcuts to a .desktop file (kglobalshortcutsrc [services]).
+# NoDisplay: not meant for the app menu, Alacritty's own entry is there.
 Name=Terminal (tmux)
 Comment=Alacritty attached to the shared tmux session
 TryExec=alacritty

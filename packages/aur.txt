@@ -14,19 +14,8 @@ vesktop-bin
 supergfxctl
 tasks-git
 
-# SteamOS Gaming Mode as a third SDDM session, alongside Hyprland and Plasma.
-# Pulls gamescope-session-git; needs Steam, which is already in the pacman
-# list. Exit via the power menu -> Switch to Desktop, which drops back to
-# SDDM rather than to a specific session.
-#
-# Two things to watch:
-#  - gamescope-session-git symlinks /usr/share/wayland-sessions/gamescope-session.desktop,
-#    so SDDM can show two near-identical entries. Removing that symlink leaves
-#    the steam one. (Not the same mechanism as the hyprland.desktop shadow —
-#    that one lives in /usr/local/share and is deliberate. See the README.)
-#  - the session is sensitive to the gamescope version, and gamescope here is
-#    load-bearing for every game's launch options. If a gamescope upgrade
-#    breaks Gaming Mode, fix the session, do not downgrade gamescope.
+# SteamOS Gaming Mode as a third SDDM session. Watch for a duplicate SDDM entry,
+# and fix the session rather than downgrade gamescope (README: Plasma session).
 gamescope-session-steam-git
 
 vimix-cursors-git

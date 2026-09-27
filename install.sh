@@ -205,12 +205,8 @@ fi
 # ==========================================
 # Manual build steps (not automated)
 # ==========================================
-# The following tools are built locally from source and not installed by this script.
-# Configs reference them but the binaries must be present for the related autostart
-# entries in hypr/lua/autostart.lua to succeed:
-#   - hyprcut  : keymap overlay   -> build from your fork, install to ~/.local/bin/hyprcut
-# After building, ensure the binaries are on PATH (or matched in hypr/lua/autostart.lua).
-# wayle is NOT manual — it comes from the wayle-git AUR package above (/usr/bin/wayle).
+# hyprcut (keymap overlay, config in .config/hyprcut) is built from source, not
+# installed here: build your fork and put the binary at ~/.local/bin/hyprcut.
 
 # ==========================================
 # Run symlink/copy config (if mode specified)
@@ -262,12 +258,9 @@ fi
 # lua/autostart.lua already runs it at login.
 bash "$current_dir/.config/hypr/scripts/claude_personality_gen/install.sh" </dev/null || true
 
-# Must be `install -o root -g root`, never `cp -a`/`cp -p`. asusd.service sets
-# CapabilityBoundingSet= and AmbientCapabilities= to EMPTY, so the daemon runs as
-# root WITHOUT CAP_DAC_OVERRIDE. It rewrites this file on exit, and opening a
-# file owned by another user for write then returns EACCES — asusd panics at
-# config-traits/src/lib.rs:94 and core-dumps on every boot until the start limit
-# is hit. A `cp -a` from this repo preserves the user ownership and breaks it.
+# Must be root-owned (install -o root, never cp -p): asusd runs without
+# CAP_DAC_OVERRIDE and rewrites this file on exit, so a user-owned copy makes it
+# panic on every boot.
 sudo install -o root -g root -m 644 \
   "$current_dir/etc/asusd/fan_curves.ron" /etc/asusd/fan_curves.ron
 

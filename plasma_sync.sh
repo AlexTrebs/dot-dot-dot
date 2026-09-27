@@ -4,15 +4,9 @@
 #   ./plasma_sync.sh apply   - write the settings below into ~/.config
 #   ./plasma_sync.sh dump    - print current live values of those same keys
 #
-# Why a script instead of tracking kdeglobals/kwinrc in the repo: KConfig saves
-# atomically (temp file + rename), so a symlinked kdeglobals is replaced by a
-# real file on the first save and silently detaches from the repo. Plasma also
-# owns hundreds of keys in those files that have nothing to do with theming.
-# So the repo owns the *declarative* bits — HyprEarth.colors plus the key list
-# here — and Plasma keeps ownership of its own files.
-#
-# `dump` exists so GUI tweaks are visible: change something in System Settings,
-# run dump, and promote anything worth keeping into the apply block below.
+# Why a script and not tracked kdeglobals/kwinrc: see README, "Plasma session".
+# `dump` makes GUI tweaks visible: change something in System Settings, run dump,
+# and promote anything worth keeping into the apply block below.
 
 set -euo pipefail
 
@@ -205,19 +199,10 @@ apply)
     # ---------------------------------------------------------------------
     # Global shortcuts
     #
-    # Plasma's defaults collide with almost every Hyprland bind: Meta+1..9 is
-    # the task manager, Meta+Q is activities, Meta+T is the tiling editor,
-    # Meta+arrows quick-tile. Switching sessions meant re-learning the keyboard,
-    # which is the single loudest way the two feel like different machines.
-    #
-    # Values are `active,default,friendly` triples; \t separates alternatives
-    # within a field, and `none` unbinds. Anything Plasma bound that would
-    # shadow a Hyprland bind is explicitly set to none rather than left alone —
-    # a stale default is what causes the collision in the first place.
-    #
-    # kglobalaccel keeps this file in memory and rewrites it, so writes made
-    # from inside a running Plasma session can be undone at logout. Applying
-    # from Hyprland is the reliable path; see the warning printed at the end.
+    # Rebinds Plasma's defaults (Meta+1..9, Meta+Q, Meta+T, Meta+arrows) to the
+    # Hyprland meanings, and sets shadowed defaults to `none` explicitly.
+    # Values are `active,default,friendly`; \t separates alternatives in a field.
+    # kglobalaccel can rewrite this file at logout, so apply from Hyprland.
     accel() { # <group> <key> <shortcut> <friendly name>
         kwriteconfig6 --file kglobalshortcutsrc --group "$1" --key "$2" "$3,$3,$4"
     }

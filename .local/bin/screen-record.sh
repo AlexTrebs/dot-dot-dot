@@ -4,13 +4,8 @@
 RECORDINGS_DIR="$HOME/Videos/Recordings"
 mkdir -p "$RECORDINGS_DIR"
 
-# wf-recorder and slurp both speak wlr-screencopy/wlr-layer-shell, which KWin
-# does not implement — same reason screenshot.sh branches. Spectacle records
-# through the KDE portal instead.
-#
-# This branch deliberately is NOT a toggle: Spectacle owns the recording and is
-# stopped from its own notification or tray entry, so a second keypress would
-# only start a second recording. Nothing in Spectacle's CLI exposes a stop.
+# KWin lacks wlr-screencopy, so Plasma records with Spectacle instead. That branch
+# is not a toggle: Spectacle's CLI has no stop, you stop it from its notification.
 case "${XDG_CURRENT_DESKTOP:-}" in
 *KDE*)
     if pgrep -x spectacle >/dev/null; then
