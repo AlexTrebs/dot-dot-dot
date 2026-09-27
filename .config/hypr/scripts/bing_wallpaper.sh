@@ -15,7 +15,8 @@ command -v jq >/dev/null 2>&1 || { echo "Error: jq not installed"; exit 1; }
 # Wait for hyprpaper to be ready
 wait_for_hyprpaper() {
     for _ in $(seq 1 20); do
-        hyprctl hyprpaper listloaded >/dev/null 2>&1 && return 0
+        # hyprctl exits 0 even on errors, so wait for the socket itself
+        [ -S "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprpaper.sock" ] && return 0
         sleep 0.5
     done
     echo "Error: hyprpaper did not start in time"
@@ -37,8 +38,6 @@ set_wallpaper() {
     echo "Setting wallpaper with hyprpaper: $WALLPAPER"
 
     wait_for_hyprpaper || return 1
-
-    hyprctl hyprpaper preload "$WALLPAPER"
 
     hyprctl monitors -j | jq -r '.[].name' | while read -r monitor; do
         hyprctl hyprpaper wallpaper "$monitor,$WALLPAPER"

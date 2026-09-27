@@ -40,7 +40,7 @@ alias pavucontrol='GDK_BACKEND=x11 pavucontrol'
 
 # ── PATH ─────────────────────────────────────────────────────
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="/home/alextrebs/.opencode/bin:$PATH"
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # ── pnpm ─────────────────────────────────────────────────────
 export PNPM_HOME="$HOME/.local/share/pnpm"
