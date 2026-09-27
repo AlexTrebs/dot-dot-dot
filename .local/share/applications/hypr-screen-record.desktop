@@ -4,7 +4,7 @@
 # Spectacle recording, which is stopped from Spectacle's own notification.
 Name=Screen recording
 Comment=Record a region of the screen to ~/Videos/Recordings
-Exec=/home/alextrebs/.config/hypr/scripts/screen_record.sh
+Exec=/home/alextrebs/.local/bin/screen-record.sh
 Terminal=false
 Type=Application
 Icon=spectacle

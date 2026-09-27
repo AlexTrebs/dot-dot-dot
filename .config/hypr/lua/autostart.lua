@@ -24,7 +24,7 @@ hl.on("hyprland.start", function()
 
     hl.exec_cmd("hyprctl setcursor Vimix-cursors 24")
     hl.exec_cmd("hyprpaper")
-    hl.exec_cmd("~/.config/hypr/scripts/bing_wallpaper.sh")
+    hl.exec_cmd("~/.local/bin/bing-wallpaper.sh")
 
     hl.exec_cmd("hyprsunset")
     hl.exec_cmd("hypridle")
@@ -36,11 +36,11 @@ hl.on("hyprland.start", function()
 
     hl.exec_cmd("~/.config/hypr/scripts/claude_personality_gen/gen.sh")
 
-    hl.exec_cmd("alacritty -e ~/.local/bin/auto_tmux.sh", { workspace = "special:tilde silent" })
+    hl.exec_cmd("alacritty -e ~/.local/bin/auto-tmux.sh", { workspace = "special:tilde silent" })
     hl.exec_cmd("spotify-launcher")
 
     hl.exec_cmd("asusctl leds set low")
 
-    hl.exec_cmd("~/.local/bin/update_all.sh")
-    hl.exec_cmd("~/.local/bin/dock-toggle.sh")
+    hl.exec_cmd("~/.local/bin/update-all.sh")
+    hl.exec_cmd("~/.config/hypr/scripts/dock-toggle.sh")
 end)

@@ -5,7 +5,7 @@
 # sessions run the same entry point and land in the same folder.
 Name=Screenshot (region)
 Comment=Select a region, save to ~/Pictures/Screenshots and copy to clipboard
-Exec=/home/alextrebs/.config/hypr/scripts/screenshot.sh
+Exec=/home/alextrebs/.local/bin/screenshot.sh
 Terminal=false
 Type=Application
 Icon=spectacle

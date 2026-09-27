@@ -1,13 +1,12 @@
 [Unit]
 Description=Battery level listener for notifications
-After=graphical-session.target
 
 [Service]
-ExecStart=%h/.local/bin/battery_listener.sh
+ExecStart=%h/.local/bin/battery-listener.sh
 Restart=always
 StandardOutput=journal
 StandardError=journal
 Environment=XDG_RUNTIME_DIR=%t
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=default.target

@@ -9,7 +9,7 @@
 Name=Terminal (tmux)
 Comment=Alacritty attached to the shared tmux session
 TryExec=alacritty
-Exec=alacritty -e /home/alextrebs/.local/bin/auto_tmux.sh
+Exec=alacritty -e /home/alextrebs/.local/bin/auto-tmux.sh
 Terminal=false
 Type=Application
 Icon=Alacritty

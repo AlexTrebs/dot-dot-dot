@@ -9,7 +9,7 @@
 # uwsm session (uwsm does honour xdg-desktop-autostart.target).
 Type=Application
 Name=Bing daily wallpaper
-Exec=/home/alextrebs/.config/hypr/scripts/bing_wallpaper.sh
+Exec=/home/alextrebs/.local/bin/bing-wallpaper.sh
 OnlyShowIn=KDE;
 X-KDE-autostart-phase=2
 NoDisplay=true

@@ -200,7 +200,7 @@ echo "🔌 Enabling Bluetooth..."
 sudo systemctl enable --now bluetooth.service || true
 
 echo "🔋 Enabling user services..."
-systemctl --user enable batteryListener.service || true
+systemctl --user enable battery-listener.service || true
 
 echo "🪞 Enabling reflector mirror update timer..."
 sudo systemctl enable --now reflector.timer || true

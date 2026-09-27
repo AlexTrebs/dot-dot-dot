@@ -135,7 +135,7 @@ icon-color = "#d4a373"
 
 [[modules.custom]]
 id = "wifi-ext"
-command = "~/.config/wayle/scripts/wifi_ext_status.sh"
+command = "~/.config/wayle/scripts/wifi-ext-status.sh"
 mode = "poll"
 interval-ms = 5000
 format = "{{ text }}"
@@ -147,13 +147,13 @@ label-color = "#f9e2af"
 
 [[modules.custom]]
 id = "mullvad"
-command = "~/.config/wayle/scripts/mullvad_status.sh"
+command = "~/.config/wayle/scripts/mullvad-status.sh"
 mode = "poll"
 interval-ms = 5000
 icon-name = "network-vpn-symbolic"
 format = "{{ text }}"
-left-click = "bash ~/.config/wayle/scripts/mullvad_toggle.sh"
-middle-click = "bash ~/.config/wayle/scripts/mullvad_menu.sh"
+left-click = "bash ~/.config/wayle/scripts/mullvad-toggle.sh"
+middle-click = "bash ~/.config/wayle/scripts/mullvad-menu.sh"
 
 [[modules.custom]]
 id = "dock-toggle"
@@ -162,16 +162,16 @@ interval-ms = 0
 icon-name = "view-app-grid-symbolic"
 icon-color = "#a05555"
 tooltip-format = "Toggle dock layout"
-left-click = "bash ~/.local/bin/dock-toggle.sh"
+left-click = "bash ~/.config/hypr/scripts/dock-toggle.sh"
 hide-if-empty = false
 
 [[modules.custom]]
 id = "g16-power"
-command = "~/.config/wayle/scripts/g16_power_status.sh"
+command = "~/.config/wayle/scripts/g16-power-status.sh"
 mode = "poll"
 interval-ms = 3000
 format = "{{ text }}"
-left-click = "bash ~/.local/bin/g16-power.sh"
+left-click = "bash ~/.config/hypr/scripts/g16-power.sh"
 icon-color = "#dededd"
 label-color = "#dededd"
 icon-map = { performance = "xsi-power-profile-performance-symbolic", quiet = "xsi-power-profile-power-saver-symbolic", balanced = "xsi-power-profile-balanced-symbolic", unknown = "battery-missing" }
