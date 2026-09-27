@@ -4,13 +4,13 @@ Arch Linux dotfiles and system setup for an ASUS laptop with Intel+NVIDIA hybrid
 
 ## Stack
 
-- **WM**: Hyprland (via uwsm), with a KDE Plasma (Wayland) session alongside — see [Plasma session](#plasma-session)
+- **WM**: Hyprland (Lua config, plugins via hyprpm), with a KDE Plasma (Wayland) session alongside — see [Hyprland](#hyprland) and [Plasma session](#plasma-session)
 - **Panel**: Wayle (Rust/GTK4)
 - **Terminal**: Alacritty + tmux
 - **Editor**: Neovim / Zed
 - **Launcher**: Rofi
 - **Browser**: Zen Browser
-- **Session**: uwsm + SDDM
+- **Session**: SDDM, plain Hyprland session (not uwsm-managed)
 - **GPU**: Intel iGPU + NVIDIA (nvidia-open, nvidia-prime, supergfxctl)
 - **Audio**: PipeWire + WirePlumber
 - **Lockscreen**: hyprlock
@@ -59,8 +59,33 @@ This will:
   ```
 - **Lock screen avatar**: Copy your profile picture to `~/.config/hypr/avatar.png`
 - **NuPhy wired keyboard**: Run `hyprctl devices | grep -i nuphy` while plugged in via USB and check it matches the NuPhy name list in `hypr/lua/input.lua`
-- **Zed**: Installed separately via `curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh` (handled by install.sh)
 - **Hyprland logout fix**: See [Out-of-repo system overrides](#out-of-repo-system-overrides) below — logout leaves a black TTY without it.
+
+## Hyprland
+
+The config is Lua (hyprlang is deprecated since Hyprland 0.55).
+`.config/hypr/hyprland.lua` only `require`s one file per section:
+
+| File | Holds |
+|---|---|
+| `lua/env.lua` | Env vars. Also loads `environment.d/*.conf`, since the session is not uwsm-managed |
+| `lua/monitors.lua` | Monitor rules. The **last** matching rule wins |
+| `lua/look.lua` | general, decoration, layouts, misc, cursor, group, xwayland |
+| `lua/animations.lua` | Beziers and animations |
+| `lua/input.lua` | Keyboard, touchpad, per-device layouts |
+| `lua/binds.lua` | Keybinds |
+| `lua/rules.lua` | Window and layer rules |
+| `lua/autostart.lua` | Startup commands |
+| `lua/plugins.lua` | hymission and borders-plus-plus settings and binds |
+
+- **Check a change:** `Hyprland --verify-config --config ~/.config/hypr/hyprland.lua`, then `hyprctl reload`.
+- **Scripts can't use `hyprctl keyword`.** Use `hyprctl eval 'hl.config({...})'` for options and
+  `hl.monitor({...})` for monitors. `hyprctl dispatch` takes Lua: `hyprctl dispatch 'hl.dsp.exit()'`.
+- **Plugins** come from hyprpm; `install.sh` adds the repos. After pacman upgrades Hyprland or its
+  libraries, run `hyprpm update -f && hyprpm reload -n`. Without `-f` it can reuse stale headers,
+  and plugins then fail with "Version mismatch".
+- **`hyprland.conf`** is the old config, kept only for rollback. Hyprland ignores it while
+  `hyprland.lua` exists.
 
 ## Plasma session
 

@@ -1,34 +1,34 @@
 [user]
 	name = Alex
-    email = snalex2539@gmail.com
+	email = snalex2539@gmail.com
 
 [init]
-    defaultBranch = main
+	defaultBranch = main
 
 [push]
-    default = current
-    autoSetupRemote = true
+	default = current
+	autoSetupRemote = true
 
 [pull]
-    rebase = false
+	rebase = false
 
 [rebase]
-    autostash = true
+	autostash = true
 
 [core]
-    editor = nvim
+	editor = nvim
 
 [credential]
-    helper = /usr/lib/git-core/git-credential-libsecret
+	helper = /usr/lib/git-core/git-credential-libsecret
 
 [diff]
-    tool = vimdiff
+	tool = vimdiff
 
 [alias]
-    st   = status
-    co   = checkout
-    lg   = log --oneline --graph --decorate -20
-    undo = reset HEAD~1 --mixed
+	st   = status
+	co   = checkout
+	lg   = log --oneline --graph --decorate -20
+	undo = reset HEAD~1 --mixed
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
