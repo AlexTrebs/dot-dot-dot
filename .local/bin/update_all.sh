@@ -27,18 +27,20 @@ if [ $repo_exit_code -eq 124 ]; then
     echo "Repository check timed out"
     notify-send "Update check timed out"
     exit 1
-elif [ $repo_exit_code -ne 0 ] && [ $repo_exit_code -ne 2 ]; then
-    echo "Repository check failed with exit code $repo_exit_code: $repo_updates"
+elif [ $repo_exit_code -ne 0 ]; then
+    [ $repo_exit_code -ne 2 ] && echo "Repository check failed with exit code $repo_exit_code: $repo_updates"
+    repo_updates=""
 fi
-echo "Repository updates found: $(echo "$repo_updates" | grep -c '^ ' || echo 0) packages"
+echo "Repository updates found: $(grep -c . <<< "$repo_updates") packages"
 
 echo "Checking AUR updates..."
 aur_updates=$(timeout 30 paru -Qua 2>&1)
 aur_exit_code=$?
-if [ $aur_exit_code -eq 124 ]; then
-    echo "AUR check timed out"
+if [ $aur_exit_code -ne 0 ]; then
+    [ $aur_exit_code -eq 124 ] && echo "AUR check timed out"
+    aur_updates=""
 fi
-echo "AUR updates found: $(echo "$aur_updates" | wc -l) packages"
+echo "AUR updates found: $(grep -c . <<< "$aur_updates") packages"
 
 if [ -n "$repo_updates$aur_updates" ]; then
     echo "Updates available, showing dialog..."
@@ -46,7 +48,7 @@ if [ -n "$repo_updates$aur_updates" ]; then
         echo "User approved updates, applying..."
         notify-send "Applying updates..."
 
-        if alacritty -e bash -c "sudo pacman -Syu && paru -Syu --aur && hyprpm update && hyprpm reload; echo 'Press enter to close'; read"; then
+        if alacritty -e bash -c "sudo pacman -Syu && paru -Syu --aur && hyprpm update -f && hyprpm reload; echo 'Press enter to close'; read"; then
             echo "Updates completed successfully"
             notify-send "Updates completed successfully!"
         else

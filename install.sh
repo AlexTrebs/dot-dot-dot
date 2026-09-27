@@ -5,7 +5,9 @@ set -euo pipefail
 #   copy      - Also copy all config files
 #   symlink   - Also symlink .config/.local (for development/updates)
 
-current_dir="$(pwd)"
+# Anchor to the repo, not the caller's cwd: every path below is repo-relative.
+current_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+cd "$current_dir"
 CONFIG_MODE="${1:-}"
 
 # ==========================================
