@@ -8,7 +8,7 @@ SCALE=(0.20 0.30 0.40 0.50 0.60 0.67 0.75 0.83 1.00 1.20 1.33 1.50 1.60 1.67)
 
 IDX=-1
 for i in "${!SCALE[@]}"; do
-    if awk "BEGIN {exit !(${SCALE[$i]} == $CURRENT)}"; then
+    if awk "BEGIN { d = ${SCALE[$i]} - $CURRENT; exit !(d < 0.01 && d > -0.01) }"; then
         IDX=$i
         break
     fi
@@ -24,5 +24,5 @@ fi
 
 NEW=${SCALE[$NEXT]}
 
-hyprctl keyword monitor "$MONITOR,preferred,auto,$NEW"
+hyprctl eval "hl.monitor({ output = \"$MONITOR\", mode = \"preferred\", position = \"auto\", scale = $NEW })"
 notify-send "Scale" "$MONITOR → $NEW"

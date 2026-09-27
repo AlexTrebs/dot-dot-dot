@@ -12,8 +12,8 @@ if [ "$CURRENT_PROFILE" = "Quiet" ]; then
     powerprofilesctl set performance
 
     # Display: full refresh rate + blur on
-    hyprctl keyword monitor "$MONITOR,$RES_MAX,0x0,1.33"
-    hyprctl keyword decoration:blur:enabled yes
+    hyprctl eval "hl.monitor({ output = \"$MONITOR\", mode = \"$RES_MAX\", position = \"0x0\", scale = 1.33 })"
+    hyprctl eval "hl.config({ decoration = { blur = { enabled = true } } })"
 
     notify-send -u normal "MODE: OVERKILL" "240Hz | Performance"
 else
@@ -22,8 +22,8 @@ else
     powerprofilesctl set power-saver
 
     # Display: 60Hz + blur off (GPU savings)
-    hyprctl keyword monitor "$MONITOR,$RES_LOW,0x0,1.33"
-    hyprctl keyword decoration:blur:enabled no
+    hyprctl eval "hl.monitor({ output = \"$MONITOR\", mode = \"$RES_LOW\", position = \"0x0\", scale = 1.33 })"
+    hyprctl eval "hl.config({ decoration = { blur = { enabled = false } } })"
 
     # Reset PipeWire to default quantum (low-latency mode wastes CPU on battery)
     pw-metadata -n settings 0 clock.force-quantum 0
