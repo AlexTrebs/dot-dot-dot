@@ -1,4 +1,4 @@
-opencode.json
+/opencode.json
 .agents/
 .claude
 tmp/
@@ -18,8 +18,6 @@ tmp/
 .ssh/
 
 # Runtime / cache dirs
-.config/hypr/icons/
 .config/hypr/scripts/claude_personality_gen/
-.config/discord/
 
 .config/wayvnc/

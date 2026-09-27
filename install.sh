@@ -39,7 +39,7 @@ packages=(
 
   # Hyprland & Wayland
   "hyprland" "hyprpm" "hypridle" "hyprlock" "hyprpaper" "hyprpolkitagent" "hyprsunset"
-  "hyprpicker" "swww" "slurp" "grim" "wl-clipboard"
+  "hyprpicker" "slurp" "grim" "wl-clipboard"
   "xdg-desktop-portal-gtk" "xdg-desktop-portal-hyprland" "xdg-utils"
   "qt5-wayland" "qt6-wayland"
   "wf-recorder"
@@ -69,7 +69,7 @@ packages=(
   "bat" "eza" "fd" "git" "git-lfs" "go" "jq" "lazygit" "playerctl" "ripgrep" "stylua" "uv" "yazi" "zoxide"
 
   # Apps
-  "discord" "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
+  "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
 
   # Gaming — gamescope sits in every game's launch options; mangohud is how you
   # tell whether a change helped. lib32 variant is required for 32-bit titles.
@@ -121,18 +121,18 @@ else
 fi
 
 # ==========================================
-# Install yay (AUR helper)
+# Install paru (AUR helper)
 # ==========================================
-if ! command -v yay &>/dev/null; then
-  echo "🚀 Installing yay..."
+if ! command -v paru &>/dev/null; then
+  echo "🚀 Installing paru..."
   tmpdir=$(mktemp -d)
-  git clone https://aur.archlinux.org/yay-bin.git "$tmpdir/yay-bin"
-  cd "$tmpdir/yay-bin"
+  git clone https://aur.archlinux.org/paru-bin.git "$tmpdir/paru-bin"
+  cd "$tmpdir/paru-bin"
   makepkg -si --noconfirm
   cd "$current_dir"
   rm -rf "$tmpdir"
 else
-  echo "✅ yay already installed."
+  echo "✅ paru already installed."
 fi
 
 # ==========================================
@@ -144,7 +144,6 @@ aur_packages=(
   "automatic-timezoned"
   "clipse"
   "davinci-resolve"
-  "gtk2"
   "mullvad-vpn-bin"
   "ninjabrain-bot"
   "obsidian"
@@ -152,6 +151,7 @@ aur_packages=(
   "r2modman-bin"
   "rog-control-center"
   "spotify"
+  "vesktop-bin"
   "supergfxctl"
   "tasks-git"
 
@@ -170,11 +170,9 @@ aur_packages=(
   #    breaks Gaming Mode, fix the session, do not downgrade gamescope.
   "gamescope-session-steam-git"
 
-  "paru"
   "vimix-cursors-git"
   "timeshift"
   "wl-clip-persist-git"
-  "wlogout"
   "zen-browser-bin"
   "zsh-you-should-use"
 )
@@ -188,7 +186,7 @@ done
 
 if (( ${#aur_to_install[@]} > 0 )); then
   echo "📦 Installing missing AUR packages..."
-  yay -S --noconfirm --needed --skipreview "${aur_to_install[@]}"
+  paru -S --noconfirm --needed --skipreview "${aur_to_install[@]}"
 else
   echo "✅ All AUR packages already installed."
 fi
@@ -201,7 +199,6 @@ sudo systemctl enable --now bluetooth.service || true
 
 echo "🔋 Enabling user services..."
 systemctl --user enable batteryListener.service || true
-systemctl --user enable wayle-resume.service || true
 
 echo "🪞 Enabling reflector mirror update timer..."
 sudo systemctl enable --now reflector.timer || true
