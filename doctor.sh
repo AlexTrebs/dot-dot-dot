@@ -25,7 +25,7 @@ for list in pacman aur; do
 done
 
 echo "Links"
-loops=$(find ~/.config ~/.local -type l 2>/dev/null | while IFS= read -r l; do [ "$(readlink "$l")" = "$l" ] && echo "$l"; done)
+loops=$(find ~/.config ~/.local -type l -printf '%p\t%l\n' 2>/dev/null | awk -F'\t' '$1 == $2 {print $1}')
 [ -z "$loops" ] && ok "no self-looping symlinks" || bad "self-looping symlinks: $(wc -l <<< "$loops")" "delete them; first: $(head -1 <<< "$loops")"
 dead=$(find ~/.config ~/.local -xtype l -lname "$REPO/*" 2>/dev/null)
 [ -z "$dead" ] && ok "no dead links into the repo" || bad "dead links into the repo: $(wc -l <<< "$dead")" "./symlink_config.sh prunes them"
