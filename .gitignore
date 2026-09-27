@@ -18,6 +18,5 @@ tmp/
 .ssh/
 
 # Runtime / cache dirs
-.config/hypr/scripts/claude_personality_gen/
 
 .config/wayvnc/

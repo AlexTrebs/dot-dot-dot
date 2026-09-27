@@ -271,7 +271,7 @@ not covered.
 |---|---|
 | `.config/nvim` | [AlexTrebs/nvim-config](https://github.com/AlexTrebs/nvim-config) |
 | `.config/tmux` | [AlexTrebs/tmux-config](https://github.com/AlexTrebs/tmux-config) |
-| `claude-personality-gen` | [AlexTrebs/claude-personality-gen](https://github.com/AlexTrebs/claude-personality-gen) |
+| `.config/hypr/scripts/claude_personality_gen` | [AlexTrebs/claude-personality-gen](https://github.com/AlexTrebs/claude-personality-gen) |
 
 ## Keyboard Layouts
 

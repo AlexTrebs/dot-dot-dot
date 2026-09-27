@@ -5,5 +5,5 @@
 	path = .config/tmux
 	url = https://github.com/AlexTrebs/tmux-config.git
 [submodule "claude-personality-gen"]
-	path = claude-personality-gen
+	path = .config/hypr/scripts/claude_personality_gen
 	url = https://github.com/AlexTrebs/claude-personality-gen.git
