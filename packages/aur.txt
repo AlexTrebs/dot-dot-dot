@@ -1,0 +1,36 @@
+# AUR packages. One per line; # starts a comment. Installed by install.sh with paru.
+# Never add these to archinstall.yaml: archinstall only installs from the official repos.
+
+wayle-git
+automatic-timezoned
+clipse
+davinci-resolve
+mullvad-vpn-bin
+ninjabrain-bot
+pwvucontrol
+r2modman-bin
+spotify
+vesktop-bin
+supergfxctl
+tasks-git
+
+# SteamOS Gaming Mode as a third SDDM session, alongside Hyprland and Plasma.
+# Pulls gamescope-session-git; needs Steam, which is already in the pacman
+# list. Exit via the power menu -> Switch to Desktop, which drops back to
+# SDDM rather than to a specific session.
+#
+# Two things to watch:
+#  - gamescope-session-git symlinks /usr/share/wayland-sessions/gamescope-session.desktop,
+#    so SDDM can show two near-identical entries. Removing that symlink leaves
+#    the steam one. (Not the same mechanism as the hyprland.desktop shadow —
+#    that one lives in /usr/local/share and is deliberate. See the README.)
+#  - the session is sensitive to the gamescope version, and gamescope here is
+#    load-bearing for every game's launch options. If a gamescope upgrade
+#    breaks Gaming Mode, fix the session, do not downgrade gamescope.
+gamescope-session-steam-git
+
+vimix-cursors-git
+wl-clip-persist-git
+zen-browser-bin
+zsh-you-should-use
+unityhub

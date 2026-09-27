@@ -1,0 +1,177 @@
+# Official-repo packages. One per line; # starts a comment.
+# install.sh installs these with pacman; archinstall.yaml must list the same set
+# (check with ./sync_package_lists.sh).
+
+# Base system
+base
+base-devel
+linux
+linux-firmware
+grub
+efibootmgr
+os-prober
+
+# CPU/GPU drivers
+intel-media-driver
+intel-ucode
+libva-intel-driver
+mesa-utils
+nvidia-open
+nvidia-prime
+nvidia-settings
+nvidia-utils
+vulkan-intel
+
+# Audio
+alsa-firmware
+alsa-utils
+pamixer
+pipewire-alsa
+pipewire-jack
+pipewire-pulse
+wireplumber
+
+# Bluetooth
+bluez
+bluez-utils
+
+# Network
+iwd
+networkmanager
+openssh
+wget
+wpa_supplicant
+
+# Hyprland & Wayland
+hyprland
+hyprpm
+hypridle
+hyprlock
+hyprpaper
+hyprpolkitagent
+hyprsunset
+hyprpicker
+slurp
+grim
+wl-clipboard
+xdg-desktop-portal-gtk
+xdg-desktop-portal-hyprland
+xdg-utils
+qt5-wayland
+qt6-wayland
+wf-recorder
+
+# Display manager
+sddm
+
+# Terminal & Shell
+alacritty
+tmux
+fzf
+zram-generator
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+
+# File management
+thunar
+gvfs
+gvfs-mtp
+file-roller
+
+# Text editors
+nano
+neovim
+vim
+
+# File viewers
+zathura
+zathura-pdf-mupdf
+imv
+mpv
+
+# Office
+libreoffice-fresh
+
+# Development
+bat
+eza
+fd
+git
+git-lfs
+go
+jq
+lazygit
+playerctl
+ripgrep
+stylua
+uv
+yazi
+zoxide
+
+# Apps
+easyeffects
+firefox
+obs-studio
+rofi
+spotify-launcher
+starship
+steam
+obsidian
+zenity
+
+# Gaming — gamescope sits in every game's launch options; mangohud is how you
+# tell whether a change helped. lib32 variant is required for 32-bit titles.
+gamescope
+mangohud
+lib32-mangohud
+
+# ASUS laptop (asusd daemon, fan curves in etc/asusd/)
+asusctl
+rog-control-center
+
+# Fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-fira-code
+ttf-jetbrains-mono-nerd
+
+# Peripherals. None of this is Hyprland's problem — it is all portal/CUPS/SANE
+# level — but none of it was installed either, so a printer or scanner simply
+# did nothing in the Plasma session. sane-airscan is the driverless backend
+# that makes modern network and USB scanners work without hunting for a
+# vendor driver; print-manager and skanpage are the KDE front ends.
+cups
+cups-pdf
+print-manager
+sane
+sane-airscan
+skanpage
+
+# Firmware updates. Discover already ships fwupd-backend.so, so its firmware
+# page existed and was permanently empty without this.
+fwupd
+
+# System utilities
+brightnessctl
+btop
+htop
+timeshift
+direnv
+dust
+gnome-keyring
+less
+nwg-look
+nvm
+power-profiles-daemon
+pacman-contrib
+procs
+reflector
+rsync
+sbctl
+smartmontools
+socat
+tree
+uwsm
+wev
+zsh-history-substring-search

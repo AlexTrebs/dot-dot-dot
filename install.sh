@@ -19,84 +19,10 @@ git submodule update --init --recursive
 # ==========================================
 # Pacman Packages
 # ==========================================
-packages=(
-  # Base system
-  "base" "base-devel" "linux" "linux-firmware" "grub" "efibootmgr" "os-prober"
+# One package per line in packages/*.txt; blank lines and # comments are skipped.
+read_pkgs() { grep -vE '^[[:space:]]*(#|$)' "$1" | sed 's/[[:space:]]*#.*//'; }
 
-  # CPU/GPU drivers
-  "intel-media-driver" "intel-ucode" "libva-intel-driver" "mesa-utils"
-  "nvidia-open" "nvidia-prime" "nvidia-settings" "nvidia-utils"
-  "vulkan-intel"
-
-  # Audio
-  "alsa-firmware" "alsa-utils" "pamixer" "pipewire-alsa"
-  "pipewire-jack" "pipewire-pulse" "wireplumber"
-
-  # Bluetooth
-  "bluez" "bluez-utils"
-
-  # Network
-  "iwd" "networkmanager"
-  "openssh" "wget" "wpa_supplicant"
-
-  # Hyprland & Wayland
-  "hyprland" "hyprpm" "hypridle" "hyprlock" "hyprpaper" "hyprpolkitagent" "hyprsunset"
-  "hyprpicker" "slurp" "grim" "wl-clipboard"
-  "xdg-desktop-portal-gtk" "xdg-desktop-portal-hyprland" "xdg-utils"
-  "qt5-wayland" "qt6-wayland"
-  "wf-recorder"
-
-  # Display manager
-  "sddm"
-
-  # Terminal & Shell
-  "alacritty" "tmux" "fzf" "zram-generator"
-  "zsh" "zsh-autosuggestions" "zsh-syntax-highlighting"
-
-  # File management
-  "thunar" "gvfs" "gvfs-mtp" "file-roller"
-
-  # Text editors
-  "nano" "neovim" "vim"
-
-  # File viewers
-  "zathura" "zathura-pdf-mupdf"
-  "imv"
-  "mpv"
-
-  # Office
-  "libreoffice-fresh"
-
-  # Development
-  "bat" "eza" "fd" "git" "git-lfs" "go" "jq" "lazygit" "playerctl" "ripgrep" "stylua" "uv" "yazi" "zoxide"
-
-  # Apps
-  "easyeffects" "firefox" "obs-studio" "rofi" "spotify-launcher" "starship" "steam" "zenity"
-
-  # Gaming — gamescope sits in every game's launch options; mangohud is how you
-  # tell whether a change helped. lib32 variant is required for 32-bit titles.
-  "gamescope" "mangohud" "lib32-mangohud"
-
-  # Fonts
-  "noto-fonts-cjk" "noto-fonts-emoji" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
-
-  # Peripherals. None of this is Hyprland's problem — it is all portal/CUPS/SANE
-  # level — but none of it was installed either, so a printer or scanner simply
-  # did nothing in the Plasma session. sane-airscan is the driverless backend
-  # that makes modern network and USB scanners work without hunting for a
-  # vendor driver; print-manager and skanpage are the KDE front ends.
-  "cups" "cups-pdf" "print-manager" "sane" "sane-airscan" "skanpage"
-
-  # Firmware updates. Discover already ships fwupd-backend.so, so its firmware
-  # page existed and was permanently empty without this.
-  "fwupd"
-
-  # System utilities
-  "brightnessctl" "btop" "direnv" "dust" "gnome-keyring" "less" "nwg-look" "nvm" "power-profiles-daemon"
-  "pacman-contrib" "procs" "reflector"
-  "rsync" "sbctl" "smartmontools" "socat" "tree" "uwsm" "wev"
-  "zsh-history-substring-search"
-)
+mapfile -t packages < <(read_pkgs "$current_dir/packages/pacman.txt")
 
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -140,44 +66,7 @@ fi
 # ==========================================
 # Install AUR Packages
 # ==========================================
-aur_packages=(
-  "asusctl"
-  "wayle-git"
-  "automatic-timezoned"
-  "clipse"
-  "davinci-resolve"
-  "mullvad-vpn-bin"
-  "ninjabrain-bot"
-  "obsidian"
-  "pwvucontrol"
-  "r2modman-bin"
-  "rog-control-center"
-  "spotify"
-  "vesktop-bin"
-  "supergfxctl"
-  "tasks-git"
-
-  # SteamOS Gaming Mode as a third SDDM session, alongside Hyprland and Plasma.
-  # Pulls gamescope-session-git; needs Steam, which is already in the pacman
-  # list. Exit via the power menu -> Switch to Desktop, which drops back to
-  # SDDM rather than to a specific session.
-  #
-  # Two things to watch:
-  #  - gamescope-session-git symlinks /usr/share/wayland-sessions/gamescope-session.desktop,
-  #    so SDDM can show two near-identical entries. Removing that symlink leaves
-  #    the steam one. (Not the same mechanism as the hyprland.desktop shadow —
-  #    that one lives in /usr/local/share and is deliberate. See the README.)
-  #  - the session is sensitive to the gamescope version, and gamescope here is
-  #    load-bearing for every game's launch options. If a gamescope upgrade
-  #    breaks Gaming Mode, fix the session, do not downgrade gamescope.
-  "gamescope-session-steam-git"
-
-  "vimix-cursors-git"
-  "timeshift"
-  "wl-clip-persist-git"
-  "zen-browser-bin"
-  "zsh-you-should-use"
-)
+mapfile -t aur_packages < <(read_pkgs "$current_dir/packages/aur.txt")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
