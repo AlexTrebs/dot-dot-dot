@@ -1,0 +1,23 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck lua5.4
+
+      # Every tracked script; submodules are separate repos and are not checked out.
+      - name: shellcheck
+        run: git ls-files -z '*.sh' | xargs -0 shellcheck -S warning
+
+      # Syntax only: the hl.* API exists only inside Hyprland.
+      - name: Lua syntax
+        run: git ls-files -z '*.lua' | xargs -0 -n1 luac5.4 -p

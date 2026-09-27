@@ -8,7 +8,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 WORK=$(mktemp -d)
-trap "rm -rf $WORK" EXIT
+trap 'rm -rf "$WORK"' EXIT
 
 mkdir -p "$WORK"/{bin,lib,proc,dev,sys/firmware/efi/efivars}
 ln -s lib "$WORK/lib64"

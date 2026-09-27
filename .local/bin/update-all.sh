@@ -5,14 +5,15 @@ LOGFILE="$HOME/.local/share/update_all.log"
 exec > >(tee -a "$LOGFILE") 2>&1
 echo "===== Update script started at $(date) ====="
 
-export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export XDG_RUNTIME_DIR
 
 echo "Sending notification: Checking for updates..."
 notify-send "Checking for updates…"
 
 # Wait for network to be ready (max 30 seconds)
 echo "Waiting for network..."
-for i in {1..30}; do
+for _ in {1..30}; do
     if ping -c 1 "$(ip route show default | awk '{print $3; exit}')" &>/dev/null; then
         echo "Network is ready"
         break

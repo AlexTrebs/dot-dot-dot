@@ -2,7 +2,7 @@
 # Read-only health check for this setup. Changes nothing; exits 1 if any check fails.
 # Each check is something that has actually broken before (see git log).
 set -uo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 REPO="$PWD"
 
 fails=0
