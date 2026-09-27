@@ -1,0 +1,18 @@
+[Desktop Entry]
+# Exists so the Plasma session can bind Meta+T to the same thing hyprland.conf
+# binds it to. Plasma 6 dropped khotkeys: custom global shortcuts are now
+# attached to a .desktop file via kglobalshortcutsrc's [services] section, so a
+# shortcut that runs a command needs a launcher entry to hang off.
+#
+# NoDisplay because this is a keybind target, not something to browse to in the
+# application menu — Alacritty's own entry already lives there.
+Name=Terminal (tmux)
+Comment=Alacritty attached to the shared tmux session
+TryExec=alacritty
+Exec=alacritty -e /home/alextrebs/.local/bin/auto_tmux.sh
+Terminal=false
+Type=Application
+Icon=Alacritty
+Categories=System;TerminalEmulator;
+NoDisplay=true
+StartupNotify=false

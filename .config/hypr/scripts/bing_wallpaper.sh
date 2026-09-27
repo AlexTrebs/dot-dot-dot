@@ -22,8 +22,18 @@ wait_for_hyprpaper() {
     return 1
 }
 
-# Function to set wallpaper using hyprpaper IPC
+# Function to set the wallpaper, via whichever compositor is actually running.
+# The download above is session-agnostic; only this last step is not, and until
+# now the Plasma session simply never got the day's image.
 set_wallpaper() {
+    case "${XDG_CURRENT_DESKTOP:-}" in
+    *KDE*)
+        echo "Setting wallpaper with plasma-apply-wallpaperimage: $WALLPAPER"
+        plasma-apply-wallpaperimage "$WALLPAPER" || return 1
+        return 0
+        ;;
+    esac
+
     echo "Setting wallpaper with hyprpaper: $WALLPAPER"
 
     wait_for_hyprpaper || return 1

@@ -111,7 +111,12 @@ thickness = 0.15
 [window]
 opacity = 0.95
 blur = false
-decorations = "none"
+# "full" asks the compositor for server-side decorations. Hyprland always
+# answers server_side and then draws no titlebar itself, so this looks exactly
+# like "none" there; KWin answers server_side and actually draws Breeze, which
+# is what the Plasma session wants. "none" was a client-side request honoured by
+# both, i.e. no titlebar under Plasma either.
+decorations = "full"
 dynamic_padding = true
 padding = { x = 0, y = 1 }
 dimensions = { columns = 100, lines = 26 }

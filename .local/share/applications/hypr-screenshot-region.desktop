@@ -1,0 +1,14 @@
+[Desktop Entry]
+# Keybind target for the Plasma session — see hypr-terminal-tmux.desktop for why
+# a .desktop file is needed at all. The script itself already branches on
+# XDG_CURRENT_DESKTOP (grim/slurp under Hyprland, spectacle under KWin), so both
+# sessions run the same entry point and land in the same folder.
+Name=Screenshot (region)
+Comment=Select a region, save to ~/Pictures/Screenshots and copy to clipboard
+Exec=/home/alextrebs/.config/hypr/scripts/screenshot.sh
+Terminal=false
+Type=Application
+Icon=spectacle
+Categories=Graphics;
+NoDisplay=true
+StartupNotify=false

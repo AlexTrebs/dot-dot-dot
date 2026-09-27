@@ -78,6 +78,17 @@ packages=(
   # Fonts
   "noto-fonts-cjk" "noto-fonts-emoji" "ttf-fira-code" "ttf-jetbrains-mono-nerd"
 
+  # Peripherals. None of this is Hyprland's problem — it is all portal/CUPS/SANE
+  # level — but none of it was installed either, so a printer or scanner simply
+  # did nothing in the Plasma session. sane-airscan is the driverless backend
+  # that makes modern network and USB scanners work without hunting for a
+  # vendor driver; print-manager and skanpage are the KDE front ends.
+  "cups" "cups-pdf" "print-manager" "sane" "sane-airscan" "skanpage"
+
+  # Firmware updates. Discover already ships fwupd-backend.so, so its firmware
+  # page existed and was permanently empty without this.
+  "fwupd"
+
   # System utilities
   "brightnessctl" "btop" "direnv" "dust" "gnome-keyring" "less" "nwg-look" "nvm" "power-profiles-daemon"
   "pacman-contrib" "procs" "reflector"
@@ -144,6 +155,21 @@ aur_packages=(
   "supergfxctl"
   "tasks-git"
 
+  # SteamOS Gaming Mode as a third SDDM session, alongside Hyprland and Plasma.
+  # Pulls gamescope-session-git; needs Steam, which is already in the pacman
+  # list. Exit via the power menu -> Switch to Desktop, which drops back to
+  # SDDM rather than to a specific session.
+  #
+  # Two things to watch:
+  #  - gamescope-session-git symlinks /usr/share/wayland-sessions/gamescope-session.desktop,
+  #    so SDDM can show two near-identical entries. Removing that symlink leaves
+  #    the steam one. (Not the same mechanism as the hyprland.desktop shadow —
+  #    that one lives in /usr/local/share and is deliberate. See the README.)
+  #  - the session is sensitive to the gamescope version, and gamescope here is
+  #    load-bearing for every game's launch options. If a gamescope upgrade
+  #    breaks Gaming Mode, fix the session, do not downgrade gamescope.
+  "gamescope-session-steam-git"
+
   "paru"
   "vimix-cursors-git"
   "timeshift"
@@ -179,6 +205,10 @@ systemctl --user enable wayle-resume.service || true
 
 echo "🪞 Enabling reflector mirror update timer..."
 sudo systemctl enable --now reflector.timer || true
+
+# Socket-activated, so this costs nothing until something actually prints.
+echo "🖨️  Enabling CUPS..."
+sudo systemctl enable --now cups.socket || true
 
 # ==========================================
 # NVIDIA Hibernate Configuration
@@ -325,6 +355,38 @@ if command -v gamescope &>/dev/null; then
   sudo setcap 'CAP_SYS_NICE=eip' /usr/bin/gamescope
   echo "✅ gamescope: $(getcap /usr/bin/gamescope)"
 fi
+
+# hyprpm plugin repos. Its state lives in /var/cache/hyprpm/$USER, outside this repo,
+# so it is not restored by symlink_config.sh — and `hyprpm purge-cache` deletes the
+# repos themselves, not just build artifacts. These lines are the only record of the
+# upstreams. Must run inside a Hyprland session: hyprpm builds against the RUNNING
+# compositor's headers. Skipped otherwise; re-run this script from a session.
+if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && command -v hyprpm &>/dev/null; then
+  hyprpm add https://github.com/hyprwm/hyprland-plugins
+  hyprpm add https://github.com/gfhdhytghd/hymission
+  hyprpm enable borders-plus-plus
+  hyprpm enable hymission
+  hyprpm reload
+  echo "✅ hyprpm plugins: $(hyprctl plugin list | grep -c 'Plugin ') loaded."
+else
+  echo "ℹ️ Not in a Hyprland session — skipping hyprpm plugin setup. Re-run from Hyprland."
+fi
+
+# Must be `install -o root -g root`, never `cp -a`/`cp -p`. asusd.service sets
+# CapabilityBoundingSet= and AmbientCapabilities= to EMPTY, so the daemon runs as
+# root WITHOUT CAP_DAC_OVERRIDE. It rewrites this file on exit, and opening a
+# file owned by another user for write then returns EACCES — asusd panics at
+# config-traits/src/lib.rs:94 and core-dumps on every boot until the start limit
+# is hit. A `cp -a` from this repo preserves the user ownership and breaks it.
+sudo install -o root -g root -m 644 \
+  "$current_dir/etc/asusd/fan_curves.ron" /etc/asusd/fan_curves.ron
+
+# Self-healing backstop: re-assert ownership at every boot, before asusd starts,
+# in case the file is ever restored by hand with the wrong flags.
+sudo install -o root -g root -m 644 /dev/stdin /etc/tmpfiles.d/asusd-fancurves.conf <<'TMPFILES'
+# type path                     mode uid  gid  age arg
+z      /etc/asusd/fan_curves.ron 0644 root root -   -
+TMPFILES
 
 # asusd holds fan curves in memory and rewrites /etc/asusd/fan_curves.ron on
 # exit, so the copied file only takes effect after a restart.

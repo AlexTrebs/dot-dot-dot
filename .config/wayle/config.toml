@@ -44,6 +44,11 @@ right = ["volume", "network", "custom-wifi-ext", "custom-dock-toggle", "bluetoot
 icon-color = "#4f8a72"
 icon-bg-color = "transparent"
 border-show = false
+# Default is `loginctl terminate-session $XDG_SESSION_ID`, which SIGTERMs the whole
+# session scope — sddm-helper included. SDDM sees the helper die and logs it as a
+# crash, so it never returns to the greeter (black screen). Let Hyprland exit on its
+# own instead: helper exits 0, SDDM cleans up and shows the greeter.
+dropdown-logout-command = "hyprctl dispatch exit"
 
 [modules.clock]
 format = "%H:%M  %d %b"

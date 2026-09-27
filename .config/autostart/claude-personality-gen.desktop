@@ -1,0 +1,11 @@
+[Desktop Entry]
+# `exec-once = ~/.config/hypr/scripts/claude_personality_gen/gen.sh` from
+# hyprland.conf. The script writes one file per day and exits early if today's
+# already exists, so a Plasma login on a day that started in Hyprland is a
+# no-op. See bing-wallpaper.desktop for why OnlyShowIn=KDE.
+Type=Application
+Name=Claude personality of the day
+Exec=/home/alextrebs/.config/hypr/scripts/claude_personality_gen/gen.sh
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2
+NoDisplay=true

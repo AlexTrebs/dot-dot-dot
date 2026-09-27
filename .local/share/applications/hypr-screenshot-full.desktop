@@ -1,0 +1,11 @@
+[Desktop Entry]
+# Keybind target for the Plasma session — see hypr-screenshot-region.desktop.
+Name=Screenshot (full screen)
+Comment=Capture every output, save to ~/Pictures/Screenshots and copy to clipboard
+Exec=/home/alextrebs/.config/hypr/scripts/full_screenshot.sh
+Terminal=false
+Type=Application
+Icon=spectacle
+Categories=Graphics;
+NoDisplay=true
+StartupNotify=false

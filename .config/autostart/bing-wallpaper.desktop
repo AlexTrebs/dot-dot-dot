@@ -1,0 +1,15 @@
+[Desktop Entry]
+# The daily wallpaper is an `exec-once` in hyprland.conf, which only ever runs
+# in the Hyprland session — Plasma showed whatever it was last set to, forever.
+# The script itself now picks hyprpaper or plasma-apply-wallpaperimage by
+# XDG_CURRENT_DESKTOP, so this only has to make Plasma run it.
+#
+# OnlyShowIn=KDE so it stays exactly one autostart per session: Hyprland keeps
+# using its exec-once, and nothing double-fires if this ever moves back to a
+# uwsm session (uwsm does honour xdg-desktop-autostart.target).
+Type=Application
+Name=Bing daily wallpaper
+Exec=/home/alextrebs/.config/hypr/scripts/bing_wallpaper.sh
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2
+NoDisplay=true

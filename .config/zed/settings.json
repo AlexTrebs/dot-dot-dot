@@ -1,6 +1,12 @@
 {
   // GENERAL
 
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
   "tab_size": 2,
   "icon_theme": "Material Icon Theme",
   "soft_wrap": "editor_width",
@@ -190,6 +196,7 @@
 
   // AGENT / AI
   "agent": {
+    "dock": "right",
     "default_profile": "ask",
     "default_model": {
       "provider": "copilot_chat",

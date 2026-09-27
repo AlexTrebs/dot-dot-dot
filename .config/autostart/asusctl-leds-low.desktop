@@ -1,0 +1,10 @@
+[Desktop Entry]
+# `exec-once = asusctl leds set low` from hyprland.conf. Nothing about keyboard
+# backlight is compositor-specific, but the Plasma session never ran it, so the
+# board came up at whatever brightness the firmware chose.
+# See bing-wallpaper.desktop for why OnlyShowIn=KDE.
+Type=Application
+Name=Keyboard backlight (low)
+Exec=asusctl leds set low
+OnlyShowIn=KDE;
+NoDisplay=true
