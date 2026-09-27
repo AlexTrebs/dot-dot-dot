@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-EXTERNAL="DP-5"
+# Dock output comes from hypr/lua/hosts/<machine>.lua; nothing to do without one
+EXTERNAL="${DOCK_OUTPUT:-}"
+[ -n "$EXTERNAL" ] || exit 0
 
 if hyprctl monitors | grep -q "$EXTERNAL"; then
     hyprctl eval "hl.monitor({ output = \"$EXTERNAL\", mode = \"1920x1080@144\", position = \"auto-right\", scale = 1 })"

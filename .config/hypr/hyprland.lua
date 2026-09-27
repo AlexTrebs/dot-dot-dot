@@ -11,3 +11,14 @@ require("lua.binds")
 require("lua.rules")
 require("lua.autostart")
 require("lua.plugins")
+
+-- Per-machine overrides (monitors, dock output): lua/hosts/<hardware family>.lua,
+-- e.g. "ROG Zephyrus G16" -> lua/hosts/rog-zephyrus-g16.lua. Skipped if absent.
+local dmi = io.open("/sys/class/dmi/id/product_family")
+if dmi then
+    local host = dmi:read("*l"):lower():gsub("[^%w]+", "-")
+    dmi:close()
+    if package.searchpath("lua.hosts." .. host, package.path) then
+        require("lua.hosts." .. host)
+    end
+end
