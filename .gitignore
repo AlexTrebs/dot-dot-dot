@@ -21,3 +21,5 @@ tmp/
 .config/hypr/icons/
 .config/hypr/scripts/claude_personality_gen/
 .config/discord/
+
+.config/wayvnc/
