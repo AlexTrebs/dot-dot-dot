@@ -38,7 +38,7 @@ packages=(
   "openssh" "wget" "wpa_supplicant"
 
   # Hyprland & Wayland
-  "hyprland" "hypridle" "hyprlock" "hyprpaper" "hyprpolkitagent" "hyprsunset"
+  "hyprland" "hyprpm" "hypridle" "hyprlock" "hyprpaper" "hyprpolkitagent" "hyprsunset"
   "hyprpicker" "swww" "slurp" "grim" "wl-clipboard"
   "xdg-desktop-portal-gtk" "xdg-desktop-portal-hyprland" "xdg-utils"
   "qt5-wayland" "qt6-wayland"
