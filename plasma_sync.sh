@@ -4,7 +4,7 @@
 #   ./plasma_sync.sh apply   - write the settings below into ~/.config
 #   ./plasma_sync.sh dump    - print current live values of those same keys
 #
-# Why a script and not tracked kdeglobals/kwinrc: see README, "Plasma session".
+# Why a script and not tracked kdeglobals/kwinrc: see docs/plasma.md.
 # `dump` makes GUI tweaks visible: change something in System Settings, run dump,
 # and promote anything worth keeping into the apply block below.
 

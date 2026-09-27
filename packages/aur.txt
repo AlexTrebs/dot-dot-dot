@@ -15,7 +15,7 @@ supergfxctl
 tasks-git
 
 # SteamOS Gaming Mode as a third SDDM session. Watch for a duplicate SDDM entry,
-# and fix the session rather than downgrade gamescope (README: Plasma session).
+# and fix the session rather than downgrade gamescope (docs/plasma.md).
 gamescope-session-steam-git
 
 vimix-cursors-git
