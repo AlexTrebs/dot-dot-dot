@@ -368,6 +368,11 @@ else
   echo "ℹ️ Not in a Hyprland session — skipping hyprpm plugin setup. Re-run from Hyprland."
 fi
 
+# Daily claude personality: links ~/.local/bin/claude-personality-gen and enables
+# its systemd timer. stdin from /dev/null declines its hyprland.conf prompt;
+# lua/autostart.lua already runs it at login.
+bash "$current_dir/.config/hypr/scripts/claude_personality_gen/install.sh" </dev/null || true
+
 # Must be `install -o root -g root`, never `cp -a`/`cp -p`. asusd.service sets
 # CapabilityBoundingSet= and AmbientCapabilities= to EMPTY, so the daemon runs as
 # root WITHOUT CAP_DAC_OVERRIDE. It rewrites this file on exit, and opening a
