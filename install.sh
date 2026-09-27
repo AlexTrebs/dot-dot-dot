@@ -322,9 +322,9 @@ fi
 # ==========================================
 # The following tools are built locally from source and not installed by this script.
 # Configs reference them but the binaries must be present for the related autostart
-# entries in hyprland.conf to succeed:
+# entries in hypr/lua/autostart.lua to succeed:
 #   - hyprcut  : keymap overlay   -> build from your fork, install to ~/.local/bin/hyprcut
-# After building, ensure the binaries are on PATH (or matched in hyprland exec-once).
+# After building, ensure the binaries are on PATH (or matched in hypr/lua/autostart.lua).
 # wayle is NOT manual — it comes from the wayle-git AUR package above (/usr/bin/wayle).
 
 # ==========================================

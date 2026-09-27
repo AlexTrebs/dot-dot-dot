@@ -89,7 +89,7 @@ apply)
     # Mirrors `input { accel_profile = flat }`.
     kwriteconfig6 --file kcminputrc --group Mouse --key X11LibInputXAccelProfileFlat true
 
-    # Mirrors hyprland.conf `input { touchpad { ... } }`. Plasma ships all four
+    # Mirrors hypr/lua/input.lua `input.touchpad`. Plasma ships all four
     # of these off/adaptive by default, so without this the pad feels wrong the
     # moment you switch sessions.
     #
@@ -112,8 +112,8 @@ apply)
     # Mirrors `input { kb_layout = gb }`. Without a kxkbrc, Plasma falls back to
     # us and the built-in UK keyboard types the wrong symbols.
     #
-    # us is second only because Plasma has no per-device layout: hyprland.conf
-    # gives the NuPhy its own `device { kb_layout = us }` block, and the closest
+    # us is second only because Plasma has no per-device layout: hypr/lua/input.lua
+    # gives the NuPhy its own `hl.device({ kb_layout = "us" })` entry, and the closest
     # Plasma gets is both layouts loaded with a manual switch. keyd does not
     # help here — it re-emits scancodes, and the layout is still the
     # compositor's to apply.
@@ -123,7 +123,7 @@ apply)
     kwriteconfig6 --file kxkbrc --group Layout --key DisplayNames ","
     kwriteconfig6 --file kxkbrc --group Layout --key SwitchMode Global
 
-    # Mirrors hyprland.conf `input { follow_mouse = 1 }`.
+    # Mirrors hypr/lua/input.lua `input.follow_mouse = 1`.
     kwriteconfig6 --file kwinrc --group Windows --key FocusPolicy FocusFollowsMouse
     # A floating window with nowhere sensible to go lands in the middle of the
     # screen rather than wherever it was last time — the SteamOS behaviour of
@@ -193,7 +193,7 @@ apply)
     done
 
     # The CPU sits at 96C and throttles ~13k times a session (see the benchmark
-    # note in hyprland.conf). A filesystem indexer is pure heat for something
+    # note in hypr/lua/rules.lua). A filesystem indexer is pure heat for something
     # the Hyprland session does not have and has never been missed.
     kwriteconfig6 --file baloofilerc --group "Basic Settings" --key Indexing-Enabled false
 

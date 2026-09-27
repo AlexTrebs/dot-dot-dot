@@ -58,7 +58,7 @@ This will:
   sudo grub-mkconfig -o /boot/grub/grub.cfg
   ```
 - **Lock screen avatar**: Copy your profile picture to `~/.config/hypr/avatar.png`
-- **NuPhy wired keyboard**: Run `hyprctl devices | grep -i nuphy` while plugged in via USB and update the `TODO-nuphy-wired-device-name` device block in `hyprland.conf`
+- **NuPhy wired keyboard**: Run `hyprctl devices | grep -i nuphy` while plugged in via USB and check it matches the NuPhy name list in `hypr/lua/input.lua`
 - **Zed**: Installed separately via `curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh` (handled by install.sh)
 - **Hyprland logout fix**: See [Out-of-repo system overrides](#out-of-repo-system-overrides) below — logout leaves a black TTY without it.
 
@@ -118,8 +118,8 @@ no KWin equivalent is listed at the end of that block rather than faked:
 
 Deliberate asymmetries:
 
-- **Per-device keyboard layouts.** `hyprland.conf` gives the NuPhy its own
-  `device { kb_layout = us }`. Plasma has no per-device layout, so `kxkbrc` gets
+- **Per-device keyboard layouts.** `hypr/lua/input.lua` gives the NuPhy its own
+  `hl.device({ kb_layout = "us" })`. Plasma has no per-device layout, so `kxkbrc` gets
   `gb,us` and the second one is a manual switch. keyd does not help — it
   re-emits scancodes, and applying the layout is still the compositor's job.
 - **XWayland scaling.** Hyprland uses `force_zero_scaling`; KWin has no
@@ -252,7 +252,7 @@ not covered.
 
 - Built-in ASUS keyboard: UK (`gb`)
 - NuPhy Air75 V2 (dongle): US (`us`)
-- NuPhy Air75 V2 (USB): US (`us`) — update device name in `hyprland.conf`
+- NuPhy Air75 V2 (USB): US (`us`) — device name listed in `hypr/lua/input.lua`
 
 ## Package List Sync
 

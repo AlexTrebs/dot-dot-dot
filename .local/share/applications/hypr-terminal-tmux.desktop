@@ -1,5 +1,5 @@
 [Desktop Entry]
-# Exists so the Plasma session can bind Meta+T to the same thing hyprland.conf
+# Exists so the Plasma session can bind Meta+T to the same thing hypr/lua/binds.lua
 # binds it to. Plasma 6 dropped khotkeys: custom global shortcuts are now
 # attached to a .desktop file via kglobalshortcutsrc's [services] section, so a
 # shortcut that runs a command needs a launcher entry to hang off.

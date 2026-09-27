@@ -1,5 +1,5 @@
 [Desktop Entry]
-# The daily wallpaper is an `exec-once` in hyprland.conf, which only ever runs
+# The daily wallpaper is a startup exec in hypr/lua/autostart.lua, which only ever runs
 # in the Hyprland session — Plasma showed whatever it was last set to, forever.
 # The script itself now picks hyprpaper or plasma-apply-wallpaperimage by
 # XDG_CURRENT_DESKTOP, so this only has to make Plasma run it.

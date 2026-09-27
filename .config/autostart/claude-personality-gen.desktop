@@ -1,6 +1,6 @@
 [Desktop Entry]
-# `exec-once = ~/.config/hypr/scripts/claude_personality_gen/gen.sh` from
-# hyprland.conf. The script writes one file per day and exits early if today's
+# `~/.config/hypr/scripts/claude_personality_gen/gen.sh` at startup in
+# hypr/lua/autostart.lua. The script writes one file per day and exits early if today's
 # already exists, so a Plasma login on a day that started in Hyprland is a
 # no-op. See bing-wallpaper.desktop for why OnlyShowIn=KDE.
 Type=Application

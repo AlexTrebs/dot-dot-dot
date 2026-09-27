@@ -1,5 +1,5 @@
 [Desktop Entry]
-# `exec-once = asusctl leds set low` from hyprland.conf. Nothing about keyboard
+# `asusctl leds set low` at startup in hypr/lua/autostart.lua. Nothing about keyboard
 # backlight is compositor-specific, but the Plasma session never ran it, so the
 # board came up at whatever brightness the firmware chose.
 # See bing-wallpaper.desktop for why OnlyShowIn=KDE.
