@@ -62,7 +62,7 @@ else
         [ -n "${!k:-}" ] || miss_env+=" $k"
     done
     [ -z "$miss_env" ] && ok "environment.d vars reach apps" \
-        || bad "env vars missing:$miss_env" "lua/env.lua loads environment.d; open a new terminal after hyprctl reload"
+        || bad "env vars missing:$miss_env" "lua/env.lua loads environment.d. Shells started before it (or a tmux server started before it) keep the old env: open a new terminal, restart tmux, or log in again"
 fi
 
 echo
