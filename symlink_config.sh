@@ -90,7 +90,9 @@ copy_etc() {
         target_dir=$(dirname "$target")
 
         sudo mkdir -p "$target_dir"
-        sudo cp -p "$file" "$target"
+        # root:root, not cp -p: that kept your ownership, leaving pacman hooks
+        # and pacman.conf user-writable, and it breaks asusd (see install.sh).
+        sudo install -o root -g root -m "$(stat -c %a "$file")" "$file" "$target"
         echo "Copied $target"
     done
 }
